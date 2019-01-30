@@ -39,6 +39,7 @@ public class TiledMapLoader extends GameBoard {
     public TileDefinition getTileDefinitionByCoordinate(int layer, int col, int row) {
         TiledMapTileLayer.Cell cell = ((TiledMapTileLayer) tiledMap.getLayers().get(layer)).getCell(col, row);
         if (cell != null) {
+
             TiledMapTile tile = cell.getTile();
             if (tile != null) {
                 int id = ((TiledMapTile) tile).getId();

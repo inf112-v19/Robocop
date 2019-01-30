@@ -48,7 +48,7 @@ public class ScrollProcessor implements InputProcessor {
     @Override
     public boolean scrolled(int i) {
         if (i != 0) {
-            camera.zoom += i/2.5;
+            camera.zoom += i/4.0;
             if(camera.zoom >5.0) {
                 camera.zoom = (float) 5.0;
             }

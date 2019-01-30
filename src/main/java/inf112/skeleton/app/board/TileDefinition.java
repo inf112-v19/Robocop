@@ -7,8 +7,9 @@ public enum TileDefinition {
     BLANK(2, true, "Blank"),
     BIDIRECTION(3, true, "BiDirectional"),
     HORISONTAL(4, true, "Horisontal"),
-    VERTICAL(5, true, "Vertical");
-
+    VERTICAL(5, true, "Vertical"),
+    TBRACKET(6, true, "T-Bracket"),
+    LBRACKET(7, true, "L-Bracket");
 
 
     public static final int TILE_SIZE = 64;
@@ -37,6 +38,7 @@ public enum TileDefinition {
     private static HashMap<Integer, TileDefinition> tileMap;
 
     static {
+        tileMap = new HashMap<>();
         for (TileDefinition tileDefinition : TileDefinition.values()) {
             tileMap.put(tileDefinition.getId(), tileDefinition);
 
