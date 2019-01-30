@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import inf112.skeleton.app.Action.ScrollProcessor;
 import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TiledMapLoader;
 
@@ -17,6 +18,7 @@ public class HelloWorld extends ApplicationAdapter {
     OrthographicCamera camera;
 
     GameBoard gameBoard;
+    ScrollProcessor scrollProcessor;
 
     @Override
     public void create() {
@@ -25,10 +27,12 @@ public class HelloWorld extends ApplicationAdapter {
         font.setColor(Color.RED);
 
         camera = new OrthographicCamera();
-        camera.setToOrtho(true,Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.setToOrtho(false,Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.update();
 
         gameBoard = new TiledMapLoader();
+        scrollProcessor = new ScrollProcessor(camera);
+        Gdx.input.setInputProcessor(scrollProcessor);
     }
 
     @Override
@@ -42,10 +46,9 @@ public class HelloWorld extends ApplicationAdapter {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         if(Gdx.input.isTouched()){
-            camera.translate(-Gdx.input.getDeltaX()*2, -Gdx.input.getDeltaY()*2);
+            camera.translate((-Gdx.input.getDeltaX())*5*camera.zoom, (Gdx.input.getDeltaY())*5*camera.zoom);
             camera.update();
         }
-
         batch.begin();
         font.draw(batch, "Hello World", 200, 200);
         batch.end();

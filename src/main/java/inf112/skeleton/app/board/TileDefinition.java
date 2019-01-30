@@ -3,11 +3,11 @@ package inf112.skeleton.app.board;
 import java.util.HashMap;
 
 public enum TileDefinition {
-    BACKGROUND(0, true, "Background"),
-    BLANK(1, true, "Blank"),
-    BIDIRECTION(2, true, "BiDirectional"),
-    HORISONTAL(3, true, "Horisontal"),
-    VERTICAL(4, true, "Vertical");
+    BACKGROUND(1, true, "Background"),
+    BLANK(2, true, "Blank"),
+    BIDIRECTION(3, true, "BiDirectional"),
+    HORISONTAL(4, true, "Horisontal"),
+    VERTICAL(5, true, "Vertical");
 
 
 
