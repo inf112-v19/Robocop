@@ -34,10 +34,7 @@ public abstract class GameBoard {
      * @param row
      * @return
      */
-    public TileDefinition getTileDefinitionByCoordinate(int layer, int col, int row) {
-        return null;
-    }
-
+    public abstract TileDefinition getTileDefinitionByCoordinate(int layer, int col, int row);
     public abstract int getWidth();
 
     public abstract int getHeight();
