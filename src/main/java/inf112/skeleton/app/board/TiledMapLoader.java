@@ -9,8 +9,8 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 public class TiledMapLoader extends GameBoard {
 
-    TiledMap tiledMap;
-    OrthogonalTiledMapRenderer tiledMapRenderer;
+    private TiledMap tiledMap;
+    private OrthogonalTiledMapRenderer tiledMapRenderer;
 
     public TiledMapLoader() {
         tiledMap = new TmxMapLoader().load("Board.tmx");
@@ -42,7 +42,7 @@ public class TiledMapLoader extends GameBoard {
 
             TiledMapTile tile = cell.getTile();
             if (tile != null) {
-                int id = ((TiledMapTile) tile).getId();
+                int id = tile.getId();
                 return TileDefinition.getTileById(id);
             }
         }

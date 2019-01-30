@@ -17,7 +17,7 @@ public enum TileDefinition {
     private boolean collidable;
     private String name;
 
-    private TileDefinition(int id, boolean collidable, String name) {
+    TileDefinition(int id, boolean collidable, String name) {
         this.id = id;
         this.collidable = collidable;
         this.name = name;

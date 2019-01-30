@@ -4,7 +4,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class ScrollProcessor implements InputProcessor {
-    OrthographicCamera camera;
+    private OrthographicCamera camera;
 
     public ScrollProcessor(OrthographicCamera camera) {
         this.camera = camera;
