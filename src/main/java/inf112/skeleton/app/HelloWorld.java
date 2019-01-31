@@ -59,10 +59,11 @@ public class HelloWorld extends ApplicationAdapter {
 
             }
         }
-        batch.begin();
-        font.draw(batch, "Hello World", 200, 200);
-        batch.end();
+
         gameBoard.render(camera);
+        batch.begin();
+        font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight()-20);
+        batch.end();
 
     }
 
