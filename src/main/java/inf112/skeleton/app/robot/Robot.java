@@ -1,30 +1,35 @@
 package inf112.skeleton.app.robot;
 
+import inf112.skeleton.app.card.Card;
+
+import java.util.LinkedList;
 import java.util.Queue;
+
+import static inf112.skeleton.app.robot.Directions.*;
 
 public class Robot {
     private Directions facing;
     private int ID;
     private int health;
-    private Queue<T> memory;
-    private Queue<T> burntMemory;
+    private Queue<Card> memory;
+    private Queue<Card> burntMemory;
 
-    public Robot(int id) {
+    public Robot(int id, Card card) {
         this.ID = id;
         this.health = 5;
-        this.facing = Directions.NORTH;
-        this.memory = new Queue<T>();       //Queue that the player can add cards to.
-        this.burntMemory = new Queue<T>();  //Queue that the player cannot add cards to themselves.
+        this.facing = NORTH;
+        this.memory = new LinkedList<Card>();       //Queue that the player can add cards to.
+        this.burntMemory = new LinkedList<Card>();  //Queue that the player cannot add cards to themselves.
     }
 
-    public void addCard(T card) throws IllegalArgumentException {
+    public void addCard(Card card) throws IllegalArgumentException {
         if (memory.size() < health)
             memory.add(card);
         else
             throw new IllegalArgumentException("Robot memory is full");
     }
 
-    public T useCard() {
+    public Card useCard() {
         if (memory.size() > 0)
             return memory.remove();
         return null;
@@ -54,47 +59,15 @@ public class Robot {
             if (burntMemory.size() > 0)
                 burntMemory.remove();
             else
-                this.id = -1;      //The idea here is that a robot with id of -1 gets removed from the board.
+                this.ID = -1;      //The idea here is that a robot with id of -1 gets removed from the board.
         }
     }
 
     public void rotateLeft() {
-        switch (facing) {
-            case Directions.NORTH:
-                facing = Directions.WEST;
-                break;
-            case Directions.WEST:
-                facing = Directions.SOUTH;
-                break;
-            case Directions.SOUTH:
-                facing = Directions.EAST;
-                break;
-            case Directions.EAST:
-                facing = Directions.NORTH;
-                break;
-            default:
-                System.out.println("Could not rotate left");
-                break;
-        }
+        facing = values()[(facing.ordinal() + values().length-1) % values().length];
     }
 
     public void rotateRight() {
-        switch (facing) {
-            case Directions.NORTH:
-                facing = Directions.EAST;
-                break;
-            case Directions.EAST:
-                facing = Directions.SOUTH;
-                break;
-            case Directions.SOUTH:
-                facing = Directions.WEST;
-                break;
-            case Directions.WEST:
-                facing = Directions.NORTH;
-                break;
-            default:
-                System.out.println("Could not rotate right");
-                break;
-        }
+        facing = values()[((facing.ordinal())+ values().length+1) % (values().length)];
     }
 }
