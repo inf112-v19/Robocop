@@ -1,14 +1,23 @@
 package inf112.skeleton.app.card;
 
 public class Card {
-    // TEMP CLASS
-    private String test;
+    private int priority;
+    private String type;
 
-    public Card() {
-        this.test = "Test";
+    public Card(int priority, String type) {
+        this.priority = priority;
+        this.type = type;
     }
 
-    public String getString() {
-        return test;
+    public String getType() {
+        return type;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public String toString() {
+        return "Type: " + type + " | Priority: " + priority;
     }
 }
