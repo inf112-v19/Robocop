@@ -12,6 +12,7 @@ public abstract class GameBoard {
 
     /**
      * Gets a tile by pixel position within the board, at a specified layer.
+     * 指定したレイヤーのボード上のピクセル位置を使ってタイルを見つけます。
      *
      * @param layer
      * @param x
@@ -28,6 +29,7 @@ public abstract class GameBoard {
 
     /**
      * Gets a tile at a specified coordinate on the game board.
+     * ボード上の座標を使ってタイルを見つけます。
      *
      * @param layer
      * @param col

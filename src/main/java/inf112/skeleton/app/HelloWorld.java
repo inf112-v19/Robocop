@@ -62,6 +62,7 @@ public class HelloWorld extends ApplicationAdapter {
 
         gameBoard.render(camera);
         batch.begin();
+        // 秒あたりのフレーム数
         font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight()-20);
         batch.end();
 
