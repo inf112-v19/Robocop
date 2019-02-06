@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import inf112.skeleton.app.Action.InputHandler;
 import inf112.skeleton.app.Action.ScrollProcessor;
 import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TileDefinition;
@@ -21,6 +22,7 @@ public class HelloWorld extends ApplicationAdapter {
 
     GameBoard gameBoard;
     ScrollProcessor scrollProcessor;
+    InputHandler inputHandler;
 
     @Override
     public void create() {
@@ -33,7 +35,8 @@ public class HelloWorld extends ApplicationAdapter {
         camera.update();
 
         gameBoard = new TiledMapLoader();
-        scrollProcessor = new ScrollProcessor(camera);
+        inputHandler = new InputHandler(camera);
+        scrollProcessor = new ScrollProcessor(camera, inputHandler);
         Gdx.input.setInputProcessor(scrollProcessor);
     }
 
@@ -47,9 +50,9 @@ public class HelloWorld extends ApplicationAdapter {
     public void render() {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        inputHandler.handleKeys();
         if (Gdx.input.isTouched()) {
             camera.translate((-Gdx.input.getDeltaX()) * 5 * camera.zoom, (Gdx.input.getDeltaY()) * 5 * camera.zoom);
-            camera.update();
         }
         if (Gdx.input.justTouched()) {
             Vector3 pos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -60,6 +63,7 @@ public class HelloWorld extends ApplicationAdapter {
             }
         }
 
+        camera.update();
         gameBoard.render(camera);
         batch.begin();
         // 秒あたりのフレーム数

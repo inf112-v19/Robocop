@@ -1,22 +1,28 @@
 package inf112.skeleton.app.Action;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class ScrollProcessor implements InputProcessor {
     private OrthographicCamera camera;
+    private InputHandler inputHandler;
 
-    public ScrollProcessor(OrthographicCamera camera) {
+    public ScrollProcessor(OrthographicCamera camera, InputHandler inputHandler) {
         this.camera = camera;
+        this.inputHandler = inputHandler;
+
     }
 
     @Override
     public boolean keyDown(int i) {
+        inputHandler.pressKey(i);
         return false;
     }
 
     @Override
     public boolean keyUp(int i) {
+        inputHandler.releseKey(i);
         return false;
     }
 
