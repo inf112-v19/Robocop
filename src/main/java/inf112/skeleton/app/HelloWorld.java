@@ -1,7 +1,6 @@
 package inf112.skeleton.app;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -31,6 +30,8 @@ public class HelloWorld extends ApplicationAdapter {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.update();
+        Gdx.graphics.setResizable(true);
+
 
         gameBoard = new TiledMapLoader();
         scrollProcessor = new ScrollProcessor(camera);
@@ -46,6 +47,7 @@ public class HelloWorld extends ApplicationAdapter {
     @Override
     public void render() {
         Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); //<--This.
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         if (Gdx.input.isTouched()) {
             camera.translate((-Gdx.input.getDeltaX()) * 5 * camera.zoom, (Gdx.input.getDeltaY()) * 5 * camera.zoom);
@@ -70,6 +72,9 @@ public class HelloWorld extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
+        camera.viewportHeight = height;
+        camera.viewportWidth = width;
+        camera.update();
     }
 
     @Override
