@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import inf112.skeleton.app.Action.InputHandler;
 import inf112.skeleton.app.Action.ScrollProcessor;
 import inf112.skeleton.app.board.GameBoard;
@@ -18,6 +20,7 @@ import inf112.skeleton.app.board.TiledMapLoader;
 public class HelloWorld extends ApplicationAdapter {
     private SpriteBatch batch;
     private BitmapFont font;
+    private Viewport viewport;
     OrthographicCamera camera;
 
     GameBoard gameBoard;
@@ -31,6 +34,7 @@ public class HelloWorld extends ApplicationAdapter {
         font.setColor(Color.RED);
 
         camera = new OrthographicCamera();
+        viewport = new FitViewport(1280, 720, camera);
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.update();
 
@@ -52,7 +56,7 @@ public class HelloWorld extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         inputHandler.handleKeys();
         if (Gdx.input.isTouched()) {
-            camera.translate((-Gdx.input.getDeltaX()) * 5 * camera.zoom, (Gdx.input.getDeltaY()) * 5 * camera.zoom);
+            camera.translate((-Gdx.input.getDeltaX()) * camera.zoom, (Gdx.input.getDeltaY()) * camera.zoom);
         }
         if (Gdx.input.justTouched()) {
             Vector3 pos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -74,6 +78,7 @@ public class HelloWorld extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
+        viewport.update(width, height);
     }
 
     @Override
