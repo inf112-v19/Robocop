@@ -21,15 +21,16 @@ public class InputHandler implements InputProcessor {
     }
 
     public void handleKeys() {
-        int movement = 10;
-        int acceleration = 1;
+        int cameraMovementSpeed = 10;
+        int speedMultiplier = 1;
 
         //Misc future keys
 
 
         //Misc camera functions
-        if(keys[Keys.SHIFT_LEFT])
-            acceleration = 3;
+        if(keys[Keys.SHIFT_LEFT]) {
+            speedMultiplier = 3;
+        }
         if(keys[Keys.PLUS]) {   //ZOOM IN
             camera.zoom -= 1/12.0;
             if(camera.zoom < 1.0)
@@ -42,26 +43,28 @@ public class InputHandler implements InputProcessor {
         }
 
         //Camera movement
-        if(keys[Keys.UP])
-            camera.translate(0,movement*acceleration);
-        else if(keys[Keys.DOWN])
-            camera.translate(0,-movement*acceleration);
-        if(keys[Keys.LEFT])
-            camera.translate(-movement*acceleration,0);
-        else if(keys[Keys.RIGHT])
-            camera.translate(movement*acceleration,0);
+        if(keys[Keys.UP]) {
+            camera.translate(0, cameraMovementSpeed * speedMultiplier);
+        } else if(keys[Keys.DOWN]) {
+            camera.translate(0, -cameraMovementSpeed * speedMultiplier);
+        }
+        if(keys[Keys.LEFT]) {
+            camera.translate(-cameraMovementSpeed * speedMultiplier, 0);
+        } else if(keys[Keys.RIGHT]) {
+            camera.translate(cameraMovementSpeed*speedMultiplier,0);
+        }
     }
 
     @Override
     public boolean keyDown(int i) {
         keys[i] = true;
-        return false;
+        return true;
     }
 
     @Override
     public boolean keyUp(int i) {
         keys[i] = false;
-        return false;
+        return true;
     }
 
     @Override
@@ -102,7 +105,7 @@ public class InputHandler implements InputProcessor {
             camera.update();
             System.out.println(camera.zoom);
         }
-        return false;
+        return true;
     }
 
 
