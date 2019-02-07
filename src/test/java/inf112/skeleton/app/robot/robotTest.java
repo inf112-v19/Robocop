@@ -1,14 +1,13 @@
-package inf112.skeleton.app.robotTest;
+package inf112.skeleton.app.robot;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import inf112.skeleton.app.robot.Directions;
-import inf112.skeleton.app.robot.Robot;
+import inf112.skeleton.app.card.CardDeck;
 import inf112.skeleton.app.card.Card;
 import org.junit.Test;
 
 import java.util.Random;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 
 public class robotTest {
     Robot robot;
@@ -134,4 +133,42 @@ public class robotTest {
             }
         }
     }
+
+    @Test
+    public void memoryAddOneCardUseOneCardTest() {
+        CardDeck deck = new CardDeck();
+        Card card = deck.dealCard();
+        robot.addCard(card);
+        assertEquals(card, robot.useCard());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void usingCardWhenEmpty() {
+        robot.useCard();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void addingCardsBeyondMemoryRange() {
+        CardDeck deck = new CardDeck();
+        for(int i = 0; i <= robot.getHealth(); i++) {
+            robot.addCard(deck.dealCard());
+        }
+    }
+
+    @Test
+    public void robotGettingHitShouldDecreaseHealthByOne() {
+        int before = robot.getHealth();
+        robot.getHit();
+        assertEquals(before-1,robot.getHealth());
+    }
+
+    @Test
+    public void robotGettingHitEnoughShouldMakeIdGoToNegative1() {
+        int robotHealth = robot.getHealth();
+        for (int i = 0; i <= robotHealth; i++) {
+            robot.getHit();
+        }
+        assertEquals(-1, robot.getID());
+    }
+
 }

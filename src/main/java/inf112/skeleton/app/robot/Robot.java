@@ -2,6 +2,7 @@ package inf112.skeleton.app.robot;
 
 import inf112.skeleton.app.card.Card;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -29,11 +30,13 @@ public class Robot {
             throw new IllegalArgumentException("Robot memory is full");
     }
 
-    public Card useCard() {
+    public Card useCard() throws IllegalArgumentException {
         if (memory.size() > 0)
             return memory.remove();
-        return null;
+        throw new IllegalArgumentException("Robot memory is empty");
     }
+
+    //TODO A way for external classes to read, but not write to, the burntMemory.
 
     public int getID() {
         return ID;
@@ -53,8 +56,9 @@ public class Robot {
      */
     public void getHit() {
         if (health > 0) {
-            health--;
-            burntMemory.add(memory.remove());
+            this.health--;
+            if(!memory.isEmpty())
+                burntMemory.add(memory.remove());
         } else {
             if (burntMemory.size() > 0)
                 burntMemory.remove();
