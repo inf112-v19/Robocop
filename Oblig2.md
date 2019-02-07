@@ -59,7 +59,7 @@ Bruker git til kodebase
 
 
 
-##Oppsummering
+## Oppsummering
 
 skrive ned telefonnummer til alle, hvist folk ikkje er på slack er dei umogleg å få tak i?
 
