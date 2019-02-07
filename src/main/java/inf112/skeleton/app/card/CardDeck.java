@@ -55,6 +55,13 @@ public class CardDeck {
         reshuffle();
     }
 
+    public void reAddMultipleCards(LinkedList<Card> cards) {
+        for(int i = 0; i < cards.size(); i++) {
+            deck.add(cards.remove());
+        }
+        reshuffle();
+    }
+
     public void reshuffle() {
         Collections.shuffle(deck);
     }
