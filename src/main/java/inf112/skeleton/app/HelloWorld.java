@@ -12,7 +12,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import inf112.skeleton.app.Action.InputHandler;
-import inf112.skeleton.app.Action.ScrollProcessor;
 import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TileDefinition;
 import inf112.skeleton.app.board.TiledMapLoader;
@@ -21,11 +20,11 @@ public class HelloWorld extends ApplicationAdapter {
     private SpriteBatch batch;
     private BitmapFont font;
     private Viewport viewport;
+    InputHandler inputHandler;
     OrthographicCamera camera;
 
     GameBoard gameBoard;
-    ScrollProcessor scrollProcessor;
-    InputHandler inputHandler;
+
 
     @Override
     public void create() {
@@ -40,8 +39,7 @@ public class HelloWorld extends ApplicationAdapter {
 
         gameBoard = new TiledMapLoader();
         inputHandler = new InputHandler(camera);
-        scrollProcessor = new ScrollProcessor(camera, inputHandler);
-        Gdx.input.setInputProcessor(scrollProcessor);
+        Gdx.input.setInputProcessor(inputHandler);
     }
 
     @Override

@@ -36,8 +36,7 @@ public class Robot {
         throw new IllegalArgumentException("Robot memory is empty");
     }
 
-    //TODO
-    //A way for external classes to read, but not write to, the burntMemory.
+    //TODO A way for external classes to read, but not write to, the burntMemory.
 
     public int getID() {
         return ID;

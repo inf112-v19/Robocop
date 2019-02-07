@@ -50,6 +50,11 @@ public class CardDeck {
         return null;
     }
 
+    public void reAddCard(Card card) {
+        deck.add(card);
+        reshuffle();
+    }
+
     public void reshuffle() {
         Collections.shuffle(deck);
     }

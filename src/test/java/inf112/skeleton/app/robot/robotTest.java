@@ -1,10 +1,7 @@
-package inf112.skeleton.app.robotTest;
+package inf112.skeleton.app.robot;
 
 import inf112.skeleton.app.card.CardDeck;
-import inf112.skeleton.app.robot.Directions;
-import inf112.skeleton.app.robot.Robot;
 import inf112.skeleton.app.card.Card;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Random;
