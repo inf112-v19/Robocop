@@ -16,7 +16,7 @@ import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TileDefinition;
 import inf112.skeleton.app.board.TiledMapLoader;
 
-public class HelloWorld extends ApplicationAdapter {
+public class RoboRally extends ApplicationAdapter {
     private SpriteBatch batch;
     private BitmapFont font;
     private Viewport viewport;
