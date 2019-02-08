@@ -1,12 +1,34 @@
 package inf112.skeleton.app.board;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import inf112.skeleton.app.board.entity.Entity;
+import inf112.skeleton.app.board.entity.Player;
+
+import java.util.ArrayList;
 
 public abstract class GameBoard {
 
-    public abstract void render(OrthographicCamera camera);
+    protected ArrayList<Entity> entities;
 
-    public abstract void update(float delta);
+    public GameBoard() {
+        entities = new ArrayList<>();
+        entities.add(new Player(10, 10, this));
+    }
+
+    public void render(OrthographicCamera camera, SpriteBatch batch) {
+        for (Entity entity : entities) {
+            entity.render(batch);
+
+        }
+    }
+
+    public void update() {
+        for (Entity entity : entities) {
+            entity.update();
+
+        }
+    }
 
     public abstract void dispose();
 
@@ -37,6 +59,8 @@ public abstract class GameBoard {
      * @return
      */
     public abstract TileDefinition getTileDefinitionByCoordinate(int layer, int col, int row);
+
+
     public abstract int getWidth();
 
     public abstract int getHeight();
