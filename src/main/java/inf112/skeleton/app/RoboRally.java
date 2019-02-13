@@ -20,7 +20,7 @@ public class RoboRally extends ApplicationAdapter {
     private SpriteBatch batch;
     private BitmapFont font;
     private Viewport viewport;
-    InputHandler inputHandler;
+    public static InputHandler inputHandler;
     OrthographicCamera camera;
 
     GameBoard gameBoard;
@@ -52,7 +52,9 @@ public class RoboRally extends ApplicationAdapter {
     public void render() {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         inputHandler.handleKeys();
+
         if (Gdx.input.isTouched()) {
             camera.translate((-Gdx.input.getDeltaX()) * camera.zoom, (Gdx.input.getDeltaY()) * camera.zoom);
         }
@@ -66,6 +68,7 @@ public class RoboRally extends ApplicationAdapter {
         }
 
         camera.update();
+        gameBoard.update();
         gameBoard.render(camera,batch);
 
         // 秒あたりのフレーム数
