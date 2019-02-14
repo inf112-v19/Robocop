@@ -2,7 +2,6 @@ package inf112.skeleton.app.board.entity;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.robot.Directions;
 
 import static inf112.skeleton.app.robot.Directions.values;

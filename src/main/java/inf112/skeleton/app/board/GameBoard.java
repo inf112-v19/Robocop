@@ -57,22 +57,26 @@ public abstract class GameBoard {
         }
     }
 
-    public void moveEntityCard(Entity e, Card card) {
-        CardMove type = card.getType();
-        if(type == CardMove.ROTATERIGHT) {
-            e.rotateRight();
-        } else if(type == CardMove.ROTATELEFT) {
-            e.rotateLeft();
-        } else if(type == CardMove.ROTATE180) {
-            e.rotate180();
-        } else if(type == CardMove.FORWARD1) {
-            e.moveForwardBackward(1);
-        } else if(type == CardMove.FORWARD2) {
-            e.moveForwardBackward(2);
-        } else if(type == CardMove.FORWARD3) {
-            e.moveForwardBackward(3);
-        } else if(type == CardMove.BACKWARD1) {
-            e.moveForwardBackward(-1);
+    public void moveEntityCard(Entity e, Card card) throws NoSuchElementException {
+        if(entities.contains(e)) {
+            CardMove type = card.getType();
+            if(type == CardMove.ROTATERIGHT) {
+                e.rotateRight();
+            } else if(type == CardMove.ROTATELEFT) {
+                e.rotateLeft();
+            } else if(type == CardMove.ROTATE180) {
+                e.rotate180();
+            } else if(type == CardMove.FORWARD1) {
+                e.moveForwardBackward(1);
+            } else if(type == CardMove.FORWARD2) {
+                e.moveForwardBackward(2);
+            } else if(type == CardMove.FORWARD3) {
+                e.moveForwardBackward(3);
+            } else if(type == CardMove.BACKWARD1) {
+                e.moveForwardBackward(-1);
+            }
+        } else {
+            throw new NoSuchElementException("Entity does not exist on this gameboard");
         }
     }
 
