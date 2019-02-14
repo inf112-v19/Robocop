@@ -3,6 +3,7 @@ package inf112.skeleton.app;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -15,6 +16,8 @@ import inf112.skeleton.app.Action.InputHandler;
 import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TileDefinition;
 import inf112.skeleton.app.board.TiledMapLoader;
+import inf112.skeleton.app.board.entity.Player;
+import inf112.skeleton.app.robot.Directions;
 
 public class RoboRally extends ApplicationAdapter {
     private SpriteBatch batch;
@@ -24,6 +27,7 @@ public class RoboRally extends ApplicationAdapter {
     OrthographicCamera camera;
 
     GameBoard gameBoard;
+    Player test1;
 
 
     @Override
@@ -40,6 +44,10 @@ public class RoboRally extends ApplicationAdapter {
         gameBoard = new TiledMapLoader();
         inputHandler = new InputHandler(camera);
         Gdx.input.setInputProcessor(inputHandler);
+
+        //Testing testing, 1-2
+        test1 = new Player(10,10,gameBoard);
+        gameBoard.addEntity(test1);
     }
 
     @Override
@@ -67,10 +75,22 @@ public class RoboRally extends ApplicationAdapter {
             }
         }
 
+        //TESTING
+        if(inputHandler.keyUp(Input.Keys.W)) {
+            gameBoard.moveEntity(test1, Directions.NORTH);
+        } else if(inputHandler.keyUp(Input.Keys.S)) {
+            gameBoard.moveEntity(test1, Directions.SOUTH);
+        }
+        if(inputHandler.keyUp(Input.Keys.A)) {
+            gameBoard.moveEntity(test1, Directions.WEST);
+        } else if(inputHandler.keyUp(Input.Keys.D)) {
+            gameBoard.moveEntity(test1, Directions.EAST);
+        }
+
         camera.update();
         gameBoard.update();
         gameBoard.render(camera,batch);
-
+        gameBoard.update();
         // 秒あたりのフレーム数
         batch.begin();
         font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight()-20);

@@ -16,8 +16,12 @@ public abstract class Entity {
         this.board = board;
     }
 
-    protected void moveX(float amount) {
+    public void moveX(float amount) {
+        this.pos.add(amount, 0);
+    }
 
+    public void moveY(float amount) {
+        this.pos.add(0,amount);
     }
 
     public abstract void update();

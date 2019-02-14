@@ -4,8 +4,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf112.skeleton.app.board.entity.Entity;
 import inf112.skeleton.app.board.entity.Player;
+import inf112.skeleton.app.robot.Directions;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 public abstract class GameBoard {
 
@@ -13,7 +15,11 @@ public abstract class GameBoard {
 
     public GameBoard() {
         entities = new ArrayList<>();
-        entities.add(new Player(10, 10, this));
+        //entities.add(new Player(10, 10, this));
+    }
+
+    public void addEntity(Entity e) {
+        entities.add(e);
     }
 
     public void render(OrthographicCamera camera, SpriteBatch batch) {
@@ -27,6 +33,27 @@ public abstract class GameBoard {
         for (Entity entity : entities) {
             entity.update();
 
+        }
+    }
+
+    public void moveEntity(Entity e, Directions dir) throws NoSuchElementException {
+        if(entities.contains(e)) {
+            switch(dir) {
+                case NORTH:
+                    e.moveY(1);
+                    break;
+                case SOUTH:
+                    e.moveY(-1);
+                    break;
+                case WEST:
+                    e.moveX(-1);
+                    break;
+                case EAST:
+                    e.moveX(1);
+                    break;
+            }
+        } else {
+            throw new NoSuchElementException("Entity does not exist on this gameboard");
         }
     }
 

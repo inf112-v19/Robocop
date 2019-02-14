@@ -20,16 +20,7 @@ public class Player extends Entity {
 
     @Override
     public void update() {
-        if(inputHandler.keyUp(Input.Keys.W)) {
-            this.pos.add(0,1);
-        } else if(inputHandler.keyUp(Input.Keys.S)) {
-            this.pos.add(0,-1);
-        }
-        if(inputHandler.keyUp(Input.Keys.A)) {
-            this.pos.add(-1,0);
-        } else if(inputHandler.keyUp(Input.Keys.D)) {
-            this.pos.add(1,0);
-        }
+
     }
 
     @Override
