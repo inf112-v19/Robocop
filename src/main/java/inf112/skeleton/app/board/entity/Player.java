@@ -1,11 +1,7 @@
 package inf112.skeleton.app.board.entity;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import inf112.skeleton.app.board.GameBoard;
-
-import static inf112.skeleton.app.RoboRally.inputHandler;
 
 public class Player extends Entity {
 
@@ -13,8 +9,8 @@ public class Player extends Entity {
     Texture image;
 
 
-    public Player(float x, float y, GameBoard board) {
-        super(x, y, EntityType.PLAYER, board);
+    public Player(float x, float y) {
+        super(x, y, EntityType.PLAYER);
         image = new Texture("robot.png");
     }
 

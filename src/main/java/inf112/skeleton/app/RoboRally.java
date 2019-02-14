@@ -1,7 +1,6 @@
 package inf112.skeleton.app;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -17,6 +16,7 @@ import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TileDefinition;
 import inf112.skeleton.app.board.TiledMapLoader;
 import inf112.skeleton.app.board.entity.Player;
+import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.robot.Directions;
 
 public class RoboRally extends ApplicationAdapter {
@@ -46,7 +46,7 @@ public class RoboRally extends ApplicationAdapter {
         Gdx.input.setInputProcessor(inputHandler);
 
         //Testing testing, 1-2
-        test1 = new Player(10,10,gameBoard);
+        test1 = new Player(10,10);
         gameBoard.addEntity(test1);
     }
 
@@ -75,7 +75,28 @@ public class RoboRally extends ApplicationAdapter {
             }
         }
 
-        //TESTING
+        //TESTING, temp.
+        if(inputHandler.keyUp(Input.Keys.NUM_1)) {
+            gameBoard.moveEntityCard(test1, new Card(0, "Forward 1"));
+        }
+        if(inputHandler.keyUp(Input.Keys.NUM_2)) {
+            gameBoard.moveEntityCard(test1, new Card(0, "Forward 2"));
+        }
+        if(inputHandler.keyUp(Input.Keys.NUM_3)) {
+            gameBoard.moveEntityCard(test1, new Card(0, "Forward 3"));
+        }
+        if(inputHandler.keyUp(Input.Keys.R)) {
+            gameBoard.moveEntityCard(test1, new Card(0, "Backward 1"));
+        }
+        if(inputHandler.keyUp(Input.Keys.E)) {
+            gameBoard.moveEntityCard(test1, new Card(0, "RotateRight"));
+        }
+        if(inputHandler.keyUp(Input.Keys.Q)) {
+            gameBoard.moveEntityCard(test1, new Card(0, "RotateLeft"));
+        }
+        if(inputHandler.keyUp(Input.Keys.X)) {
+            gameBoard.moveEntityCard(test1, new Card(0, "Rotate180"));
+        }
         if(inputHandler.keyUp(Input.Keys.W)) {
             gameBoard.moveEntity(test1, Directions.NORTH);
         } else if(inputHandler.keyUp(Input.Keys.S)) {
