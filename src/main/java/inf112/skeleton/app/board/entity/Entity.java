@@ -28,26 +28,7 @@ public abstract class Entity {
         this.pos.add(0,amount);
     }
 
-    public void moveEntity(Card card) {
-        String s = card.getType();
-        if(s.compareTo("RotateRight") == 0) {
-            rotateRight();
-        } else if(s.compareTo("RotateLeft") == 0) {
-            rotateLeft();
-        } else if(s.compareTo("Rotate180") == 0) {
-            rotate180();
-        } else if(s.compareTo("Forward 1") == 0) {
-            moveForwardBackward(1);
-        } else if(s.compareTo("Forward 2") == 0) {
-            moveForwardBackward(2);
-        } else if(s.compareTo("Forward 3") == 0) {
-            moveForwardBackward(3);
-        } else if(s.compareTo("Backward 1") == 0) {
-            moveForwardBackward(-1);
-        }
-    }
-
-    private void moveForwardBackward(int i) {
+    public void moveForwardBackward(int i) {
         switch(facing) {
             case NORTH:
                 moveY(i);
@@ -64,18 +45,18 @@ public abstract class Entity {
         }
     }
 
-    private void rotateLeft() {
+    public void rotateLeft() {
         facing = values()[(facing.ordinal() + values().length-1) % values().length];
         System.out.println("Facing " + facing);
     }
 
-    private void rotateRight() {
+    public void rotateRight() {
         facing = values()[((facing.ordinal())+ values().length+1) % (values().length)];
         System.out.println("Facing " + facing);
 
     }
 
-    private void rotate180() {
+    public void rotate180() {
         facing = values()[(facing.ordinal() + values().length-1) % values().length];
         facing = values()[(facing.ordinal() + values().length-1) % values().length];
         System.out.println("Facing " + facing);
