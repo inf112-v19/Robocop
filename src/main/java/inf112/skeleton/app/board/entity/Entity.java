@@ -2,9 +2,8 @@ package inf112.skeleton.app.board.entity;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.app.robot.Directions;
 
-import static inf112.skeleton.app.robot.Directions.values;
+import static inf112.skeleton.app.board.entity.Directions.values;
 
 
 public abstract class Entity {
@@ -45,21 +44,15 @@ public abstract class Entity {
     }
 
     public void rotateLeft() {
-        facing = values()[(facing.ordinal() + values().length-1) % values().length];
-        System.out.println("Facing " + facing);
+        facing = values()[(facing.ordinal() + values().length - 1) % values().length];
     }
 
     public void rotateRight() {
-        facing = values()[((facing.ordinal())+ values().length+1) % (values().length)];
-        System.out.println("Facing " + facing);
-
+        facing = values()[(facing.ordinal() + values().length + 1) % values().length];
     }
 
     public void rotate180() {
-        facing = values()[(facing.ordinal() + values().length-1) % values().length];
-        facing = values()[(facing.ordinal() + values().length-1) % values().length];
-        System.out.println("Facing " + facing);
-
+        facing = values()[(facing.ordinal() + 2) % values().length];
     }
 
     public abstract void update();

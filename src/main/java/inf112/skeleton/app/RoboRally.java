@@ -16,9 +16,10 @@ import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TileDefinition;
 import inf112.skeleton.app.board.TiledMapLoader;
 import inf112.skeleton.app.board.entity.Player;
+import inf112.skeleton.app.board.entity.Robot;
 import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.card.CardMove;
-import inf112.skeleton.app.robot.Directions;
+import inf112.skeleton.app.board.entity.Directions;
 
 public class RoboRally extends ApplicationAdapter {
     private SpriteBatch batch;
@@ -28,7 +29,7 @@ public class RoboRally extends ApplicationAdapter {
     OrthographicCamera camera;
 
     GameBoard gameBoard;
-    Player test1;
+    Robot test1;
 
 
     @Override
@@ -47,7 +48,7 @@ public class RoboRally extends ApplicationAdapter {
         Gdx.input.setInputProcessor(inputHandler);
 
         //Testing testing, 1-2
-        test1 = new Player(10,10);
+        test1 = new Robot(10,10);
         gameBoard.addEntity(test1);
     }
 

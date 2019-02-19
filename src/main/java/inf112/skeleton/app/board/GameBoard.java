@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf112.skeleton.app.board.entity.Entity;
 import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.card.CardMove;
-import inf112.skeleton.app.robot.Directions;
+import inf112.skeleton.app.board.entity.Directions;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;

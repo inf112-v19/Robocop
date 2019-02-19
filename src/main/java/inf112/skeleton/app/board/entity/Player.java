@@ -2,10 +2,9 @@ package inf112.skeleton.app.board.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import inf112.skeleton.app.robot.Directions;
 
-import static inf112.skeleton.app.robot.Directions.*;
-import static inf112.skeleton.app.robot.Directions.values;
+import static inf112.skeleton.app.board.entity.Directions.*;
+import static inf112.skeleton.app.board.entity.Directions.values;
 
 public class Player extends Entity {
     Texture image;
@@ -33,12 +32,14 @@ public class Player extends Entity {
         facing = values()[(facing.ordinal() + values().length - 1) % values().length];
     }
 
+    @Override
     public void rotateRight() {
-        facing = values()[(facing.ordinal() + values().length + 1) % (values().length)];
+        facing = values()[(facing.ordinal() + values().length + 1) % values().length];
     }
 
+    @Override
     public void rotate180() {
-        facing = values()[(facing.ordinal() + 2) % (values().length)];
+        facing = values()[(facing.ordinal() + 2) % values().length];
     }
 
     @Override
