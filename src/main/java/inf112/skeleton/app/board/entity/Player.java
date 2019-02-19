@@ -30,7 +30,19 @@ public class Player extends Entity {
 
     @Override
     public void rotateLeft() {
-        facing = values()[(facing.ordinal() + values().length-1) % values().length];
+        facing = values()[(facing.ordinal() + values().length - 1) % values().length];
+    }
+
+    public void rotateRight() {
+        facing = values()[(facing.ordinal() + values().length + 1) % (values().length)];
+    }
+
+    public void rotate180() {
+        facing = values()[(facing.ordinal() + 2) % (values().length)];
+    }
+
+    @Override
+    public void render(SpriteBatch batch) {
         if(facing == NORTH) {
             image = facing_north;
         } else if (facing == SOUTH) {
@@ -40,23 +52,6 @@ public class Player extends Entity {
         } else if (facing == EAST) {
             image = facing_east;
         }
-        System.out.println("Facing " + facing);
-    }
-
-    public void rotateRight() {
-        facing = values()[((facing.ordinal())+ values().length+1) % (values().length)];
-        System.out.println("Facing " + facing);
-    }
-
-    public void rotate180() {
-        rotateLeft();
-        rotateLeft();
-        System.out.println("Facing " + facing);
-
-    }
-
-    @Override
-    public void render(SpriteBatch batch) {
         batch.draw(image, pos.x*64, pos.y*64, getWidth(), getHeight());
     }
 }
