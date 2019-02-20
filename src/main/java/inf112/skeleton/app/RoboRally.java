@@ -28,7 +28,7 @@ public class RoboRally extends ApplicationAdapter {
     public static InputHandler inputHandler;
     OrthographicCamera camera;
 
-    GameBoard gameBoard;
+    public static GameBoard gameBoard;
     Robot test1;
 
 

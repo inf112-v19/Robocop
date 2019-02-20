@@ -1,8 +1,12 @@
 package inf112.skeleton.app.board.entity;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.app.board.TileDefinition;
 import inf112.skeleton.app.card.Card;
 
 import java.util.LinkedList;
@@ -139,6 +143,9 @@ public class Robot extends Entity {
 
     @Override
     public void moveX(float amount) {
+        if(!canMove(amount,0)) {
+            return;
+        }
         if(!processMovement(System.currentTimeMillis())) {
             this.tileTo.add(amount, 0);
             this.timeMoved = System.currentTimeMillis();
@@ -147,10 +154,22 @@ public class Robot extends Entity {
 
     @Override
     public void moveY(float amount) {
+        if(!canMove(0,amount)) {
+            return;
+        }
         if(!processMovement(System.currentTimeMillis())){
             this.tileTo.add(0,amount);
             this.timeMoved = System.currentTimeMillis();
         }
+    }
+
+    private boolean canMove(float amountX, float amountY) {
+        TileDefinition def = RoboRally.gameBoard.getTileDefinitionByCoordinate(0,  (int)(pos.x+amountX), (int)(pos.y+amountY));
+        System.out.println(def.getName());
+        if(RoboRally.gameBoard.getWidth() < pos.x+amountX || pos.x+amountX < 0 ||
+                RoboRally.gameBoard.getHeight() < pos.y+amountY || pos.y+amountY < 0 || !def.isCollidable())
+            return false;
+        return true;
     }
 
     @Override
