@@ -45,11 +45,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        int port = 58008;
-        if(args.length > 0 ){
-            port = Integer.parseInt(args[0]);
-        }
-        new Main(port).run();
+      new ChatServer(58008).run();
 
     }
 }
