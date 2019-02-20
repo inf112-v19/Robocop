@@ -1,58 +1,37 @@
 package inf112.skeleton.app.board.entity;
+import inf112.skeleton.app.card.Card;
+import java.util.ArrayList;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+public class Player {
+    private Robot robot;
+    private ArrayList<Card> hand;
+    private int ID;
 
-import static inf112.skeleton.app.board.entity.Directions.*;
-import static inf112.skeleton.app.board.entity.Directions.values;
-
-public class Player extends Entity {
-    Texture image;
-    Texture facing_north;
-    Texture facing_south;
-    Texture facing_west;
-    Texture facing_east;
-
-    public Player(float x, float y) {
-        super(x, y, EntityType.PLAYER);
-        image = new Texture("robot.png");
-        facing_north = new Texture("NORTH.png");
-        facing_south = new Texture("SOUTH.png");
-        facing_west = new Texture("WEST.png");
-        facing_east = new Texture("EAST.png");
+    public Player(Robot r, int i) {
+        this.robot = r;
+        this.ID = i;
+        hand = new ArrayList<>();
     }
 
-    @Override
-    public void update() {
-
+    public void recieveCardsForHand(ArrayList<Card> cards) {
+        hand.addAll(cards);
     }
 
-    @Override
-    public void rotateLeft() {
-        facing = values()[(facing.ordinal() + values().length - 1) % values().length];
+    public void addCardToRobot(int arrayPos) {
+        robot.addCard(hand.remove(arrayPos));
     }
 
-    @Override
-    public void rotateRight() {
-        facing = values()[(facing.ordinal() + values().length + 1) % values().length];
+    public ArrayList<Card> returnRemainderHandToDealer() {
+        ArrayList<Card> foo = new ArrayList<>();
+        foo.addAll(hand);
+        return foo;
     }
 
-    @Override
-    public void rotate180() {
-        facing = values()[(facing.ordinal() + 2) % values().length];
+    public int handSize() {
+        return hand.size();
     }
 
-    @Override
-    public void render(SpriteBatch batch) {
-        if(facing == NORTH) {
-            image = facing_north;
-        } else if (facing == SOUTH) {
-            image = facing_south;
-        } else if (facing == WEST) {
-            image = facing_west;
-        } else if (facing == EAST) {
-            image = facing_east;
-        }
-        batch.draw(image, pos.x*64, pos.y*64, getWidth(), getHeight());
+    public int getID() {
+        return ID;
     }
 }

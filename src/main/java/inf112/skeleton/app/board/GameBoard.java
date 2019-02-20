@@ -2,7 +2,9 @@ package inf112.skeleton.app.board;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.board.entity.Entity;
+import inf112.skeleton.app.board.entity.Robot;
 import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.card.CardMove;
 import inf112.skeleton.app.board.entity.Directions;
@@ -78,6 +80,45 @@ public abstract class GameBoard {
         } else {
             throw new NoSuchElementException("Entity does not exist on this gameboard");
         }
+    }
+
+    //TODO REFACTOR THIS MESS OF A METHOD
+    public boolean canRobotMove(Robot e, Card card) {
+        Vector2 curPos = e.getPos();
+        Directions facing = e.getFacingDirection();
+        int moveAmount = translateCardMoveAmount(card);
+        TileDefinition tileDef;
+        if(facing == Directions.NORTH || facing == Directions.SOUTH) {
+            tileDef = getTileDefinitionByCoordinate(0,(int)(curPos.x),(int)(curPos.y+moveAmount));
+            try {
+                System.out.println(tileDef.getName());
+            }catch (NullPointerException e1) {
+                System.out.println("Nullpointer");
+            }
+        } else {
+            tileDef = getTileDefinitionByCoordinate(0,(int)(curPos.x+moveAmount),(int)(curPos.y));
+            System.out.println(tileDef.getName());
+        }
+        if(facing == Directions.NORTH || facing == Directions.SOUTH) {
+            if(getHeight() < curPos.y+moveAmount || curPos.y+moveAmount < 0 || !tileDef.isCollidable())
+                return false;
+        } else {
+            if(getWidth() < curPos.x+moveAmount || curPos.x+moveAmount < 0 || !tileDef.isCollidable())
+                return false;
+        }
+        return true;
+    }
+
+    public int translateCardMoveAmount(Card card) {
+        if(card.getType() == CardMove.FORWARD1)
+            return 1;
+        if(card.getType() == CardMove.FORWARD2)
+            return 2;
+        if(card.getType() == CardMove.FORWARD3)
+            return 3;
+        if(card.getType() == CardMove.BACKWARD1)
+            return -1;
+        return 0;
     }
 
     public abstract void dispose();
