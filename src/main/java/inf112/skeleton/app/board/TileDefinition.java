@@ -3,13 +3,13 @@ package inf112.skeleton.app.board;
 import java.util.HashMap;
 
 public enum TileDefinition {
-    BACKGROUND(1, false, "Background"),
-    BLANK(2, true, "Blank"),
-    BIDIRECTION(3, true, "BiDirectional"),
-    HORISONTAL(4, true, "Horisontal"),
-    VERTICAL(5, true, "Vertical"),
-    TBRACKET(6, true, "T-Bracket"),
-    LBRACKET(7, true, "L-Bracket");
+    BACKGROUND(1, true, "Background"),
+    BLANK(2, false, "Blank"),
+    BIDIRECTION(3, false, "BiDirectional"),
+    HORISONTAL(4, false, "Horisontal"),
+    VERTICAL(5, false, "Vertical"),
+    TBRACKET(6, false, "T-Bracket"),
+    LBRACKET(7, false, "L-Bracket");
 
 
     public static final int TILE_SIZE = 64;

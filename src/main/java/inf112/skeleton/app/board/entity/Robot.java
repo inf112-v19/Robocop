@@ -135,9 +135,6 @@ public class Robot extends Entity {
 
     @Override
     public void moveX(float amount) {
-        if(!canMove(amount,0)) {
-            return;
-        }
         if(!processMovement(System.currentTimeMillis())) {
             this.movingTo.add(amount, 0);
             this.timeMoved = System.currentTimeMillis();
@@ -146,22 +143,10 @@ public class Robot extends Entity {
 
     @Override
     public void moveY(float amount) {
-        if(!canMove(0,amount)) {
-            return;
-        }
         if(!processMovement(System.currentTimeMillis())){
             this.movingTo.add(0,amount);
             this.timeMoved = System.currentTimeMillis();
         }
-    }
-
-    private boolean canMove(float amountX, float amountY) {
-        TileDefinition def = RoboRally.gameBoard.getTileDefinitionByCoordinate(0,  (int)(pos.x+amountX), (int)(pos.y+amountY));
-        System.out.println(def.getName());
-        if(RoboRally.gameBoard.getWidth() < pos.x+amountX || pos.x+amountX < 0 ||
-                RoboRally.gameBoard.getHeight() < pos.y+amountY || pos.y+amountY < 0 || !def.isCollidable())
-            return false;
-        return true;
     }
 
     @Override

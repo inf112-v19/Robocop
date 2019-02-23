@@ -72,6 +72,7 @@ public class RoboRally extends ApplicationAdapter {
             Vector3 pos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             TileDefinition def = gameBoard.getTileDefinitionByLocation(0, pos.x, pos.y);
             if(def != null){
+                System.out.println("Clicked on tile: x" + (int)pos.x/64 + ", y" + (int)pos.y/64 + "  | Valid tile? " + gameBoard.isValidTile((int)pos.x/64,(int)pos.y/64));
                 System.out.printf("You clicked on tile %s with id %d.%n",def.getName(), def.getId());
 
             }

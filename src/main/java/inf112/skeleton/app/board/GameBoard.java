@@ -61,55 +61,66 @@ public abstract class GameBoard {
 
     public void moveEntityCard(Entity e, Card card) throws NoSuchElementException {
         if(entities.contains(e)) {
-            CardMove type = card.getType();
-            if(type == CardMove.ROTATERIGHT) {
-                e.rotateRight();
-            } else if(type == CardMove.ROTATELEFT) {
-                e.rotateLeft();
-            } else if(type == CardMove.ROTATE180) {
-                e.rotate180();
-            } else if(type == CardMove.FORWARD1) {
-                e.moveForwardBackward(1);
-            } else if(type == CardMove.FORWARD2) {
-                e.moveForwardBackward(2);
-            } else if(type == CardMove.FORWARD3) {
-                e.moveForwardBackward(3);
-            } else if(type == CardMove.BACKWARD1) {
-                e.moveForwardBackward(-1);
+            if(canRobotMove((Robot)e, card)) {
+                CardMove type = card.getType();
+                if(type == CardMove.ROTATERIGHT) {
+                    e.rotateRight();
+                } else if(type == CardMove.ROTATELEFT) {
+                    e.rotateLeft();
+                } else if(type == CardMove.ROTATE180) {
+                    e.rotate180();
+                } else if(type == CardMove.FORWARD1) {
+                    e.moveForwardBackward(1);
+                } else if(type == CardMove.FORWARD2) {
+                    e.moveForwardBackward(2);
+                } else if(type == CardMove.FORWARD3) {
+                    e.moveForwardBackward(3);
+                } else if(type == CardMove.BACKWARD1) {
+                    e.moveForwardBackward(-1);
+                }
             }
+            return;
         } else {
             throw new NoSuchElementException("Entity does not exist on this gameboard");
         }
     }
 
-    //TODO REFACTOR THIS MESS OF A METHOD
-    public boolean canRobotMove(Robot e, Card card) {
+    //TODO Fix this borked method.
+    private boolean canRobotMove(Robot e, Card card) {
         Vector2 curPos = e.getPos();
         Directions facing = e.getFacingDirection();
         int moveAmount = translateCardMoveAmount(card);
-        TileDefinition tileDef;
+
         if(facing == Directions.NORTH || facing == Directions.SOUTH) {
-            tileDef = getTileDefinitionByCoordinate(0,(int)(curPos.x),(int)(curPos.y+moveAmount));
-            try {
-                System.out.println(tileDef.getName());
-            }catch (NullPointerException e1) {
-                System.out.println("Nullpointer");
+            for(int i = moveAmount; i > 0; i--) {
+                System.out.println(i);
+                System.out.println("x: " + curPos.x + ", y: " + curPos.y+1);
+                if(!isValidTile((int)curPos.x,(int)curPos.y+i)) {
+                   return false;
+                }
             }
         } else {
-            tileDef = getTileDefinitionByCoordinate(0,(int)(curPos.x+moveAmount),(int)(curPos.y));
-            System.out.println(tileDef.getName());
-        }
-        if(facing == Directions.NORTH || facing == Directions.SOUTH) {
-            if(getHeight() < curPos.y+moveAmount || curPos.y+moveAmount < 0 || !tileDef.isCollidable())
-                return false;
-        } else {
-            if(getWidth() < curPos.x+moveAmount || curPos.x+moveAmount < 0 || !tileDef.isCollidable())
-                return false;
+            for(int i = moveAmount; i > 0; i--) {
+                System.out.println(i);
+                if(!isValidTile((int)curPos.x+i,(int)curPos.y)) {
+                    return false;
+                }
+            }
         }
         return true;
     }
 
-    public int translateCardMoveAmount(Card card) {
+    public boolean isValidTile(int x, int y) {
+        if(x > 0 && x < getWidth()-1 && y > 0 && y < getHeight()-1) {
+            TileDefinition tileDef = getTileDefinitionByCoordinate(0,x,y);
+            if(tileDef.isCollidable())
+                return false;
+            return true;
+        }
+        return false;
+    }
+
+    private int translateCardMoveAmount(Card card) {
         if(card.getType() == CardMove.FORWARD1)
             return 1;
         if(card.getType() == CardMove.FORWARD2)
