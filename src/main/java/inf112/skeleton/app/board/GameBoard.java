@@ -61,6 +61,7 @@ public abstract class GameBoard {
 
     public void moveEntityCard(Entity e, Card card) throws NoSuchElementException {
         if(entities.contains(e)) {
+            System.out.println("Current location: " + e.getX() + " " + e.getY());
             if(canRobotMove((Robot)e, card)) {
                 CardMove type = card.getType();
                 if(type == CardMove.ROTATERIGHT) {
@@ -78,8 +79,8 @@ public abstract class GameBoard {
                 } else if(type == CardMove.BACKWARD1) {
                     e.moveForwardBackward(-1);
                 }
+                System.out.println("Moved to location: " + e.getX() + " " + e.getY());
             }
-            return;
         } else {
             throw new NoSuchElementException("Entity does not exist on this gameboard");
         }
@@ -87,22 +88,20 @@ public abstract class GameBoard {
 
     //TODO Fix this borked method.
     private boolean canRobotMove(Robot e, Card card) {
-        Vector2 curPos = e.getPos();
+        int curX = (int)e.getPos().x;
+        int curY = (int)e.getPos().y;
         Directions facing = e.getFacingDirection();
         int moveAmount = translateCardMoveAmount(card);
 
         if(facing == Directions.NORTH || facing == Directions.SOUTH) {
             for(int i = moveAmount; i > 0; i--) {
-                System.out.println(i);
-                System.out.println("x: " + curPos.x + ", y: " + curPos.y+1);
-                if(!isValidTile((int)curPos.x,(int)curPos.y+i)) {
+                if(!isValidTile(curX,curY+i)) {
                    return false;
                 }
             }
         } else {
             for(int i = moveAmount; i > 0; i--) {
-                System.out.println(i);
-                if(!isValidTile((int)curPos.x+i,(int)curPos.y)) {
+                if(!isValidTile(curX+i,curY)) {
                     return false;
                 }
             }

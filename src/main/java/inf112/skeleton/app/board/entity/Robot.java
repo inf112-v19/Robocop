@@ -135,18 +135,30 @@ public class Robot extends Entity {
 
     @Override
     public void moveX(float amount) {
-        if(!processMovement(System.currentTimeMillis())) {
-            this.movingTo.add(amount, 0);
-            this.timeMoved = System.currentTimeMillis();
-        }
+        this.position[0] += (int)amount*64;
+        //if(!processMovement(System.currentTimeMillis())) {
+        //    this.movingTo.add(amount, 0);
+        //    this.timeMoved = System.currentTimeMillis();
+        //}
     }
 
     @Override
     public void moveY(float amount) {
-        if(!processMovement(System.currentTimeMillis())){
-            this.movingTo.add(0,amount);
-            this.timeMoved = System.currentTimeMillis();
-        }
+        this.position[1] += (int)amount*64;
+        //if(!processMovement(System.currentTimeMillis())){
+        //    this.movingTo.add(0,amount);
+        //    this.timeMoved = System.currentTimeMillis();
+        //}
+    }
+
+    @Override
+    public float getX() {
+        return this.position[0]/64;
+    }
+
+    @Override
+    public float getY() {
+        return this.position[1]/64;
     }
 
     @Override
