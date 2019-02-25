@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 
+import inf112.skeleton.app.Main;
+import inf112.skeleton.server.WorldMap.GameBoard;
+import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.login.UserLogging;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
@@ -15,6 +18,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
     private static final Collection<User> connections = new ArrayList<>(); // Users who are not logged in but connected
     private static final Collection<User> loggedInPlayers = new ArrayList<>(); // Users who have logged in
+
+    private GameBoard gameBoard = new TiledMapLoader();
+
+
+    //private GameBoard gameBoard = new TiledMapLoader();
 
     /**
      * Handling a incoming connection
@@ -154,6 +162,8 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
         for (User entity : loggedInPlayers) {
             if (entity.getChannel() == incoming) {
                 entity.getChannel().write("[You] " + arg1 + "\n");
+                entity.getChannel().write("[You] " +gameBoard.getTileDefinitionByCoordinate(0,10,10).getId()+ "\n");
+
                 entity.getChannel().flush();
                 continue;
             }

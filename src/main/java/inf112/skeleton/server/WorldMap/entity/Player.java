@@ -1,10 +1,9 @@
-package inf112.skeleton.app.board.entity;
+package inf112.skeleton.server.WorldMap.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import static inf112.skeleton.app.board.entity.Directions.*;
-import static inf112.skeleton.app.board.entity.Directions.values;
+import static inf112.skeleton.server.WorldMap.entity.Directions.*;
 
 public class Player extends Entity {
     Texture image;

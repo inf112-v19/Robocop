@@ -1,11 +1,11 @@
-package inf112.skeleton.app.board;
+package inf112.skeleton.server.WorldMap;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import inf112.skeleton.app.board.entity.Entity;
-import inf112.skeleton.app.card.Card;
-import inf112.skeleton.app.card.CardMove;
-import inf112.skeleton.app.board.entity.Directions;
+import inf112.skeleton.server.WorldMap.entity.Directions;
+import inf112.skeleton.server.WorldMap.entity.Entity;
+import inf112.skeleton.server.card.Card;
+import inf112.skeleton.server.card.CardMove;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;

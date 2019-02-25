@@ -57,12 +57,16 @@ public class InputHandler implements InputProcessor {
 
     @Override
     public boolean keyDown(int i) {
-        keys[i] = true;
-        return true;
+        if(keys[i])
+            return false;   //Key has already been pressed down before-hand. Input was not handled, return false as defined in Javadoc.
+        keys[i] = true;     //Key has not already been pressed down. Update key-status to true.
+        return true;        //Input was indeed handled, return true.
     }
 
     @Override
     public boolean keyUp(int i) {
+        if(!keys[i])
+            return false;
         keys[i] = false;
         return true;
     }

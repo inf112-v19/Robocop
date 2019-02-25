@@ -1,9 +1,8 @@
-package inf112.skeleton.app.board.entity;
+package inf112.skeleton.server.WorldMap.entity;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-
-import static inf112.skeleton.app.board.entity.Directions.values;
+import static inf112.skeleton.server.WorldMap.entity.Directions.values;
 
 
 public abstract class Entity {

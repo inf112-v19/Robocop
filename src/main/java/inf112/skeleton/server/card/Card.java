@@ -1,4 +1,4 @@
-package inf112.skeleton.app.card;
+package inf112.skeleton.server.card;
 
 public class Card {
     private int priority;

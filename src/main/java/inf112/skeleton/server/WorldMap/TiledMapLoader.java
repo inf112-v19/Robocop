@@ -1,5 +1,6 @@
-package inf112.skeleton.app.board;
+package inf112.skeleton.server.WorldMap;
 
+import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import inf112.skeleton.app.Main;
 
+
 public class TiledMapLoader extends GameBoard {
 
     private TiledMap tiledMap;
@@ -16,21 +18,13 @@ public class TiledMapLoader extends GameBoard {
 
     public TiledMapLoader() {
         super();
-        tiledMap = new TmxMapLoader().load("/home/henning/Documents/Skule/inf112/group1.team1/target/classes/Board.tmx");
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+        tiledMap = new TmxMapLoader().load("Board.tmx");
+
+//        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
     }
 
-    @Override
-    public void render(OrthographicCamera camera, SpriteBatch batch) {
-        tiledMapRenderer.setView(camera);
-        tiledMapRenderer.render();
-
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        super.render(camera, batch);
-        batch.end();
-    }
 
     @Override
     public void update() {

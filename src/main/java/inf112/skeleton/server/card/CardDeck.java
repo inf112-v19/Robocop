@@ -1,4 +1,4 @@
-package inf112.skeleton.app.card;
+package inf112.skeleton.server.card;
 
 import java.util.Collections;
 import java.util.LinkedList;

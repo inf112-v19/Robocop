@@ -1,4 +1,4 @@
-package inf112.skeleton.app.board.entity;
+package inf112.skeleton.server.WorldMap.entity;
 
 public enum EntityType {
 
