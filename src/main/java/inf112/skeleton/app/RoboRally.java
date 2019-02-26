@@ -6,8 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -29,6 +28,7 @@ public class RoboRally extends ApplicationAdapter {
     OrthographicCamera camera;
 
     public static GameBoard gameBoard;
+
     Robot test1;
 
 
@@ -38,10 +38,13 @@ public class RoboRally extends ApplicationAdapter {
         font = new BitmapFont();
         font.setColor(Color.RED);
 
+
         camera = new OrthographicCamera();
         viewport = new FitViewport(1280, 720, camera);
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.update();
+
+
 
         gameBoard = new TiledMapLoader();
         inputHandler = new InputHandler(camera);

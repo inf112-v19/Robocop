@@ -10,6 +10,7 @@ import javax.swing.JPasswordField;
 
 
 import inf112.skeleton.app.ChatGUI;
+import inf112.skeleton.common.packet.LoginPacket;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -19,6 +20,10 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.gson.Gson;
 
 public class ChatLogin {
 
@@ -28,6 +33,7 @@ public class ChatLogin {
 
     public static Label label_3;
     static ChatLogin window;
+    static Gson gson;
     /**
      * Launch the application.
      * @throws InterruptedException
@@ -49,8 +55,7 @@ public class ChatLogin {
         Bootstrap bootstrap = new Bootstrap()
                 .group(group)
                 .channel(NioSocketChannel.class) //use new io sockets
-                .handler(new ChatLoginInitializer()); //handle all incoming messages here
-
+                .handler(new ChatLoginInitializer()); //handle all IncomingPacket messages here
         ChatGUI.channel = bootstrap.connect("localhost",58008).sync().channel(); // creating a connection with the server
     }
 
@@ -66,7 +71,7 @@ public class ChatLogin {
      */
     private void initialize() {
         frmChat = new JFrame();
-        frmChat.setTitle("Chat System by _Lev518");
+        frmChat.setTitle("Chat System test");
         frmChat.setBounds(100, 100, 450, 250);
         frmChat.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frmChat.getContentPane().setLayout(null);
@@ -98,9 +103,16 @@ public class ChatLogin {
             @SuppressWarnings("deprecation")
             public void actionPerformed(ActionEvent arg0) {
                 if (ChatGUI.channel.isOpen()) {
-
-                    ChatGUI.channel.writeAndFlush("username:"+textField.getText()+"\r\n");
-                    ChatGUI.channel.writeAndFlush("password:"+passwordField.getText()+"\r\n");
+                    Packet packet = new Packet(0, new LoginPacket(textField.getText(),passwordField.getText()));
+                    Map<String, String> colours = new HashMap<>();
+                    colours.put("id", "0");
+                    colours.put("username", textField.getText());
+                    colours.put("password", passwordField.getText());
+                    gson = new Gson();
+                    System.out.println("sending: " + gson.toJson(packet));
+                    ChatGUI.channel.writeAndFlush(gson.toJson(packet)+"\r\n");
+//                    ChatGUI.channel.writeAndFlush("username:"+textField.getText()+"\r\n");
+//                    ChatGUI.channel.writeAndFlush("password:"+passwordField.getText()+"\r\n");
                 } else {
 
                 }

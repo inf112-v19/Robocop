@@ -47,7 +47,7 @@ public class ChatServer implements ApplicationListener {
 
     @Override
     public void render() {
-
+        System.out.println("hello World");
     }
 
     @Override

@@ -1,5 +1,6 @@
 package inf112.skeleton.server.login;
 
+import inf112.skeleton.common.packet.LoginPacket;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.user.UserPrivilege;
 import io.netty.channel.Channel;
@@ -20,7 +21,9 @@ import com.google.gson.JsonParser;
 
 public class UserLogging {
 
-    public static User login(String username, String password, Channel channel) {
+    public static User login(LoginPacket login, Channel channel) {
+        String username = login.getUsername();
+        String password = login.getPassword();
         Path path = Paths.get("data/users/", username.toLowerCase() + ".json");
         File file = path.toFile();
         String jsonName = "";

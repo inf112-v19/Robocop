@@ -3,8 +3,9 @@
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.headless.*;
 import com.badlogic.gdx.backends.headless.mock.graphics.MockGraphics;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -26,12 +27,12 @@ import java.io.File;
 
 
         if (!server){
-            LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
-            cfg.title = "RoboRally";
-            cfg.width = 1920;
-            cfg.height = 1080;
+            Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
+            cfg.setTitle("RoboRally");
+//            cfg.width = 1920;
+//            cfg.height = 1080;
 
-            new LwjglApplication(new RoboRally(), cfg);
+            new Lwjgl3Application(new RoboRally(), cfg);
         } else {
             MockGraphics mockGraphics = new MockGraphics();
             Gdx.graphics = mockGraphics;

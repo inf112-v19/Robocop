@@ -103,8 +103,8 @@ public class InputHandler implements InputProcessor {
             if(camera.zoom >5.0) {
                 camera.zoom = (float) 5.0;
             }
-            if(camera.zoom <1.0) {
-                camera.zoom = (float) 1.0;
+            if(camera.zoom <0.5) {
+                camera.zoom = (float) 0.5;
             }
             camera.update();
             System.out.println(camera.zoom);

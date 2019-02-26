@@ -1,18 +1,20 @@
 package inf112.skeleton.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-
-import inf112.skeleton.app.Main;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import inf112.skeleton.common.packet.LoginPacket;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.login.UserLogging;
+import inf112.skeleton.server.packet.IncomingPacket;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 
 public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
@@ -20,18 +22,19 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
     private static final Collection<User> loggedInPlayers = new ArrayList<>(); // Users who have logged in
 
     private GameBoard gameBoard = new TiledMapLoader();
+    private Gson gson = new Gson();
 
 
     //private GameBoard gameBoard = new TiledMapLoader();
 
     /**
-     * Handling a incoming connection
+     * Handling a IncomingPacket connection
      */
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
         /**
-         * Adding the incoming channel to the collection of users who are not logged in.
+         * Adding the IncomingPacket channel to the collection of users who are not logged in.
          */
         System.out.println("receieved conntstion");
         User user = new User(incoming);
@@ -51,8 +54,8 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
         for (User entity : loggedInPlayers) { //looping through all the other users and telling them that this user has left. Also removing the user from the list.
             if (entity.getChannel() == incoming)
                 continue;
-            entity.getChannel().writeAndFlush("[SERVER] - "+ Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()) + " has left the channel! \r\n");
-            entity.getChannel().writeAndFlush("listremove:"+Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName())+"\r\n");
+            entity.getChannel().writeAndFlush("[SERVER] - " + Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()) + " has left the channel! \r\n");
+            entity.getChannel().writeAndFlush("listremove:" + Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()) + "\r\n");
         }
         /**
          * Removing the user from the collections
@@ -64,7 +67,6 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
     }
 
     /**
-     *
      * Gets the user from the list of connections (Non-logged in users)
      */
     public User getEntityFromConnections(Channel channel) {
@@ -86,8 +88,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
         return null;
     }
 
-    String username = "";
-    String password = "";
+
 
     /**
      * Sends a boolean to all logged in users
@@ -97,7 +98,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
             if (!everyone)
                 if (entity.getChannel() == channel)
                     continue;
-            entity.getChannel().writeAndFlush(message+"\r\n");
+            entity.getChannel().writeAndFlush(message + "\r\n");
         }
     }
 
@@ -112,26 +113,16 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
         return false;
     }
 
-    /**
-     * Reading the incoming messages and doing something with it. (Both logging in, and sending messages to the server, are handled here)
-     */
-    @Override
-    protected void channelRead0(ChannelHandlerContext arg0, final String arg1) throws Exception {
-        Channel incoming = arg0.channel();
-        if (getEntityFromLoggedIn(incoming) == null) {
-            if (arg1.startsWith("username:")) {
-                username = arg1.replaceAll("username:", "");
-            }
-            if (arg1.startsWith("password:")) {
-                password = arg1.replaceAll("password:", "");
-            }
 
-            if (username.length() > 0 && password.length() > 0) {
-                User loggingIn = UserLogging.login(username.toLowerCase(), password, incoming);
+    public void handleIncomingPacket(Channel incoming, JsonObject jsonObject){
+        IncomingPacket packetId = IncomingPacket.values()[jsonObject.get("id").getAsInt()];
+        switch (packetId){
+            case LOGIN:
+                LoginPacket loginpkt = gson.fromJson(jsonObject.get("data"), LoginPacket.class);
+                User loggingIn = UserLogging.login(loginpkt, incoming);
                 if (loggingIn != null) {
                     if (!loggedInPlayers.contains(loggingIn)) {
                         if (alreadyLoggedIn(loggingIn.getName())) {
-                            System.out.println("here");
                             incoming.writeAndFlush("loggedinalready\r\n");
                             return;
                         }
@@ -139,17 +130,37 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
                         loggedInPlayers.add(loggingIn);
                         incoming.writeAndFlush("loginsuccess\r\n");
                         loggingIn.setLoggedIn(true);
-                        globalMessage("[SERVER] - "+(loggingIn.getRights().getPrefix().equalsIgnoreCase("") ? "" : "["+loggingIn.getRights().getPrefix()+"] ")+Utility.formatPlayerName(loggingIn.getName().toLowerCase())+" has just joined!",incoming, false);
-                        globalMessage("list:"+Utility.formatPlayerName(loggingIn.getName().toLowerCase()),incoming,true);
+                        globalMessage("[SERVER] - " + (loggingIn.getRights().getPrefix().equalsIgnoreCase("") ? "" : "[" + loggingIn.getRights().getPrefix() + "] ") + Utility.formatPlayerName(loggingIn.getName().toLowerCase()) + " has just joined!", incoming, false);
+                        globalMessage("list:" + Utility.formatPlayerName(loggingIn.getName().toLowerCase()), incoming, true);
                         for (User user : loggedInPlayers) {
                             if (user.getChannel() == incoming)
                                 continue;
-                            incoming.writeAndFlush("list:"+Utility.formatPlayerName(user.getName().toLowerCase()) +"\r\n");
+                            incoming.writeAndFlush("list:" + Utility.formatPlayerName(user.getName().toLowerCase()) + "\r\n");
                         }
                         connections.remove(loggingIn);
                     } else
                         incoming.writeAndFlush("loggedinalready\r\n");
                 }
+                break;
+        }
+        System.out.println(jsonObject.get("data"));
+    }
+
+    /**
+     * Reading the IncomingPacket messages and doing something with it. (Both logging in, and sending messages to the server, are handled here)
+     */
+    @Override
+    protected void channelRead0(ChannelHandlerContext arg0, final String arg1) throws Exception {
+        Channel incoming = arg0.channel();
+        System.out.println(arg1);
+        if (getEntityFromLoggedIn(incoming) == null) {
+            if (arg1.startsWith("{")) {
+//                GsonBuilder gsonBuilder = new GsonBuilder();
+//                gsonBuilder.registerTypeAdapter(PacketReciever.class, new PacketTypeAdapter());
+                JsonObject jsonObject = gson.fromJson( arg1, JsonObject.class);
+                handleIncomingPacket(incoming, jsonObject);
+
+
             }
             return;
         }
@@ -162,12 +173,12 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
         for (User entity : loggedInPlayers) {
             if (entity.getChannel() == incoming) {
                 entity.getChannel().write("[You] " + arg1 + "\n");
-                entity.getChannel().write("[You] " +gameBoard.getTileDefinitionByCoordinate(0,10,10).getId()+ "\n");
+                entity.getChannel().write("[You] " + gameBoard.getTileDefinitionByCoordinate(0, 10, 10).getId() + "\n");
 
                 entity.getChannel().flush();
                 continue;
             }
-            entity.getChannel().write("["+(getEntityFromLoggedIn(incoming).getRights().getPrefix().equalsIgnoreCase("") ? "" : getEntityFromLoggedIn(incoming).getRights().getPrefix()+ " - ") + (getEntityFromLoggedIn(incoming).getName() == null
+            entity.getChannel().write("[" + (getEntityFromLoggedIn(incoming).getRights().getPrefix().equalsIgnoreCase("") ? "" : getEntityFromLoggedIn(incoming).getRights().getPrefix() + " - ") + (getEntityFromLoggedIn(incoming).getName() == null
                     ? incoming.remoteAddress() : Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName())) + "] " + arg1 + "\n");
             entity.getChannel().flush();
         }
