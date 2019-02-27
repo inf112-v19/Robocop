@@ -188,9 +188,7 @@ public class Robot extends Entity {
     }
 
     private boolean canMove(float amountX, float amountY) {
-        System.out.println("Got here");
         TileDefinition def = State_Playing.gameBoard.getTileDefinitionByCoordinate(0, (int) (pos.x + amountX), (int) (pos.y + amountY));
-        System.out.println("Got here...");
         System.out.println(def.getName());
         if (State_Playing.gameBoard.getWidth() < pos.x + amountX || pos.x + amountX < 0 ||
                 State_Playing.gameBoard.getHeight() < pos.y + amountY || pos.y + amountY < 0 || !def.isCollidable())
