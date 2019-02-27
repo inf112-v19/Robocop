@@ -15,6 +15,7 @@ import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.card.CardMove;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
+import io.netty.channel.Channel;
 
 import static inf112.skeleton.app.RoboRally.HEIGHT;
 import static inf112.skeleton.app.RoboRally.WIDTH;
@@ -25,12 +26,12 @@ public class State_Playing extends GameState {
     CameraHandler cameraHandler;
     public static GameBoard gameBoard;
     HUD hud;
-
+    Channel channel;
     Robot test1;
 
-    public State_Playing(GameStateManager gsm) {
+    public State_Playing(GameStateManager gsm, Channel channel) {
         super(gsm);
-
+        this.channel = channel;
         viewport = new FitViewport(WIDTH,HEIGHT, camera);
         camera.setToOrtho(false, WIDTH, HEIGHT);
         camera.update();
@@ -41,7 +42,7 @@ public class State_Playing extends GameState {
         cameraHandler = new CameraHandler(camera, inputContainer);
 
         gameBoard = new TiledMapLoader();
-        hud = new HUD(gsm, inputContainer);
+        hud = new HUD(gsm, inputContainer, channel);
 
         //Testing testing, 1-2
         test1 = new Robot(10,10);

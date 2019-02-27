@@ -40,25 +40,25 @@ public class ChatLogin {
      * @throws InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-
-                    window = new ChatLogin();
-                    window.frmChat.setVisible(true);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        EventLoopGroup group = new NioEventLoopGroup();
-        Bootstrap bootstrap = new Bootstrap()
-                .group(group)
-                .channel(NioSocketChannel.class) //use new io sockets
-                .handler(new ChatLoginInitializer()); //handle all IncomingPacket messages
-
-        ChatGUI.channel = bootstrap.connect("localhost",58008).sync().channel(); // creating a connection with the server
+//        EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                try {
+//
+//                    window = new ChatLogin();
+//                    window.frmChat.setVisible(true);
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//        EventLoopGroup group = new NioEventLoopGroup();
+//        Bootstrap bootstrap = new Bootstrap()
+//                .group(group)
+//                .channel(NioSocketChannel.class) //use new io sockets
+//                .handler(new ChatLoginInitializer()); //handle all IncomingPacket messages
+//
+//        ChatGUI.channel = bootstrap.connect("localhost",58008).sync().channel(); // creating a connection with the server
     }
 
     /**

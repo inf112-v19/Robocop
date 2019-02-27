@@ -1,9 +1,12 @@
 package inf112.skeleton.app.Socket;
 
 
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import inf112.skeleton.app.ChatGUI;
+import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.LoginResponsePacket;
 import inf112.skeleton.common.packet.OutgoingPacket;
 import inf112.skeleton.common.status.LoginResponseStatus;
@@ -14,6 +17,13 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
 
     private String[] args = {"", ""};
     private Gson gson = new Gson();
+    private RoboRally game;
+
+    public ChatLoginHandler(RoboRally game){
+        this.game = game;
+        game.setSocketHandler(this);
+    }
+
 
     public void handleIncomingPacket(JsonObject jsonObject) throws Exception {
         OutgoingPacket packetId = OutgoingPacket.values()[jsonObject.get("id").getAsInt()];
@@ -22,9 +32,9 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
                 LoginResponsePacket responsePacket = gson.fromJson(jsonObject.get("data"), LoginResponsePacket.class);
                 switch (LoginResponseStatus.values()[responsePacket.getStatusCode()]) {
                     case LOGIN_SUCCESS:
-                        ChatGUI.main(args);
+//                        ChatGUI.main(args);
 
-                        ChatLogin.window.frmChat.dispose();
+//                        ChatLogin.window.frmChat.dispose();
                         break;
                     case ALREADY_LOGGEDIN:
                         ChatLogin.label_3.setText(responsePacket.getResponseMsg());
@@ -35,7 +45,7 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
                 System.out.println("create player");
                 break;
             default:
-                ChatGUI.textArea.append("resp: " + jsonObject.get("data") + "\n");
+//                ChatGUI.textArea.append("resp: " + jsonObject.get("data") + "\n");
                 break;
 
         }
@@ -52,7 +62,7 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
             handleIncomingPacket(jsonObject);
         } else {
             if (arg1.equalsIgnoreCase("loginsuccess")) {
-                ChatGUI.main(args);
+//                ChatGUI.main(args);
 
                 ChatLogin.window.frmChat.dispose();
             } else if (arg1.equalsIgnoreCase("wrongpassword")) {
@@ -61,11 +71,12 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
                 ChatLogin.label_3.setText("This account is already logged in!");
             else {
                 if (arg1.startsWith("list:")) {
-                    ChatGUI.list.add(arg1.replaceAll("list:", ""));
+//                    ChatGUI.list.add(arg1.replaceAll("list:", ""));
                 } else if (arg1.startsWith("listremove:")) {
-                    ChatGUI.list.remove(arg1.replaceAll("listremove:", ""));
-                } else
-                    ChatGUI.textArea.append(arg1 + "\n");
+//                    ChatGUI.list.remove(arg1.replaceAll("listremove:", ""));
+                } else {
+//                    ChatGUI.textArea.append(arg1 + "\n");
+                }
             }
         }
     }
