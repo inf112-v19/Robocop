@@ -3,19 +3,29 @@ package inf112.skeleton.app.gameStates.MainMenu;
 // Source: https://youtu.be/24p1Mvx6KFg
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.google.gson.Gson;
+import inf112.skeleton.app.ChatGUI;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.app.Action.Action;
 import inf112.skeleton.app.menu.Menu;
+import inf112.skeleton.common.packet.LoginPacket;
+import inf112.skeleton.common.packet.Packet;
+import io.netty.channel.Channel;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class State_MainMenu extends GameState {
     private Menu menu;
+    private Channel channel;
+    private Gson gson;
 
-    public State_MainMenu(GameStateManager gsm) {
+    public State_MainMenu(GameStateManager gsm, Channel channel) {
         super(gsm);
         menu = new Menu();
-
+        this.channel = channel;
         menu.add("Play", new Action() {
             public void invoke() {
                 playGame("");
@@ -48,7 +58,11 @@ public class State_MainMenu extends GameState {
     protected void playGame(String ip) {
         // TODO: Validate IP and connect
         System.out.println(ip);
-        gsm.set(new State_Playing(gsm));
+        Packet packet = new Packet(0, new LoginPacket("adjwioa", "oiajwdioj"));
+        gson = new Gson();
+        System.out.println("sending: " + gson.toJson(packet));
+        channel.writeAndFlush(gson.toJson(packet)+"\r\n");
+        gsm.set(new State_Playing(gsm, channel));
     }
 
 

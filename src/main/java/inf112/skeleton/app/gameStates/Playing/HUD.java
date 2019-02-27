@@ -12,6 +12,7 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
 import inf112.skeleton.app.menu.ButtonGenerator;
+import io.netty.channel.Channel;
 
 public class HUD {
     private BitmapFont font;
@@ -20,8 +21,9 @@ public class HUD {
     private TextButton to_mainMenu;
     private GameStateManager gsm;
     private InputContainer ic;
+    Channel channel;
 
-    public HUD(GameStateManager gameStateManager, InputContainer inputContainer) {
+    public HUD(GameStateManager gameStateManager, InputContainer inputContainer, final Channel channel) {
         gsm = gameStateManager;
         ic = inputContainer;
 
@@ -43,7 +45,7 @@ public class HUD {
                 new ChangeListener() {
                     @Override
                     public void changed(ChangeEvent event, Actor actor) {
-                        gsm.set(new State_MainMenu(gsm));
+                        gsm.set(new State_MainMenu(gsm, channel));
                     }
                 }
         );
