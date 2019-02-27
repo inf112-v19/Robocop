@@ -61,7 +61,7 @@ public class State_MainMenu extends GameState {
         Packet packet = new Packet(0, new LoginPacket("adjwioa", "oiajwdioj"));
         gson = new Gson();
         System.out.println("sending: " + gson.toJson(packet));
-        channel.writeAndFlush(gson.toJson(packet)+"\r\n");
+        //channel.writeAndFlush(gson.toJson(packet)+"\r\n");
         gsm.set(new State_Playing(gsm, channel));
     }
 
