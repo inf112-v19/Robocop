@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import inf112.skeleton.app.Action.InputContainer;
+import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
 import inf112.skeleton.app.menu.ButtonGenerator;
@@ -32,7 +33,12 @@ public class HUD {
         btngen = new ButtonGenerator();
         to_mainMenu = btngen.generate("Main menu");
         to_mainMenu.setTransform(true);
-        to_mainMenu.setScale(0.5f);
+
+        //to_mainMenu.setScaleX(RoboRally.WIDTH)
+
+
+
+        //to_mainMenu.setScale(0.5f);
         to_mainMenu.addListener(
                 new ChangeListener() {
                     @Override
@@ -52,12 +58,17 @@ public class HUD {
     public void render(SpriteBatch sb) {
         hudBatch.begin();
         font.draw(hudBatch , "fps: " + Gdx.graphics.getFramesPerSecond(), Gdx.graphics.getWidth() - 60, Gdx.graphics.getHeight()-10);
-        to_mainMenu.setPosition(1f, Gdx.graphics.getHeight() - to_mainMenu.getHeight() * 0.5f - 1);
         to_mainMenu.draw(hudBatch, 1f);
         hudBatch.end();
     }
 
     public void resize(int width, int height) {
-
+        System.out.println("Button height: " + to_mainMenu.getHeight());
+        //to_mainMenu.setPosition(1f, height - to_mainMenu.getHeight() * 0.5f - 1);
+        to_mainMenu.setPosition(1f, height - 1);
+        //to_mainMenu.setPosition(1,1);
+        System.out.println("Window size: (" + width + "," + height + ")");
+        System.out.println(""+ic.getViewport().getScreenWidth());
+        System.out.println(""+ic.getViewport().getTopGutterY());
     }
 }
