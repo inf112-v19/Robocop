@@ -88,20 +88,20 @@ public abstract class GameBoard {
 
     //TODO Fix this borked method.
     private boolean canRobotMove(Robot e, Card card) {
-        int curX = (int)e.getPos().x;
-        int curY = (int)e.getPos().y;
+        int curX = (int)e.getX();
+        int curY = (int)e.getY();
         Directions facing = e.getFacingDirection();
         int moveAmount = translateCardMoveAmount(card);
 
         if(facing == Directions.NORTH || facing == Directions.SOUTH) {
             for(int i = moveAmount; i > 0; i--) {
-                if(!isValidTile(curX,curY+i)) {
+                if(!isValidTile(curX,curY-i)) {
                    return false;
                 }
             }
         } else {
             for(int i = moveAmount; i > 0; i--) {
-                if(!isValidTile(curX+i,curY)) {
+                if(!isValidTile(curX-i,curY)) {
                     return false;
                 }
             }
