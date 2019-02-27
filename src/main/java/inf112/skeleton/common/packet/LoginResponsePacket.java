@@ -1,6 +1,7 @@
 package inf112.skeleton.common.packet;
 
-public class LoginResponsePacket {
+
+public class LoginResponsePacket implements PacketData {
     int statusCode;
     String responseMsg;
 

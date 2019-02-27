@@ -1,8 +1,7 @@
 package inf112.skeleton.common.packet;
 
-import inf112.skeleton.app.Socket.packetData;
 
-public class LoginPacket implements packetData {
+public class LoginPacket implements PacketData {
     String username;
     String password;
 

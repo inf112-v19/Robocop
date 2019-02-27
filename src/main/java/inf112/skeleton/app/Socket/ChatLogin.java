@@ -11,6 +11,7 @@ import javax.swing.JPasswordField;
 
 import inf112.skeleton.app.ChatGUI;
 import inf112.skeleton.common.packet.LoginPacket;
+import inf112.skeleton.common.packet.Packet;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -55,7 +56,8 @@ public class ChatLogin {
         Bootstrap bootstrap = new Bootstrap()
                 .group(group)
                 .channel(NioSocketChannel.class) //use new io sockets
-                .handler(new ChatLoginInitializer()); //handle all IncomingPacket messages here
+                .handler(new ChatLoginInitializer()); //handle all IncomingPacket messages
+
         ChatGUI.channel = bootstrap.connect("localhost",58008).sync().channel(); // creating a connection with the server
     }
 

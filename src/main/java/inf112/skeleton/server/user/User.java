@@ -9,6 +9,7 @@ public class User {
     public String password;
     public UserPrivilege userRights;
 
+
     public User(Channel channel) {
         this.channel = channel;
     }

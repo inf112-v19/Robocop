@@ -2,11 +2,10 @@ package inf112.skeleton.server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import inf112.skeleton.common.packet.LoginPacket;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.login.UserLogging;
-import inf112.skeleton.server.packet.IncomingPacket;
+import inf112.skeleton.server.packet.IncomingPacketHandler;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
@@ -18,13 +17,15 @@ import java.util.Collection;
 
 
 public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
-    private static final Collection<User> connections = new ArrayList<>(); // Users who are not logged in but connected
-    private static final Collection<User> loggedInPlayers = new ArrayList<>(); // Users who have logged in
+    public static final Collection<User> connections = new ArrayList<>(); // Users who are not logged in but connected
+    public static final Collection<User> loggedInPlayers = new ArrayList<>(); // Users who have logged in
 
-    private GameBoard gameBoard = new TiledMapLoader();
-    private Gson gson = new Gson();
-
-
+    public Gson gson = new Gson();
+    private IncomingPacketHandler incomingPacketHandler = new IncomingPacketHandler();
+    GameServerInstance game;
+    public ChatServerHandler(){
+        this.game = Server.game;
+    }
     //private GameBoard gameBoard = new TiledMapLoader();
 
     /**
@@ -114,37 +115,6 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
     }
 
 
-    public void handleIncomingPacket(Channel incoming, JsonObject jsonObject){
-        IncomingPacket packetId = IncomingPacket.values()[jsonObject.get("id").getAsInt()];
-        switch (packetId){
-            case LOGIN:
-                LoginPacket loginpkt = gson.fromJson(jsonObject.get("data"), LoginPacket.class);
-                User loggingIn = UserLogging.login(loginpkt, incoming);
-                if (loggingIn != null) {
-                    if (!loggedInPlayers.contains(loggingIn)) {
-                        if (alreadyLoggedIn(loggingIn.getName())) {
-                            incoming.writeAndFlush("loggedinalready\r\n");
-                            return;
-                        }
-
-                        loggedInPlayers.add(loggingIn);
-                        incoming.writeAndFlush("loginsuccess\r\n");
-                        loggingIn.setLoggedIn(true);
-                        globalMessage("[SERVER] - " + (loggingIn.getRights().getPrefix().equalsIgnoreCase("") ? "" : "[" + loggingIn.getRights().getPrefix() + "] ") + Utility.formatPlayerName(loggingIn.getName().toLowerCase()) + " has just joined!", incoming, false);
-                        globalMessage("list:" + Utility.formatPlayerName(loggingIn.getName().toLowerCase()), incoming, true);
-                        for (User user : loggedInPlayers) {
-                            if (user.getChannel() == incoming)
-                                continue;
-                            incoming.writeAndFlush("list:" + Utility.formatPlayerName(user.getName().toLowerCase()) + "\r\n");
-                        }
-                        connections.remove(loggingIn);
-                    } else
-                        incoming.writeAndFlush("loggedinalready\r\n");
-                }
-                break;
-        }
-        System.out.println(jsonObject.get("data"));
-    }
 
     /**
      * Reading the IncomingPacket messages and doing something with it. (Both logging in, and sending messages to the server, are handled here)
@@ -153,27 +123,25 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
     protected void channelRead0(ChannelHandlerContext arg0, final String arg1) throws Exception {
         Channel incoming = arg0.channel();
         System.out.println(arg1);
-        if (getEntityFromLoggedIn(incoming) == null) {
-            if (arg1.startsWith("{")) {
+        if (arg1.startsWith("{")) {
 //                GsonBuilder gsonBuilder = new GsonBuilder();
 //                gsonBuilder.registerTypeAdapter(PacketReciever.class, new PacketTypeAdapter());
-                JsonObject jsonObject = gson.fromJson( arg1, JsonObject.class);
-                handleIncomingPacket(incoming, jsonObject);
-
-
-            }
+            JsonObject jsonObject = gson.fromJson( arg1, JsonObject.class);
+            incomingPacketHandler.handleIncomingPacket(incoming, jsonObject, this);
             return;
         }
+
         if (arg1.startsWith("password:")) {
             return;
         }
         if (getEntityFromLoggedIn(incoming) == null) {
             return;
         }
+
         for (User entity : loggedInPlayers) {
             if (entity.getChannel() == incoming) {
                 entity.getChannel().write("[You] " + arg1 + "\n");
-                entity.getChannel().write("[You] " + gameBoard.getTileDefinitionByCoordinate(0, 10, 10).getId() + "\n");
+                entity.getChannel().write("[You] " + game.gameBoard.getTileDefinitionByCoordinate(0, 10, 10).getId() + "\n");
 
                 entity.getChannel().flush();
                 continue;

@@ -1,16 +1,20 @@
 package inf112.skeleton.server.WorldMap.entity;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.app.RoboRally;
-import inf112.skeleton.app.board.TileDefinition;
-import inf112.skeleton.app.card.Card;
+import inf112.skeleton.server.Server;
+import inf112.skeleton.server.WorldMap.TileDefinition;
+import inf112.skeleton.server.card.Card;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
 import static inf112.skeleton.server.WorldMap.entity.Directions.*;
+
 
 public class Robot extends Entity {
     private Directions facing;
@@ -19,32 +23,45 @@ public class Robot extends Entity {
     private Queue<Card> memory;
     private Queue<Card> burntMemory;
     private int[] position;
-    private int delayMove = 224;
+    private int delayMove = 400;
     private long timeMoved = 0;
     private Vector2 tileTo;
 
-    Texture image;
-    Texture facing_north;
-    Texture facing_south;
-    Texture facing_west;
-    Texture facing_east;
+    Animation<TextureRegion> currentAnimation;
+    Animation<TextureRegion> facing_north;
+    Animation<TextureRegion> facing_south;
+    Animation<TextureRegion> facing_west;
+    Animation<TextureRegion> facing_east;
+
+//    Texture facing_north;
+//    Texture facing_north;
+//    Texture facing_west;
+//    Texture facing_east;
+
+    TextureAtlas textureAtlas;
+    float stateTime;
 
     public Robot(float x, float y) {
         super(x, y, EntityType.ROBOT);
-        this.tileTo = new Vector2(x,y);
+        this.tileTo = new Vector2(x, y);
         this.position = new int[2];
-        this.position[0] = (int)x*64;
-        this.position[1] = (int)y*64;
+        this.position[0] = (int) x * 64;
+        this.position[1] = (int) y * 64;
         this.health = 5;
         this.facing = NORTH;
         this.memory = new LinkedList<Card>();       //Queue that the player can add cards to.
         this.burntMemory = new LinkedList<Card>();  //Queue that the player cannot add cards to themselves.
-
-        image = new Texture("robot.png");
-        facing_north = new Texture("NORTH.png");
-        facing_south = new Texture("SOUTH.png");
-        facing_west = new Texture("WEST.png");
-        facing_east = new Texture("EAST.png");
+        textureAtlas = new TextureAtlas(Gdx.files.internal("robotAllSides.atlas"));
+        facing_north = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_North"), Animation.PlayMode.LOOP);
+        facing_south = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_South"), Animation.PlayMode.LOOP);
+        facing_west = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_West"), Animation.PlayMode.LOOP);
+        facing_east = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_East"), Animation.PlayMode.LOOP);
+        stateTime = 0f;
+//        image = new Texture("robot.png");
+//        facing_north = new Texture("NORTH.png");
+//        facing_south = new Texture("SOUTH.png");
+//        facing_west = new Texture("WEST.png");
+//        facing_east = new Texture("EAST.png");
     }
 
     public void addCard(Card card) throws IllegalArgumentException {
@@ -86,7 +103,7 @@ public class Robot extends Entity {
     public void getHit() {
         if (health > 0) {
             this.health--;
-            if(!memory.isEmpty())
+            if (!memory.isEmpty())
                 burntMemory.add(memory.remove());
         } else {
             if (burntMemory.size() > 0)
@@ -95,6 +112,7 @@ public class Robot extends Entity {
                 this.ID = -1;      //The idea here is that a robot with id of -1 gets removed from the board.
         }
     }
+
     @Override
     public void rotateLeft() {
         facing = values()[(facing.ordinal() + values().length - 1) % values().length];
@@ -118,20 +136,19 @@ public class Robot extends Entity {
         if ((t - this.timeMoved) >= this.delayMove) {
             this.placeAt(this.tileTo.x, this.tileTo.y);
         } else {
-            this.position[0] = (int)(this.pos.x * 64);
-            this.position[1] = (int)(this.pos.y * 64);
+            this.position[0] = (int) (this.pos.x * 64);
+            this.position[1] = (int) (this.pos.y * 64);
             if (this.tileTo.x != this.pos.x) {
-                long diff = (long)((64.0 / this.delayMove) * (t - this.timeMoved));
+                long diff = (long) ((64.0 / this.delayMove) * (t - this.timeMoved));
                 this.position[0] += (this.tileTo.x < this.pos.x ? 0 - diff : diff);
             }
             if (this.tileTo.y != this.pos.y) {
-                long diff = (long)((64.0 / this.delayMove) * (t - this.timeMoved));
+                long diff = (long) ((64.0 / this.delayMove) * (t - this.timeMoved));
                 this.position[1] += (this.tileTo.y < this.pos.y ? 0 - diff : diff);
             }
 
             this.position[0] = (int) Math.round(this.position[0]);
             this.position[1] = (int) Math.round(this.position[1]);
-
 
 
         }
@@ -141,38 +158,49 @@ public class Robot extends Entity {
 
     @Override
     public void moveX(float amount) {
-        if(!canMove(amount,0)) {
+        if (!canMove(amount, 0)) {
             return;
         }
-        if(!processMovement(System.currentTimeMillis())) {
+        if (!processMovement(System.currentTimeMillis())) {
             this.tileTo.add(amount, 0);
             this.timeMoved = System.currentTimeMillis();
+            if (amount > 0) {
+                facing = EAST;
+            } else {
+                facing = WEST;
+            }
         }
     }
 
     @Override
     public void moveY(float amount) {
-        if(!canMove(0,amount)) {
+        if (!canMove(0, amount)) {
             return;
         }
-        if(!processMovement(System.currentTimeMillis())){
-            this.tileTo.add(0,amount);
+        if (!processMovement(System.currentTimeMillis())) {
+            this.tileTo.add(0, amount);
             this.timeMoved = System.currentTimeMillis();
+
+            if (amount > 0) {
+                facing = NORTH;
+            } else {
+                facing = SOUTH;
+            }
         }
     }
 
     private boolean canMove(float amountX, float amountY) {
-        TileDefinition def = RoboRally.gameBoard.getTileDefinitionByCoordinate(0,  (int)(pos.x+amountX), (int)(pos.y+amountY));
+        TileDefinition def = Server.game.gameBoard.getTileDefinitionByCoordinate(0, (int) (pos.x + amountX), (int) (pos.y + amountY));
         System.out.println(def.getName());
-        if(RoboRally.gameBoard.getWidth() < pos.x+amountX || pos.x+amountX < 0 ||
-                RoboRally.gameBoard.getHeight() < pos.y+amountY || pos.y+amountY < 0 || !def.isCollidable())
+        if (Server.game.gameBoard.getWidth() < pos.x + amountX || pos.x + amountX < 0 ||
+                Server.game.gameBoard.getHeight() < pos.y + amountY || pos.y + amountY < 0 || !def.isCollidable())
             return false;
         return true;
     }
 
     @Override
     public void moveForwardBackward(int i) {
-        switch(facing) {
+        switch (facing) {
             case NORTH:
                 moveY(i);
                 break;
@@ -193,8 +221,8 @@ public class Robot extends Entity {
         this.pos.y = y;
         this.tileTo.x = x;
         this.tileTo.y = y;
-        this.position[0] = (int)(this.pos.x * 64);
-        this.position[1] = (int)(this.pos.y * 64);
+        this.position[0] = (int) (this.pos.x * 64);
+        this.position[1] = (int) (this.pos.y * 64);
     }
 
     @Override
@@ -204,16 +232,29 @@ public class Robot extends Entity {
 
     @Override
     public void render(SpriteBatch batch) {
-        if(facing == NORTH) {
-            image = facing_north;
+        if (facing == NORTH) {
+            currentAnimation = facing_north;
         } else if (facing == SOUTH) {
-            image = facing_south;
+            currentAnimation = facing_south;
         } else if (facing == WEST) {
-            image = facing_west;
+            currentAnimation = facing_west;
         } else if (facing == EAST) {
-            image = facing_east;
+            currentAnimation = facing_east;
         }
-        processMovement(System.currentTimeMillis());
-        batch.draw(image, position[0], position[1], getWidth(), getHeight());
+
+        stateTime += Gdx.graphics.getDeltaTime();
+
+        if (processMovement(System.currentTimeMillis())) {
+//            sprite.setRegion(textureAtlas.findRegion());
+            TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
+
+            batch.draw(currentFrame, position[0], position[1], getWidth(), getHeight());
+
+        } else {
+            TextureRegion currentFrame = currentAnimation.getKeyFrames()[0];
+
+            batch.draw(currentFrame, position[0], position[1], getWidth(), getHeight());
+        }
+//        batch.draw(image, position[0], position[1], getWidth(), getHeight());
     }
 }

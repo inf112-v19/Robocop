@@ -1,4 +1,4 @@
-package inf112.skeleton.server.packet;
+package inf112.skeleton.common.packet;
 
 public enum IncomingPacket {
     LOGIN,
