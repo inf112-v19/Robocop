@@ -116,7 +116,6 @@ public class RoboRally extends ApplicationAdapter {
         camera.update();
         gameBoard.update();
         gameBoard.render(camera,batch);
-        // 秒あたりのフレーム数
         batch.begin();
         font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight()-20);
         batch.end();

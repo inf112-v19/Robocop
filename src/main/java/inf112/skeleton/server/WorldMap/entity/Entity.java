@@ -2,8 +2,9 @@ package inf112.skeleton.server.WorldMap.entity;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import inf112.skeleton.common.specs.Directions;
 
-import static inf112.skeleton.server.WorldMap.entity.Directions.values;
+import static inf112.skeleton.common.specs.Directions.values;
 
 
 public abstract class Entity {

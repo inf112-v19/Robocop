@@ -12,15 +12,15 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
 
-    private String[] args = { "",""};
+    private String[] args = {"", ""};
     private Gson gson = new Gson();
 
     public void handleIncomingPacket(JsonObject jsonObject) throws Exception {
         OutgoingPacket packetId = OutgoingPacket.values()[jsonObject.get("id").getAsInt()];
-        switch (packetId){
+        switch (packetId) {
             case LOGINRESPONSE:
                 LoginResponsePacket responsePacket = gson.fromJson(jsonObject.get("data"), LoginResponsePacket.class);
-                switch (LoginResponseStatus.values()[responsePacket.getStatusCode()]){
+                switch (LoginResponseStatus.values()[responsePacket.getStatusCode()]) {
                     case LOGIN_SUCCESS:
                         ChatGUI.main(args);
 
@@ -31,20 +31,24 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
                         break;
                 }
                 break;
-                default:
-                    ChatGUI.textArea.append("resp: " + jsonObject.get("data") + "\n");
-                    break;
+            case INIT_PLAYER:
+                System.out.println("create player");
+                break;
+            default:
+                ChatGUI.textArea.append("resp: " + jsonObject.get("data") + "\n");
+                break;
 
         }
 
     }
+
     @Override
     protected void channelRead0(ChannelHandlerContext arg0, String arg1) throws Exception {
         System.out.println(arg1);
         if (arg1.startsWith("{")) {
 //                GsonBuilder gsonBuilder = new GsonBuilder();
 //                gsonBuilder.registerTypeAdapter(PacketReciever.class, new PacketTypeAdapter());
-            JsonObject jsonObject = gson.fromJson( arg1, JsonObject.class);
+            JsonObject jsonObject = gson.fromJson(arg1, JsonObject.class);
             handleIncomingPacket(jsonObject);
         } else {
             if (arg1.equalsIgnoreCase("loginsuccess")) {

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.server.Server;
 import inf112.skeleton.server.WorldMap.TileDefinition;
 import inf112.skeleton.server.card.Card;
@@ -13,7 +14,7 @@ import inf112.skeleton.server.card.Card;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import static inf112.skeleton.server.WorldMap.entity.Directions.*;
+import static inf112.skeleton.common.specs.Directions.*;
 
 
 public class Robot extends Entity {
