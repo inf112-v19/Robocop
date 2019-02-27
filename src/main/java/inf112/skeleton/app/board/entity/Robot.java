@@ -6,7 +6,9 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.TileDefinition;
 import inf112.skeleton.app.card.Card;
+import inf112.skeleton.app.gameStates.Playing.State_Playing;
 
+import javax.swing.plaf.nimbus.State;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -186,10 +188,12 @@ public class Robot extends Entity {
     }
 
     private boolean canMove(float amountX, float amountY) {
-        TileDefinition def = RoboRally.gameBoard.getTileDefinitionByCoordinate(0, (int) (pos.x + amountX), (int) (pos.y + amountY));
+        System.out.println("Got here");
+        TileDefinition def = State_Playing.gameBoard.getTileDefinitionByCoordinate(0, (int) (pos.x + amountX), (int) (pos.y + amountY));
+        System.out.println("Got here...");
         System.out.println(def.getName());
-        if (RoboRally.gameBoard.getWidth() < pos.x + amountX || pos.x + amountX < 0 ||
-                RoboRally.gameBoard.getHeight() < pos.y + amountY || pos.y + amountY < 0 || !def.isCollidable())
+        if (State_Playing.gameBoard.getWidth() < pos.x + amountX || pos.x + amountX < 0 ||
+                State_Playing.gameBoard.getHeight() < pos.y + amountY || pos.y + amountY < 0 || !def.isCollidable())
             return false;
         return true;
     }
