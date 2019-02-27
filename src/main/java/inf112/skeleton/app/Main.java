@@ -16,10 +16,12 @@ public class Main {
 
 
         if (!server) {
+            // TODO: Ask Henning why Lwjgl3 is used
             Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
-            cfg.setTitle("RoboRally");
-//            cfg.width = 1920;
-//            cfg.height = 1080;
+            cfg.setTitle(RoboRally.TITLE);
+            //cfg.title = RoboRally.TITLE;
+            //cfg.width = RoboRally.WIDTH;
+            //cfg.height = RoboRally.HEIGHT;
 
             new Lwjgl3Application(new RoboRally(), cfg);
         } else {

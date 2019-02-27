@@ -1,4 +1,4 @@
-package inf112.skeleton.server.WorldMap.entity;
+package inf112.skeleton.common.specs;
 
 public enum Directions {
     NORTH,

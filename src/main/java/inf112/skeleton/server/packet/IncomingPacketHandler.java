@@ -1,5 +1,6 @@
 package inf112.skeleton.server.packet;
 
+import com.badlogic.gdx.math.Vector2;
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.status.LoginResponseStatus;
@@ -32,6 +33,16 @@ public class IncomingPacketHandler {
                         Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
                         incoming.writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
                         loggingIn.setLoggedIn(true);
+
+
+                        OutgoingPacket initPlayer = OutgoingPacket.INIT_PLAYER;
+                        PlayerInitPacket playerInitPacket =
+                                new PlayerInitPacket(new Vector2(10,10), 10);
+                        Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
+                        incoming.writeAndFlush(handler.gson.toJson(initPacket) + "\r\n");
+
+
+
                         handler.globalMessage("[SERVER] - " + (loggingIn.getRights().getPrefix().equalsIgnoreCase("") ? "" : "[" + loggingIn.getRights().getPrefix() + "] ") + Utility.formatPlayerName(loggingIn.getName().toLowerCase()) + " has just joined!", incoming, false);
                         handler.globalMessage("list:" + Utility.formatPlayerName(loggingIn.getName().toLowerCase()), incoming, true);
                         for (User user : handler.loggedInPlayers) {

@@ -66,31 +66,31 @@ public class UserLogging {
     }
 
     public static void logoff(User user) {
-        if (user == null || user.getName() == null || user.getName().equalsIgnoreCase("null"))
-            return;
-        Path path = Paths.get("data/users/", user.getName() + ".json");
-        File file = path.toFile();
-        file.getParentFile().setWritable(true);
-
-        // Attempt to make the player save directory if it doesn't
-        // exist.
-        if (!file.getParentFile().exists()) {
-            try {
-                file.getParentFile().mkdirs();
-            } catch (SecurityException e) {
-                System.out.println("Unable to create directory for player data!");
-            }
-        }
-        try (FileWriter writer = new FileWriter(file)) {
-            JsonObject object = new JsonObject();
-            Gson builder = new GsonBuilder().setPrettyPrinting().create();
-            object.addProperty("username", user.getName().toLowerCase());
-            object.addProperty("password", user.getPassword());
-            object.addProperty("UserPrivilege", user.getRights().getPrefix());
-            writer.write(builder.toJson(object));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        if (user == null || user.getName() == null || user.getName().equalsIgnoreCase("null"))
+//            return;
+//        Path path = Paths.get("data/users/", user.getName() + ".json");
+//        File file = path.toFile();
+//        file.getParentFile().setWritable(true);
+//
+//        // Attempt to make the player save directory if it doesn't
+//        // exist.
+//        if (!file.getParentFile().exists()) {
+//            try {
+//                file.getParentFile().mkdirs();
+//            } catch (SecurityException e) {
+//                System.out.println("Unable to create directory for player data!");
+//            }
+//        }
+//        try (FileWriter writer = new FileWriter(file)) {
+//            JsonObject object = new JsonObject();
+//            Gson builder = new GsonBuilder().setPrettyPrinting().create();
+//            object.addProperty("username", user.getName().toLowerCase());
+//            object.addProperty("password", user.getPassword());
+//            object.addProperty("UserPrivilege", user.getRights().getPrefix());
+//            writer.write(builder.toJson(object));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
 }
