@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -35,12 +36,9 @@ public class HUD {
         btngen = new ButtonGenerator();
         to_mainMenu = btngen.generate("Main menu");
         to_mainMenu.setTransform(true);
+        to_mainMenu.setScale(0.5f);
+        to_mainMenu.setPosition(1f, ic.getViewport().getScreenHeight() - to_mainMenu.getHeight() * to_mainMenu.getScaleY() - 1);
 
-        //to_mainMenu.setScaleX(RoboRally.WIDTH)
-
-
-
-        //to_mainMenu.setScale(0.5f);
         to_mainMenu.addListener(
                 new ChangeListener() {
                     @Override
@@ -59,18 +57,12 @@ public class HUD {
 
     public void render(SpriteBatch sb) {
         hudBatch.begin();
-        font.draw(hudBatch , "fps: " + Gdx.graphics.getFramesPerSecond(), Gdx.graphics.getWidth() - 60, Gdx.graphics.getHeight()-10);
+        font.draw(hudBatch , "fps: " + Gdx.graphics.getFramesPerSecond(), ic.getViewport().getScreenWidth() - 60, ic.getViewport().getScreenHeight() - 10);
         to_mainMenu.draw(hudBatch, 1f);
         hudBatch.end();
     }
 
     public void resize(int width, int height) {
-        System.out.println("Button height: " + to_mainMenu.getHeight());
-        //to_mainMenu.setPosition(1f, height - to_mainMenu.getHeight() * 0.5f - 1);
-        to_mainMenu.setPosition(1f, height - 1);
-        //to_mainMenu.setPosition(1,1);
-        System.out.println("Window size: (" + width + "," + height + ")");
-        System.out.println(""+ic.getViewport().getScreenWidth());
-        System.out.println(""+ic.getViewport().getTopGutterY());
+        // TODO: Fix bug where event-listener click-box won't move along with button.
     }
 }
