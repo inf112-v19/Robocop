@@ -16,7 +16,7 @@ public class TiledMapLoader extends GameBoard {
 
     public TiledMapLoader() {
         super();
-        tiledMap = new TmxMapLoader().load("/home/henning/Documents/Skule/inf112/group1.team1/target/classes/Board.tmx");
+        tiledMap = new TmxMapLoader().load("Board.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
     }
