@@ -188,10 +188,10 @@ public class Robot extends Entity {
     }
 
     private boolean canMove(float amountX, float amountY) {
-        TileDefinition def = State_Playing.gameBoard.getTileDefinitionByCoordinate(0, (int) (pos.x + amountX), (int) (pos.y + amountY));
+        TileDefinition def = RoboRally.gameBoard.getTileDefinitionByCoordinate(0, (int) (pos.x + amountX), (int) (pos.y + amountY));
         System.out.println(def.getName());
-        if (State_Playing.gameBoard.getWidth() < pos.x + amountX || pos.x + amountX < 0 ||
-                State_Playing.gameBoard.getHeight() < pos.y + amountY || pos.y + amountY < 0 || !def.isCollidable())
+        if (RoboRally.gameBoard.getWidth() < pos.x + amountX || pos.x + amountX < 0 ||
+                RoboRally.gameBoard.getHeight() < pos.y + amountY || pos.y + amountY < 0 || !def.isCollidable())
             return false;
         return true;
     }

@@ -31,6 +31,10 @@ public class GameStateManager {
         states.push(state);
         state.focus();
     }
+    public GameState peek(){
+        return states.peek();
+    }
+
 
     public void update(float dt) {
         GameState currentState = states.peek();

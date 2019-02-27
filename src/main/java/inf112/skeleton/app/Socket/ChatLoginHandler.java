@@ -7,8 +7,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import inf112.skeleton.app.ChatGUI;
 import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.common.packet.LoginResponsePacket;
 import inf112.skeleton.common.packet.OutgoingPacket;
+import inf112.skeleton.common.packet.PlayerInitPacket;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -33,6 +35,8 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
                 switch (LoginResponseStatus.values()[responsePacket.getStatusCode()]) {
                     case LOGIN_SUCCESS:
 //                        ChatGUI.main(args);
+                        game.currentState = State_Playing.class;
+
 
 //                        ChatLogin.window.frmChat.dispose();
                         break;
@@ -43,6 +47,10 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
                 break;
             case INIT_PLAYER:
                 System.out.println("create player");
+                PlayerInitPacket pkt = gson.fromJson(jsonObject.get("data"), PlayerInitPacket.class);
+
+                RoboRally.gameBoard.addPlayer(pkt);
+
                 break;
             default:
 //                ChatGUI.textArea.append("resp: " + jsonObject.get("data") + "\n");

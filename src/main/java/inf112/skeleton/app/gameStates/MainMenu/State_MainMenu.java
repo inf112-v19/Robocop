@@ -23,7 +23,7 @@ public class State_MainMenu extends GameState {
     private Gson gson;
 
     public State_MainMenu(GameStateManager gsm, Channel channel) {
-        super(gsm);
+        super(gsm, channel);
         menu = new Menu();
         this.channel = channel;
         menu.add("Play", new Action() {
@@ -62,7 +62,6 @@ public class State_MainMenu extends GameState {
         gson = new Gson();
         System.out.println("sending: " + gson.toJson(packet));
         channel.writeAndFlush(gson.toJson(packet)+"\r\n");
-        gsm.set(new State_Playing(gsm, channel));
     }
 
 

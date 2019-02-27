@@ -21,7 +21,7 @@ public class IncomingPacketHandler {
                 if (loggingIn != null) {
                     if (!handler.loggedInPlayers.contains(loggingIn)) {
                         if (handler.alreadyLoggedIn(loggingIn.getName())) {
-                            AlreadyLoggedIn(incoming, handler);
+                            AlreadyLoggedIn(incoming, handler, loggingIn.name);
                             return;
                         }
 
@@ -29,7 +29,7 @@ public class IncomingPacketHandler {
                         OutgoingPacket response = OutgoingPacket.LOGINRESPONSE;
                         LoginResponseStatus status = LoginResponseStatus.LOGIN_SUCCESS;
                         LoginResponsePacket loginResponsePacket =
-                                new LoginResponsePacket(status.ordinal(), "Success");
+                                new LoginResponsePacket(status.ordinal(), loggingIn.name, "Success");
                         Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
                         incoming.writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
                         loggingIn.setLoggedIn(true);
@@ -37,10 +37,9 @@ public class IncomingPacketHandler {
 
                         OutgoingPacket initPlayer = OutgoingPacket.INIT_PLAYER;
                         PlayerInitPacket playerInitPacket =
-                                new PlayerInitPacket(new Vector2(10,10), 10);
+                                new PlayerInitPacket(loggingIn.name, new Vector2(10, 10), 10);
                         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
                         incoming.writeAndFlush(handler.gson.toJson(initPacket) + "\r\n");
-
 
 
                         handler.globalMessage("[SERVER] - " + (loggingIn.getRights().getPrefix().equalsIgnoreCase("") ? "" : "[" + loggingIn.getRights().getPrefix() + "] ") + Utility.formatPlayerName(loggingIn.getName().toLowerCase()) + " has just joined!", incoming, false);
@@ -52,7 +51,7 @@ public class IncomingPacketHandler {
                         }
                         handler.connections.remove(loggingIn);
                     } else {
-                        AlreadyLoggedIn(incoming, handler);
+                        AlreadyLoggedIn(incoming, handler, loggingIn.name);
                     }
                 }
                 break;
@@ -60,11 +59,11 @@ public class IncomingPacketHandler {
         System.out.println(jsonObject.get("data"));
     }
 
-    private void AlreadyLoggedIn(Channel incoming, ChatServerHandler handler) {
+    private void AlreadyLoggedIn(Channel incoming, ChatServerHandler handler, String name) {
         OutgoingPacket response = OutgoingPacket.LOGINRESPONSE;
         LoginResponseStatus status = LoginResponseStatus.ALREADY_LOGGEDIN;
         LoginResponsePacket loginResponsePacket =
-                new LoginResponsePacket(status.ordinal(), "User already logged in");
+                new LoginResponsePacket(status.ordinal(), name, "User already logged in");
         Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
         incoming.writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
     }

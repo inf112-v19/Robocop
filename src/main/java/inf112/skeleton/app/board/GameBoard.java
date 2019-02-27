@@ -4,10 +4,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.board.entity.Entity;
+import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.board.entity.Robot;
 import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.card.CardMove;
 import inf112.skeleton.app.board.entity.Directions;
+import inf112.skeleton.common.packet.PlayerInitPacket;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -15,9 +17,12 @@ import java.util.NoSuchElementException;
 public abstract class GameBoard {
 
     protected ArrayList<Entity> entities;
+    protected ArrayList<Player> players;
+
 
     public GameBoard() {
         entities = new ArrayList<>();
+        players = new ArrayList<>();
     }
 
     public void addEntity(Entity e) {
@@ -32,10 +37,23 @@ public abstract class GameBoard {
     }
 
     public void update() {
+        for (Player player : players) {
+            player.update();
+
+        }
         for (Entity entity : entities) {
             entity.update();
 
         }
+
+
+    }
+
+    public Entity getFirstEntity(){
+        if(entities.isEmpty()){
+            return null;
+        }
+        return entities.get(0);
     }
 
     public void moveEntity(Entity e, Directions dir) throws NoSuchElementException {
@@ -167,4 +185,7 @@ public abstract class GameBoard {
     public abstract int getLayers();
 
 
+    public void addPlayer(PlayerInitPacket pkt) {
+        this.players.add(new Player("",pkt.getPos(),pkt.getHealth(), Directions.SOUTH));
+    }
 }
