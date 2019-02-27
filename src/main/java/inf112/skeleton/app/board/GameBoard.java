@@ -2,7 +2,9 @@ package inf112.skeleton.app.board;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.board.entity.Entity;
+import inf112.skeleton.app.board.entity.Robot;
 import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.card.CardMove;
 import inf112.skeleton.app.board.entity.Directions;
@@ -59,25 +61,74 @@ public abstract class GameBoard {
 
     public void moveEntityCard(Entity e, Card card) throws NoSuchElementException {
         if(entities.contains(e)) {
-            CardMove type = card.getType();
-            if(type == CardMove.ROTATERIGHT) {
-                e.rotateRight();
-            } else if(type == CardMove.ROTATELEFT) {
-                e.rotateLeft();
-            } else if(type == CardMove.ROTATE180) {
-                e.rotate180();
-            } else if(type == CardMove.FORWARD1) {
-                e.moveForwardBackward(1);
-            } else if(type == CardMove.FORWARD2) {
-                e.moveForwardBackward(2);
-            } else if(type == CardMove.FORWARD3) {
-                e.moveForwardBackward(3);
-            } else if(type == CardMove.BACKWARD1) {
-                e.moveForwardBackward(-1);
+            System.out.println("Current location: " + e.getX() + " " + e.getY());
+            if(canRobotMove((Robot)e, card)) {
+                CardMove type = card.getType();
+                if(type == CardMove.ROTATERIGHT) {
+                    e.rotateRight();
+                } else if(type == CardMove.ROTATELEFT) {
+                    e.rotateLeft();
+                } else if(type == CardMove.ROTATE180) {
+                    e.rotate180();
+                } else if(type == CardMove.FORWARD1) {
+                    e.moveForwardBackward(1);
+                } else if(type == CardMove.FORWARD2) {
+                    e.moveForwardBackward(2);
+                } else if(type == CardMove.FORWARD3) {
+                    e.moveForwardBackward(3);
+                } else if(type == CardMove.BACKWARD1) {
+                    e.moveForwardBackward(-1);
+                }
+                System.out.println("Moved to location: " + e.getX() + " " + e.getY());
             }
         } else {
             throw new NoSuchElementException("Entity does not exist on this gameboard");
         }
+    }
+
+    //TODO Fix this borked method.
+    private boolean canRobotMove(Robot e, Card card) {
+        int curX = (int)e.getX();
+        int curY = (int)e.getY();
+        Directions facing = e.getFacingDirection();
+        int moveAmount = translateCardMoveAmount(card);
+
+        if(facing == Directions.NORTH || facing == Directions.SOUTH) {
+            for(int i = moveAmount; i > 0; i--) {
+                if(!isValidTile(curX,curY-i)) {
+                   return false;
+                }
+            }
+        } else {
+            for(int i = moveAmount; i > 0; i--) {
+                if(!isValidTile(curX-i,curY)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean isValidTile(int x, int y) {
+        if(x > 0 && x < getWidth()-1 && y > 0 && y < getHeight()-1) {
+            TileDefinition tileDef = getTileDefinitionByCoordinate(0,x,y);
+            if(tileDef.isCollidable())
+                return false;
+            return true;
+        }
+        return false;
+    }
+
+    private int translateCardMoveAmount(Card card) {
+        if(card.getType() == CardMove.FORWARD1)
+            return 1;
+        if(card.getType() == CardMove.FORWARD2)
+            return 2;
+        if(card.getType() == CardMove.FORWARD3)
+            return 3;
+        if(card.getType() == CardMove.BACKWARD1)
+            return -1;
+        return 0;
     }
 
     public abstract void dispose();
