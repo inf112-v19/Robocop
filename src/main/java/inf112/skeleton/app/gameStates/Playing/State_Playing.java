@@ -2,8 +2,8 @@ package inf112.skeleton.app.gameStates.Playing;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import inf112.skeleton.app.Action.InputContainer;
@@ -22,6 +22,7 @@ import static inf112.skeleton.app.RoboRally.WIDTH;
 
 public class State_Playing extends GameState {
     private Viewport viewport;
+    InputMultiplexer inputMultiplexer;
     InputContainer inputContainer;
     CameraHandler cameraHandler;
     public static GameBoard gameBoard;
@@ -36,13 +37,12 @@ public class State_Playing extends GameState {
         camera.setToOrtho(false, WIDTH, HEIGHT);
         camera.update();
 
-
-
         inputContainer = new InputContainer();
         cameraHandler = new CameraHandler(camera, inputContainer);
+        inputMultiplexer = new InputMultiplexer(inputContainer);
 
         gameBoard = new TiledMapLoader();
-        hud = new HUD(gsm, inputContainer, channel);
+        hud = new HUD(gsm, inputMultiplexer, channel);
 
         //Testing testing, 1-2
         test1 = new Robot(10,10);
@@ -62,8 +62,8 @@ public class State_Playing extends GameState {
 
     @Override
     public void render(SpriteBatch sb) {
+        sb.setProjectionMatrix(camera.combined);
         gameBoard.render(camera, sb);
-        hud.render(sb);
         
         
         //TESTING, temp.
@@ -98,10 +98,11 @@ public class State_Playing extends GameState {
         } else if(inputContainer.keys[Input.Keys.D]) {
             gameBoard.moveEntity(test1, Directions.EAST);
         }
-        
-        
-        
-        
+
+
+
+
+        hud.render(sb);
         
         
         
@@ -115,12 +116,12 @@ public class State_Playing extends GameState {
 
     @Override
     public void focus() {
-        Gdx.input.setInputProcessor(inputContainer);
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height, true);
+        viewport.update(width, height, false);
         hud.resize(width, height);
     }
 }

@@ -1,18 +1,19 @@
 package inf112.skeleton.app.gameStates.Playing;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import inf112.skeleton.app.Action.InputContainer;
-import inf112.skeleton.app.RoboRally;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
 import inf112.skeleton.app.menu.ButtonGenerator;
+import inf112.skeleton.app.menu.ScrollableTextbox;
 import io.netty.channel.Channel;
 
 public class HUD {
@@ -21,14 +22,17 @@ public class HUD {
     private ButtonGenerator btngen;
     private TextButton to_mainMenu;
     private GameStateManager gsm;
-    private InputContainer ic;
+    private Stage stage;
+    private ScrollableTextbox gameChat;
     Channel channel;
 
-    public HUD(GameStateManager gameStateManager, InputContainer inputContainer, final Channel channel) {
+    public HUD(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, final Channel channel) {
         gsm = gameStateManager;
-        ic = inputContainer;
+        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()));
+        inputMultiplexer.addProcessor(stage);
 
         hudBatch = new SpriteBatch();
+        hudBatch.setProjectionMatrix(stage.getCamera().combined);
 
         font = new BitmapFont();
         font.setColor(Color.RED);
@@ -37,7 +41,7 @@ public class HUD {
         to_mainMenu = btngen.generate("Main menu");
         to_mainMenu.setTransform(true);
         to_mainMenu.setScale(0.5f);
-        to_mainMenu.setPosition(1f, ic.getViewport().getScreenHeight() - to_mainMenu.getHeight() * to_mainMenu.getScaleY() - 1);
+        to_mainMenu.setPosition(1f, stage.getViewport().getScreenHeight() - to_mainMenu.getHeight() * to_mainMenu.getScaleY() - 1);
 
         to_mainMenu.addListener(
                 new ChangeListener() {
@@ -48,7 +52,10 @@ public class HUD {
                 }
         );
 
-        ic.addActor(to_mainMenu);
+        gameChat = new ScrollableTextbox(100,inputMultiplexer);
+
+        stage.addActor(to_mainMenu);
+
     }
 
     public void dispose() {
@@ -56,13 +63,16 @@ public class HUD {
     }
 
     public void render(SpriteBatch sb) {
-        hudBatch.begin();
-        font.draw(hudBatch , "fps: " + Gdx.graphics.getFramesPerSecond(), ic.getViewport().getScreenWidth() - 60, ic.getViewport().getScreenHeight() - 10);
-        to_mainMenu.draw(hudBatch, 1f);
-        hudBatch.end();
+        sb.setProjectionMatrix(stage.getCamera().combined);
+        stage.draw();
+        sb.begin();
+        gameChat.render(sb);
+        font.draw(sb , "fps: " + Gdx.graphics.getFramesPerSecond(), stage.getViewport().getScreenWidth() - 60, stage.getViewport().getScreenHeight() - 10);
+        sb.end();
     }
 
     public void resize(int width, int height) {
         // TODO: Fix bug where event-listener click-box won't move along with button.
+        stage.getViewport().update(width,height);
     }
 }
