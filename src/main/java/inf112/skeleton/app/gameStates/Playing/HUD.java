@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -67,7 +68,7 @@ public class HUD {
         stage.draw();
         sb.begin();
         gameChat.render(sb);
-        font.draw(sb , "fps: " + Gdx.graphics.getFramesPerSecond(), stage.getViewport().getScreenWidth() - 60, stage.getViewport().getScreenHeight() - 10);
+        font.draw(sb , "fps: " + Gdx.graphics.getFramesPerSecond(),stage.getWidth()-60, stage.getHeight()-10);
         sb.end();
     }
 
