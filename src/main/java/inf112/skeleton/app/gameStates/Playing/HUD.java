@@ -54,6 +54,7 @@ public class HUD {
         );
 
         gameChat = new ScrollableTextbox(100,inputMultiplexer);
+        gameChat.push("Welcome to RoboRally. Hope you enjoy this game -RoboCop");
 
         stage.addActor(to_mainMenu);
 
