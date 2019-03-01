@@ -5,7 +5,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -13,8 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
-import inf112.skeleton.app.menu.ButtonGenerator;
-import inf112.skeleton.app.menu.ScrollableTextbox;
+import inf112.skeleton.app.GUI.ButtonGenerator;
+import inf112.skeleton.app.GUI.ScrollableTextbox;
 import io.netty.channel.Channel;
 
 public class HUD {

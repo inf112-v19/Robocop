@@ -1,4 +1,4 @@
-package inf112.skeleton.app.menu;
+package inf112.skeleton.app.GUI;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
