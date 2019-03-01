@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -18,6 +20,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
  * Circular message-box.
  */
 public class ScrollableTextbox {
+    InputMultiplexer inputMultiplexer;
     TextField[] lines;
     int         lineAmount = 0,
                 lineLimit,
@@ -37,12 +40,18 @@ public class ScrollableTextbox {
     int tableWidth = 600,
         tableHeight = 140;
 
+
     public ScrollableTextbox(int limit, InputMultiplexer inputMultiplexer) {
         lineLimit = limit;
+        this.inputMultiplexer = inputMultiplexer;
+
+        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        inputMultiplexer.addProcessor(stage);
 
         init_inputField();
         init_scrollButtons();
         emptyField = new Actor();
+
 
         txtStyle = new TextField.TextFieldStyle();
         txtStyle.font = new BitmapFont();
@@ -59,11 +68,8 @@ public class ScrollableTextbox {
         display.setSize(tableWidth,tableHeight);
         display.background(new TextureRegionDrawable(new TextureRegion(
                 new Texture(Gdx.files.internal("chatStyleOpac.png")))));
-        updateDisplay();
-
-        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         stage.addActor(display);
-        inputMultiplexer.addProcessor(stage);
+        updateDisplay();
     }
 
     private void init_inputField() {
@@ -79,7 +85,20 @@ public class ScrollableTextbox {
                     }
                     inputField.setText("");
                     stage.setKeyboardFocus(null);
+                    Gdx.input.setInputProcessor(inputMultiplexer);
                 }
+            }
+        });
+
+        stage.getRoot().addCaptureListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                if (event.getTarget() == inputField){
+                    Gdx.input.setInputProcessor(stage);
+                }else {
+                    Gdx.input.setInputProcessor(inputMultiplexer);
+                    stage.setKeyboardFocus(null);
+                }
+                return false;
             }
         });
     }
