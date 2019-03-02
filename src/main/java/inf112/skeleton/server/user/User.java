@@ -1,5 +1,8 @@
 package inf112.skeleton.server.user;
 
+import com.badlogic.gdx.math.Vector2;
+import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.server.WorldMap.entity.Player;
 import io.netty.channel.Channel;
 
 public class User {
@@ -8,6 +11,7 @@ public class User {
     private boolean isLoggedIn;
     public String password;
     public UserPrivilege userRights;
+    public Player player;
 
 
     public User(Channel channel) {
@@ -18,6 +22,7 @@ public class User {
         this.name = username;
         this.password = password;
         this.channel = channel;
+        this.player = new Player(name, new Vector2(10,10), 10, Directions.SOUTH, this);
     }
 
     public boolean isLoggedIn() {

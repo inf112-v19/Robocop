@@ -23,7 +23,7 @@ public class RoboRally extends ApplicationAdapter {
     public static final int     WIDTH   = 1080,
                                 HEIGHT  = 720;
     public static final String  TITLE   = "RoboRally";
-    public Channel channel;
+    public static Channel channel;
     public EventLoopGroup nioWorkerGroup;
 
     private SpriteBatch batch;

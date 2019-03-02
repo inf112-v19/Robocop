@@ -1,18 +1,19 @@
 package inf112.skeleton.app.board.entity;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.TileDefinition;
 import inf112.skeleton.app.card.Card;
-import inf112.skeleton.app.gameStates.Playing.State_Playing;
+import inf112.skeleton.common.specs.Directions;
 
-import javax.swing.plaf.nimbus.State;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import static inf112.skeleton.app.board.entity.Directions.*;
+import static inf112.skeleton.common.specs.Directions.*;
+
 
 public class Robot extends Entity {
     private Directions facing;
@@ -38,8 +39,10 @@ public class Robot extends Entity {
 
     TextureAtlas textureAtlas;
     float stateTime;
+    Player player;
+    BitmapFont font = new BitmapFont(); //or use alex answer to use custom font
 
-    public Robot(float x, float y) {
+    public Robot(float x, float y, Player player) {
         super(x, y, EntityType.ROBOT);
         this.tileTo = new Vector2(x, y);
         this.position = new int[2];
@@ -55,6 +58,7 @@ public class Robot extends Entity {
         facing_west = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_West"), Animation.PlayMode.LOOP);
         facing_east = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_East"), Animation.PlayMode.LOOP);
         stateTime = 0f;
+        this.player = player;
 //        image = new Texture("robot.png");
 //        facing_north = new Texture("NORTH.png");
 //        facing_south = new Texture("SOUTH.png");
@@ -239,7 +243,10 @@ public class Robot extends Entity {
         } else if (facing == EAST) {
             currentAnimation = facing_east;
         }
-
+        final GlyphLayout layout = new GlyphLayout(font, player.name);
+        final float fontX = position[0] + (64 - layout.width) / 2;
+        font.setColor(Color.RED);
+        font.draw(batch, player.name, fontX, position[1] + 78);
         stateTime += Gdx.graphics.getDeltaTime();
 
         if (processMovement(System.currentTimeMillis())) {

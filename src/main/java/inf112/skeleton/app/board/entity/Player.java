@@ -4,10 +4,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.common.specs.Directions;
 
-import static inf112.skeleton.app.board.entity.Directions.*;
-import static inf112.skeleton.app.board.entity.Directions.values;
-
+import static inf112.skeleton.common.specs.Directions.*;
+import static inf112.skeleton.common.specs.Directions.values;
 public class Player {
     String name;
     Robot robot = null;
@@ -23,9 +23,13 @@ public class Player {
 
     public void update() {
         if(robot == null){
-            this.robot = new Robot(initialPos.x, initialPos.y);
+            this.robot = new Robot(initialPos.x, initialPos.y, this);
             RoboRally.gameBoard.addEntity(robot);
         }
+    }
+
+    public void updateRobot(){
+        //TODO: recive update packet from server, overwrite values in robot. ALSO check what kind of update
     }
 
 }

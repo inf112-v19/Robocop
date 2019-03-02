@@ -34,20 +34,12 @@ public class IncomingPacketHandler {
                         incoming.writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
                         loggingIn.setLoggedIn(true);
 
+                        loggingIn.player.sendInit();
 
-                        OutgoingPacket initPlayer = OutgoingPacket.INIT_PLAYER;
-                        PlayerInitPacket playerInitPacket =
-                                new PlayerInitPacket(loggingIn.name, new Vector2(10, 10), 10);
-                        Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
-                        incoming.writeAndFlush(handler.gson.toJson(initPacket) + "\r\n");
-
-
-                        handler.globalMessage("[SERVER] - " + (loggingIn.getRights().getPrefix().equalsIgnoreCase("") ? "" : "[" + loggingIn.getRights().getPrefix() + "] ") + Utility.formatPlayerName(loggingIn.getName().toLowerCase()) + " has just joined!", incoming, false);
-                        handler.globalMessage("list:" + Utility.formatPlayerName(loggingIn.getName().toLowerCase()), incoming, true);
                         for (User user : handler.loggedInPlayers) {
                             if (user.getChannel() == incoming)
                                 continue;
-                            incoming.writeAndFlush("list:" + Utility.formatPlayerName(user.getName().toLowerCase()) + "\r\n");
+                            user.player.sendToNewClient(incoming);
                         }
                         handler.connections.remove(loggingIn);
                     } else {

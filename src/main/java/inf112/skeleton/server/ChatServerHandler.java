@@ -20,7 +20,8 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
     public static final Collection<User> connections = new ArrayList<>(); // Users who are not logged in but connected
     public static final Collection<User> loggedInPlayers = new ArrayList<>(); // Users who have logged in
 
-    public Gson gson = new Gson();
+
+    public static Gson gson = new Gson();
     private IncomingPacketHandler incomingPacketHandler = new IncomingPacketHandler();
     GameServerInstance game;
     public ChatServerHandler(){

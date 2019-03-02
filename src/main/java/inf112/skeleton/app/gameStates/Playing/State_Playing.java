@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import inf112.skeleton.app.Action.InputContainer;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.GameBoard;
-import inf112.skeleton.app.board.entity.Directions;
+import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.app.board.entity.Robot;
 import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.card.CardMove;
@@ -18,6 +18,7 @@ import io.netty.channel.Channel;
 
 import static inf112.skeleton.app.RoboRally.HEIGHT;
 import static inf112.skeleton.app.RoboRally.WIDTH;
+
 
 public class State_Playing extends GameState {
     private Viewport viewport;
@@ -94,14 +95,14 @@ public class State_Playing extends GameState {
             gameBoard.moveEntityCard(test1, new Card(0, CardMove.ROTATE180));
         }
         if (inputContainer.keys[Input.Keys.W]) {
-            gameBoard.moveEntity(test1, Directions.NORTH);
+            gameBoard.moveEntity(Directions.NORTH);
         } else if (inputContainer.keys[Input.Keys.S]) {
-            gameBoard.moveEntity(test1, Directions.SOUTH);
+            gameBoard.moveEntity(Directions.SOUTH);
         }
         if (inputContainer.keys[Input.Keys.A]) {
-            gameBoard.moveEntity(test1, Directions.WEST);
+            gameBoard.moveEntity(Directions.WEST);
         } else if (inputContainer.keys[Input.Keys.D]) {
-            gameBoard.moveEntity(test1, Directions.EAST);
+            gameBoard.moveEntity(Directions.EAST);
         }
 
 

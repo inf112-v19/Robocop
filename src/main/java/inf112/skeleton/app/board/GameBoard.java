@@ -2,14 +2,18 @@ package inf112.skeleton.app.board;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
+import com.google.gson.Gson;
+import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Entity;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.board.entity.Robot;
 import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.card.CardMove;
-import inf112.skeleton.app.board.entity.Directions;
+import inf112.skeleton.common.packet.IncomingPacket;
+import inf112.skeleton.common.packet.MovementPacket;
+import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.PlayerInitPacket;
+import inf112.skeleton.common.specs.Directions;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -18,6 +22,7 @@ public abstract class GameBoard {
 
     protected ArrayList<Entity> entities;
     protected ArrayList<Player> players;
+    Gson gson = new Gson();
 
 
     public GameBoard() {
@@ -49,52 +54,55 @@ public abstract class GameBoard {
 
     }
 
-    public Entity getFirstEntity(){
-        if(entities.isEmpty()){
+    public Entity getFirstEntity() {
+        if (entities.isEmpty()) {
             return null;
         }
         return entities.get(0);
     }
 
-    public void moveEntity(Entity e, Directions dir) throws NoSuchElementException {
-        if(entities.contains(e)) {
-            switch(dir) {
-                case NORTH:
-                    e.moveY(1);
-                    break;
-                case SOUTH:
-                    e.moveY(-1);
-                    break;
-                case WEST:
-                    e.moveX(-1);
-                    break;
-                case EAST:
-                    e.moveX(1);
-                    break;
-            }
-        } else {
-            throw new NoSuchElementException("Entity does not exist on this gameboard");
-        }
+    public void moveEntity(Directions dir) throws NoSuchElementException {
+
+        Packet packet = new Packet(IncomingPacket.MOVEMENT_ACTION.ordinal(), new MovementPacket(dir, 1));
+        RoboRally.channel.writeAndFlush(gson.toJson(packet) + "\r\n");
+//        if (entities.contains(e)) {
+//            switch (dir) {
+//                case NORTH:
+//                    e.moveY(1);
+//                    break;
+//                case SOUTH:
+//                    e.moveY(-1);
+//                    break;
+//                case WEST:
+//                    e.moveX(-1);
+//                    break;
+//                case EAST:
+//                    e.moveX(1);
+//                    break;
+//            }
+//        } else {
+//            throw new NoSuchElementException("Entity does not exist on this gameboard");
+//        }
     }
 
     public void moveEntityCard(Entity e, Card card) throws NoSuchElementException {
-        if(entities.contains(e)) {
+        if (entities.contains(e)) {
             System.out.println("Current location: " + e.getX() + " " + e.getY());
-            if(canRobotMove((Robot)e, card)) {
+            if (canRobotMove((Robot) e, card)) {
                 CardMove type = card.getType();
-                if(type == CardMove.ROTATERIGHT) {
+                if (type == CardMove.ROTATERIGHT) {
                     e.rotateRight();
-                } else if(type == CardMove.ROTATELEFT) {
+                } else if (type == CardMove.ROTATELEFT) {
                     e.rotateLeft();
-                } else if(type == CardMove.ROTATE180) {
+                } else if (type == CardMove.ROTATE180) {
                     e.rotate180();
-                } else if(type == CardMove.FORWARD1) {
+                } else if (type == CardMove.FORWARD1) {
                     e.moveForwardBackward(1);
-                } else if(type == CardMove.FORWARD2) {
+                } else if (type == CardMove.FORWARD2) {
                     e.moveForwardBackward(2);
-                } else if(type == CardMove.FORWARD3) {
+                } else if (type == CardMove.FORWARD3) {
                     e.moveForwardBackward(3);
-                } else if(type == CardMove.BACKWARD1) {
+                } else if (type == CardMove.BACKWARD1) {
                     e.moveForwardBackward(-1);
                 }
                 System.out.println("Moved to location: " + e.getX() + " " + e.getY());
@@ -106,20 +114,20 @@ public abstract class GameBoard {
 
     //TODO Fix this borked method.
     private boolean canRobotMove(Robot e, Card card) {
-        int curX = (int)e.getX();
-        int curY = (int)e.getY();
+        int curX = (int) e.getX();
+        int curY = (int) e.getY();
         Directions facing = e.getFacingDirection();
         int moveAmount = translateCardMoveAmount(card);
 
-        if(facing == Directions.NORTH || facing == Directions.SOUTH) {
-            for(int i = moveAmount; i > 0; i--) {
-                if(!isValidTile(curX,curY-i)) {
-                   return false;
+        if (facing == Directions.NORTH || facing == Directions.SOUTH) {
+            for (int i = moveAmount; i > 0; i--) {
+                if (!isValidTile(curX, curY - i)) {
+                    return false;
                 }
             }
         } else {
-            for(int i = moveAmount; i > 0; i--) {
-                if(!isValidTile(curX-i,curY)) {
+            for (int i = moveAmount; i > 0; i--) {
+                if (!isValidTile(curX - i, curY)) {
                     return false;
                 }
             }
@@ -128,9 +136,9 @@ public abstract class GameBoard {
     }
 
     public boolean isValidTile(int x, int y) {
-        if(x > 0 && x < getWidth()-1 && y > 0 && y < getHeight()-1) {
-            TileDefinition tileDef = getTileDefinitionByCoordinate(0,x,y);
-            if(tileDef.isCollidable())
+        if (x > 0 && x < getWidth() - 1 && y > 0 && y < getHeight() - 1) {
+            TileDefinition tileDef = getTileDefinitionByCoordinate(0, x, y);
+            if (tileDef.isCollidable())
                 return false;
             return true;
         }
@@ -138,13 +146,13 @@ public abstract class GameBoard {
     }
 
     private int translateCardMoveAmount(Card card) {
-        if(card.getType() == CardMove.FORWARD1)
+        if (card.getType() == CardMove.FORWARD1)
             return 1;
-        if(card.getType() == CardMove.FORWARD2)
+        if (card.getType() == CardMove.FORWARD2)
             return 2;
-        if(card.getType() == CardMove.FORWARD3)
+        if (card.getType() == CardMove.FORWARD3)
             return 3;
-        if(card.getType() == CardMove.BACKWARD1)
+        if (card.getType() == CardMove.BACKWARD1)
             return -1;
         return 0;
     }
@@ -186,6 +194,6 @@ public abstract class GameBoard {
 
 
     public void addPlayer(PlayerInitPacket pkt) {
-        this.players.add(new Player("",pkt.getPos(),pkt.getHealth(), Directions.SOUTH));
+        this.players.add(new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), Directions.SOUTH));
     }
 }

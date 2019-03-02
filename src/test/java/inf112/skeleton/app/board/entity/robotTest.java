@@ -1,6 +1,7 @@
 package inf112.skeleton.app.board.entity;
 
-import inf112.skeleton.app.board.entity.Directions;
+import inf112.skeleton.common.specs.Directions;
+
 import inf112.skeleton.app.board.entity.Robot;
 import inf112.skeleton.app.card.CardDeck;
 import inf112.skeleton.app.card.Card;
@@ -14,7 +15,7 @@ import static org.junit.Assert.*;
 public class robotTest {
     Robot robot;
     {
-        robot = new Robot(0,0);
+        robot = new Robot(0,0, null);
     }
 
     Random random;
@@ -85,7 +86,7 @@ public class robotTest {
     @Test
     public void rotateRightGeneralCase() {
         for (int i = 0; i < 100000; i++) {
-            Robot robotRight = new Robot(1,1);
+            Robot robotRight = new Robot(1,1, null);
             int r = random.nextInt(1000);
             for (int j = 0; j < r; j++) {
                 robotRight.rotateRight();
@@ -112,7 +113,7 @@ public class robotTest {
     @Test
     public void rotateLeftGeneralCase() {
         for (int i = 0; i < 100000; i++) {
-            Robot robotLeft = new Robot(2, 2);
+            Robot robotLeft = new Robot(2, 2, null);
             int r = random.nextInt(1000);
             for (int j = 0; j < r; j++) {
                 robotLeft.rotateLeft();
