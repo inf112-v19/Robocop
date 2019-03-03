@@ -34,6 +34,7 @@ public class Player {
         this.name = name;
         this.currentHP = hp;
         this.currentPos = pos;
+        this.movingTo = new Vector2(currentPos.x,currentPos.y);
         this.direction = directions;
         this.owner = owner;
     }

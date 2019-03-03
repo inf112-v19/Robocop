@@ -117,6 +117,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 
 
 
+
     /**
      * Reading the IncomingPacket messages and doing something with it. (Both logging in, and sending messages to the server, are handled here)
      */

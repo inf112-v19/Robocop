@@ -7,9 +7,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import inf112.skeleton.app.Action.InputContainer;
+import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TiledMapLoader;
-import inf112.skeleton.app.board.entity.Directions;
+import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.app.board.entity.Robot;
 import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.card.CardMove;
@@ -31,7 +32,7 @@ public class State_Playing extends GameState {
     Robot test1;
 
     public State_Playing(GameStateManager gsm, Channel channel) {
-        super(gsm);
+        super(gsm, channel);
         this.channel = channel;
         viewport = new FitViewport(WIDTH,HEIGHT, camera);
         camera.setToOrtho(false, WIDTH, HEIGHT);
@@ -41,7 +42,7 @@ public class State_Playing extends GameState {
         cameraHandler = new CameraHandler(camera, inputContainer);
         inputMultiplexer = new InputMultiplexer(inputContainer);
 
-        gameBoard = new TiledMapLoader();
+        gameBoard = RoboRally.gameBoard;
         hud = new HUD(gsm, inputMultiplexer, channel);
 
         //Testing testing, 1-2

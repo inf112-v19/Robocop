@@ -14,6 +14,7 @@ import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
 import inf112.skeleton.app.GUI.ButtonGenerator;
 import inf112.skeleton.app.GUI.ScrollableTextbox;
+import inf112.skeleton.common.packet.ChatMessagePacket;
 import io.netty.channel.Channel;
 
 public class HUD {
@@ -52,8 +53,8 @@ public class HUD {
                 }
         );
 
-        gameChat = new ScrollableTextbox(100,inputMultiplexer);
-        gameChat.push("Welcome to RoboRally. Hope you enjoy this game -RoboCop");
+        gameChat = new ScrollableTextbox(100,inputMultiplexer, channel);
+        gameChat.push(new ChatMessagePacket("Welcome to RoboRally. Hope you enjoy this game -RoboCop"));
 
         stage.addActor(to_mainMenu);
 

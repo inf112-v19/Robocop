@@ -4,4 +4,5 @@ public enum OutgoingPacket {
     LOGINRESPONSE,
     INIT_PLAYER,
     INIT_ALLPLAYERS, //TODO: IMplement
+    CHATMESSAGE,
 }

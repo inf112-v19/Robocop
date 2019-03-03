@@ -1,13 +1,13 @@
 package inf112.skeleton.app.Socket;
 
 
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import inf112.skeleton.app.ChatGUI;
+import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.app.gameStates.Playing.HUD;
 import inf112.skeleton.app.gameStates.Playing.State_Playing;
+import inf112.skeleton.common.packet.ChatMessagePacket;
 import inf112.skeleton.common.packet.LoginResponsePacket;
 import inf112.skeleton.common.packet.OutgoingPacket;
 import inf112.skeleton.common.packet.PlayerInitPacket;
@@ -21,7 +21,7 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
     private Gson gson = new Gson();
     private RoboRally game;
 
-    public ChatLoginHandler(RoboRally game){
+    public ChatLoginHandler(RoboRally game) {
         this.game = game;
         game.setSocketHandler(this);
     }
@@ -52,6 +52,11 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
                 RoboRally.gameBoard.addPlayer(pkt);
 
                 break;
+            case CHATMESSAGE:
+                if (ScrollableTextbox.textbox != null) {
+                    ChatMessagePacket chatMessagePacket = gson.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
+                    ScrollableTextbox.textbox.push(chatMessagePacket);
+                }
             default:
 //                ChatGUI.textArea.append("resp: " + jsonObject.get("data") + "\n");
                 break;

@@ -1,17 +1,14 @@
 package inf112.skeleton.server.packet;
 
-import com.badlogic.gdx.math.Vector2;
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.server.ChatServerHandler;
 import inf112.skeleton.server.login.UserLogging;
 import inf112.skeleton.server.user.User;
-import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
 
 public class IncomingPacketHandler {
-
     public void handleIncomingPacket(Channel incoming, JsonObject jsonObject, ChatServerHandler handler) {
         IncomingPacket packetId = IncomingPacket.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
@@ -47,9 +44,45 @@ public class IncomingPacketHandler {
                     }
                 }
                 break;
-                default:
-                    System.out.println("Unhandled packet: " + packetId.name());
-                    System.out.println("data: " + jsonObject.get("data"));
+            case CHAT_MESSAGE:
+
+                ChatMessagePacket msgPacket = handler.gson.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
+                User messagingUser = handler.getEntityFromLoggedIn(incoming);
+                if (msgPacket.getMessage().startsWith("!")) {
+                    String[] command = msgPacket.getMessage().substring(1).split(" ");
+                    handleCommand(messagingUser, command, handler);
+                } else {
+                    OutgoingPacket chatMessage = OutgoingPacket.CHATMESSAGE;
+                    ChatMessagePacket chatMessagePacket = new ChatMessagePacket(messagingUser.getName() + ": " + msgPacket.getMessage());
+                    Packet responsePacket = new Packet(chatMessage.ordinal(), chatMessagePacket);
+
+                    for (User entity : handler.loggedInPlayers) {
+                        entity.getChannel().writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
+                    }
+                }
+                break;
+            default:
+                System.err.println("Unhandled packet: " + packetId.name());
+                System.out.println("data: " + jsonObject.get("data"));
+        }
+    }
+
+    private void handleCommand(User messagingUser, String[] command, ChatServerHandler handler) {
+        System.out.println(messagingUser.getName() + " sent command: " + command[0]);
+
+        switch (command[0]) {
+            case "players":
+                Packet responsePacket = new Packet(
+                        OutgoingPacket.CHATMESSAGE.ordinal(),
+                        new ChatMessagePacket("[SERVER]: There is currently " + handler.loggedInPlayers.size() + " player(s) online."));
+                messagingUser.getChannel().writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
+                break;
+            default:
+                responsePacket = new Packet(
+                        OutgoingPacket.CHATMESSAGE.ordinal(),
+                        new ChatMessagePacket("[SERVER]: Command not found \"" + command[0] + "\"."));
+                messagingUser.getChannel().writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
+                break;
         }
     }
 
