@@ -16,6 +16,7 @@ import io.netty.channel.Channel;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class State_MainMenu extends GameState {
     private Menu menu;
@@ -58,7 +59,8 @@ public class State_MainMenu extends GameState {
     protected void playGame(String ip) {
         // TODO: Validate IP and connect
         System.out.println(ip);
-        Packet packet = new Packet(0, new LoginPacket("jjadjwioajj", "oiajwdioj"));
+        Random random = new Random();
+        Packet packet = new Packet(0, new LoginPacket("" + random.nextInt(), "oiajwdioj"));
         gson = new Gson();
         System.out.println("sending: " + gson.toJson(packet));
         channel.writeAndFlush(gson.toJson(packet)+"\r\n");

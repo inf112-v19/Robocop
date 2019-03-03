@@ -47,8 +47,10 @@ public class IncomingPacketHandler {
                     }
                 }
                 break;
+                default:
+                    System.out.println("Unhandled packet: " + packetId.name());
+                    System.out.println("data: " + jsonObject.get("data"));
         }
-        System.out.println(jsonObject.get("data"));
     }
 
     private void AlreadyLoggedIn(Channel incoming, ChatServerHandler handler, String name) {
