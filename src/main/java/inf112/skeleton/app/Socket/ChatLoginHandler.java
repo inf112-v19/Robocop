@@ -5,12 +5,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.Playing.HUD;
 import inf112.skeleton.app.gameStates.Playing.State_Playing;
-import inf112.skeleton.common.packet.ChatMessagePacket;
-import inf112.skeleton.common.packet.LoginResponsePacket;
-import inf112.skeleton.common.packet.OutgoingPacket;
-import inf112.skeleton.common.packet.PlayerInitPacket;
+import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -57,6 +55,12 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
                     ChatMessagePacket chatMessagePacket = gson.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
                     ScrollableTextbox.textbox.push(chatMessagePacket);
                 }
+                break;
+            case PLAYER_UPDATE:
+                UpdatePlayerPacket playerUpdate = gson.fromJson(jsonObject.get("data"), UpdatePlayerPacket.class);
+                Player toUpdate = RoboRally.gameBoard.getPlayer(playerUpdate.getName());
+                toUpdate.updateRobot(playerUpdate);
+                break;
             default:
 //                ChatGUI.textArea.append("resp: " + jsonObject.get("data") + "\n");
                 break;

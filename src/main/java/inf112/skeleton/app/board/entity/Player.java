@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.common.packet.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Directions;
 
 import static inf112.skeleton.common.specs.Directions.*;
@@ -28,8 +29,9 @@ public class Player {
         }
     }
 
-    public void updateRobot(){
+    public void updateRobot(UpdatePlayerPacket update){
         //TODO: recive update packet from server, overwrite values in robot. ALSO check what kind of update
+        robot.updateMovement(update);
     }
 
 }

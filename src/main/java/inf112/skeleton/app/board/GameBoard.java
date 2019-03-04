@@ -16,18 +16,20 @@ import inf112.skeleton.common.packet.PlayerInitPacket;
 import inf112.skeleton.common.specs.Directions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 public abstract class GameBoard {
 
     protected ArrayList<Entity> entities;
-    protected ArrayList<Player> players;
+    protected Map<String, Player> players;
     Gson gson = new Gson();
 
 
     public GameBoard() {
         entities = new ArrayList<>();
-        players = new ArrayList<>();
+        players = new HashMap<>();
     }
 
     public void addEntity(Entity e) {
@@ -42,7 +44,7 @@ public abstract class GameBoard {
     }
 
     public void update() {
-        for (Player player : players) {
+        for (Player player : players.values()) {
             player.update();
 
         }
@@ -194,6 +196,10 @@ public abstract class GameBoard {
 
 
     public void addPlayer(PlayerInitPacket pkt) {
-        this.players.add(new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), Directions.SOUTH));
+        this.players.put(pkt.getName(),new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), Directions.SOUTH));
+    }
+
+    public Player getPlayer(String name) {
+        return this.players.get(name);
     }
 }

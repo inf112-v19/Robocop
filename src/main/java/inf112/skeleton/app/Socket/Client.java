@@ -32,6 +32,8 @@ public class Client {
                         new Lwjgl3Application(game, application);
                         game.channel.closeFuture();
                         group.shutdownGracefully();
+                        System.out.println("stopped");
+                        System.exit(1);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -46,7 +48,6 @@ public class Client {
             ChannelFuture f = bootstrap.connect("localhost", 58008).sync();
             game.channel = f.channel(); // creating a connection with the server
         } finally {
-            System.out.println("stopped");
         }
     }
 }

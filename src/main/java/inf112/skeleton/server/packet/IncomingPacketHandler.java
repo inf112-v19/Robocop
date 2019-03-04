@@ -2,11 +2,15 @@ package inf112.skeleton.server.packet;
 
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
+import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.server.ChatServerHandler;
 import inf112.skeleton.server.login.UserLogging;
 import inf112.skeleton.server.user.User;
+import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
+
+import javax.rmi.CORBA.Util;
 
 public class IncomingPacketHandler {
     public void handleIncomingPacket(Channel incoming, JsonObject jsonObject, ChatServerHandler handler) {
@@ -72,18 +76,32 @@ public class IncomingPacketHandler {
 
         switch (command[0]) {
             case "players":
-                Packet responsePacket = new Packet(
-                        OutgoingPacket.CHATMESSAGE.ordinal(),
-                        new ChatMessagePacket("[SERVER]: There is currently " + handler.loggedInPlayers.size() + " player(s) online."));
-                messagingUser.getChannel().writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
+                sendMessage("There is currently " + handler.loggedInPlayers.size() + " player(s) online.", messagingUser, handler);
+                break;
+            case "move":
+                if(command.length > 2){
+                    if(Directions.fromString(command[1].toUpperCase()) != null){
+                        Directions direction = Directions.valueOf(command[1].toUpperCase());
+                        if(Utility.isStringInt(command[2])){
+                            messagingUser.player.startMovement(direction, Integer.parseInt(command[2]));
+                            return;
+                        }
+                    }
+                }
+                sendMessage("Error in command, proper usage: '!move north 3'.", messagingUser, handler);
+
                 break;
             default:
-                responsePacket = new Packet(
-                        OutgoingPacket.CHATMESSAGE.ordinal(),
-                        new ChatMessagePacket("[SERVER]: Command not found \"" + command[0] + "\"."));
-                messagingUser.getChannel().writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
+                sendMessage("Command not found \"" + command[0] + "\".", messagingUser, handler);
                 break;
         }
+    }
+
+    private void sendMessage(String message, User user, ChatServerHandler handler){
+        Packet responsePacket = new Packet(
+                OutgoingPacket.CHATMESSAGE.ordinal(),
+                new ChatMessagePacket("[SERVER]: " +message));
+        user.getChannel().writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
     }
 
     private void AlreadyLoggedIn(Channel incoming, ChatServerHandler handler, String name) {

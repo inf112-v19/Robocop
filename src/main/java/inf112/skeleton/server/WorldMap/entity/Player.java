@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.OutgoingPacket;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.PlayerInitPacket;
+import inf112.skeleton.common.packet.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.server.ChatServerHandler;
 import inf112.skeleton.server.WorldMap.GameBoard;
@@ -13,7 +14,6 @@ import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
 
 import static inf112.skeleton.common.specs.Directions.*;
-import static inf112.skeleton.common.specs.Directions.SOUTH;
 
 
 public class Player {
@@ -25,6 +25,7 @@ public class Player {
     int currentHP;
     Directions direction;
     GameBoard gameBoard;
+    int movingTiles = 0;
 
 
     private int delayMove = 400;
@@ -34,7 +35,7 @@ public class Player {
         this.name = name;
         this.currentHP = hp;
         this.currentPos = pos;
-        this.movingTo = new Vector2(currentPos.x,currentPos.y);
+        this.movingTo = new Vector2(currentPos.x, currentPos.y);
         this.direction = directions;
         this.owner = owner;
     }
@@ -45,7 +46,7 @@ public class Player {
             return false;
         }
 
-        if ((t - this.timeMoved) >= this.delayMove) {
+        if ((t - this.timeMoved) >= this.delayMove * movingTiles) {
             this.placeAt(this.movingTo.x, this.movingTo.y);
         }
         return true;
@@ -62,7 +63,8 @@ public class Player {
 
 
     public void update() {
-        if (processMovement(System.currentTimeMillis())) {}
+        if (processMovement(System.currentTimeMillis())) {
+        }
     }
 
 
@@ -143,4 +145,32 @@ public class Player {
         //TODO: send init player to a new connection
     }
 
+    public void startMovement(Directions direction, int amount) {
+        if (!processMovement(System.currentTimeMillis())) {
+            this.timeMoved = System.currentTimeMillis();
+            this.movingTiles = amount;
+            this.direction = direction;
+            switch (direction) {
+                case SOUTH:
+                    this.movingTo.add(0, -amount);
+                    break;
+                case NORTH:
+                    this.movingTo.add(0, amount);
+                    break;
+                case EAST:
+                    this.movingTo.add(amount, 0);
+                    break;
+                case WEST:
+                    this.movingTo.add(-amount, 0);
+                    break;
+            }
+
+            OutgoingPacket pktId = OutgoingPacket.PLAYER_UPDATE;
+            UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(name, direction, movingTiles, currentPos, movingTo);
+            Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
+            ChatServerHandler.globalMessage(ChatServerHandler.gson.toJson(updatePacket), owner.getChannel(), true);
+
+        }
+
+    }
 }

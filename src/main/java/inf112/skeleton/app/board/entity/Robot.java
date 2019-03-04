@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.TileDefinition;
 import inf112.skeleton.app.card.Card;
+import inf112.skeleton.common.packet.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Directions;
 
 import java.util.LinkedList;
@@ -26,6 +27,7 @@ public class Robot extends Entity {
     private long timeMoved = 0;
     private Vector2 tileTo;
 
+    private int movementLenght = 1;
     Animation<TextureRegion> currentAnimation;
     Animation<TextureRegion> facing_north;
     Animation<TextureRegion> facing_south;
@@ -134,20 +136,37 @@ public class Robot extends Entity {
         if (this.pos.x == this.tileTo.x && this.pos.y == this.tileTo.y) {
             return false;
         }
-
-        if ((t - this.timeMoved) >= this.delayMove) {
+        int movementDelay = this.delayMove * movementLenght;
+        if ((t - this.timeMoved) >= movementDelay) {
             this.placeAt(this.tileTo.x, this.tileTo.y);
         } else {
+            int tileHeight = 64;
+            int tileWidth = 64;
+            switch (getFacingDirection()) {
+                case NORTH:
+                case SOUTH:
+                    tileHeight = tileHeight * movementLenght;
+                    break;
+                case WEST:
+                case EAST:
+                    tileWidth = tileWidth * movementLenght;
+
+            }
             this.position[0] = (int) (this.pos.x * 64);
             this.position[1] = (int) (this.pos.y * 64);
             if (this.tileTo.x != this.pos.x) {
-                long diff = (long) ((64.0 / this.delayMove) * (t - this.timeMoved));
+                long diff = (long) ((((float)tileWidth) / movementDelay) * (t - this.timeMoved));
+                System.out.println("x: " + (this.tileTo.x < this.pos.x ? 0 - diff : diff));
+
                 this.position[0] += (this.tileTo.x < this.pos.x ? 0 - diff : diff);
             }
             if (this.tileTo.y != this.pos.y) {
-                long diff = (long) ((64.0 / this.delayMove) * (t - this.timeMoved));
+                long diff = (long) ((((float)tileHeight) / movementDelay) * (t - this.timeMoved));
+                System.out.println("y: " + (this.tileTo.y < this.pos.y ? 0 - diff : diff));
+
                 this.position[1] += (this.tileTo.y < this.pos.y ? 0 - diff : diff);
             }
+
 
             this.position[0] = (int) Math.round(this.position[0]);
             this.position[1] = (int) Math.round(this.position[1]);
@@ -189,6 +208,18 @@ public class Robot extends Entity {
                 facing = SOUTH;
             }
         }
+    }
+
+    public void updateMovement(UpdatePlayerPacket updatePlayerPacket) {
+
+        this.tileTo = updatePlayerPacket.getToTile();
+        this.facing = updatePlayerPacket.getDirection();
+        this.movementLenght = updatePlayerPacket.getMovingTiles();
+        this.pos = updatePlayerPacket.getFromTile();
+        this.timeMoved = System.currentTimeMillis();
+        processMovement(System.currentTimeMillis());
+
+
     }
 
     private boolean canMove(float amountX, float amountY) {
