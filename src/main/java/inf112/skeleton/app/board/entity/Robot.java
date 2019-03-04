@@ -156,14 +156,10 @@ public class Robot extends Entity {
             this.position[1] = (int) (this.pos.y * 64);
             if (this.tileTo.x != this.pos.x) {
                 long diff = (long) ((((float)tileWidth) / movementDelay) * (t - this.timeMoved));
-                System.out.println("x: " + (this.tileTo.x < this.pos.x ? 0 - diff : diff));
-
                 this.position[0] += (this.tileTo.x < this.pos.x ? 0 - diff : diff);
             }
             if (this.tileTo.y != this.pos.y) {
                 long diff = (long) ((((float)tileHeight) / movementDelay) * (t - this.timeMoved));
-                System.out.println("y: " + (this.tileTo.y < this.pos.y ? 0 - diff : diff));
-
                 this.position[1] += (this.tileTo.y < this.pos.y ? 0 - diff : diff);
             }
 
