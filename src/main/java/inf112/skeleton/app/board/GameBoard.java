@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class GameBoard {
 
@@ -29,7 +30,7 @@ public abstract class GameBoard {
 
     public GameBoard() {
         entities = new ArrayList<>();
-        players = new HashMap<>();
+        players = new ConcurrentHashMap<>();
     }
 
     public void addEntity(Entity e) {
@@ -39,6 +40,10 @@ public abstract class GameBoard {
     public void render(OrthographicCamera camera, SpriteBatch batch) {
         for (Entity entity : entities) {
             entity.render(batch);
+
+        }
+        for (Entity entity : entities) {
+            entity.renderName(batch);
 
         }
     }

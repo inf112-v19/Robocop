@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.google.gson.Gson;
 import inf112.skeleton.app.ChatGUI;
+import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.Playing.State_Playing;
@@ -106,6 +107,7 @@ public class State_MainMenu extends GameState {
         gson = new Gson();
         System.out.println("sending: " + gson.toJson(packet));
         channel.writeAndFlush(gson.toJson(packet)+"\r\n");
+        RoboRally.username = username;
         gsm.set(new State_Playing(gsm, channel));
     }
 

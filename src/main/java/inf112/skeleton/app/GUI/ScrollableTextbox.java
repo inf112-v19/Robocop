@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.google.gson.Gson;
+import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.ChatMessagePacket;
 import inf112.skeleton.common.packet.IncomingPacket;
 import inf112.skeleton.common.packet.LoginPacket;
@@ -88,7 +89,7 @@ public class ScrollableTextbox {
 
     private void init_inputField() {
         inputField = new TextField("", new Skin(Gdx.files.internal("uiskin.json")));
-        inputField.setMessageText("Type a message...");
+        inputField.setMessageText(RoboRally.username + ": ");
         inputField.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {

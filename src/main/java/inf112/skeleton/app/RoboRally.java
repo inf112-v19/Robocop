@@ -31,6 +31,8 @@ public class RoboRally extends ApplicationAdapter {
     public Class currentState;
     private ChatLoginHandler socketHandler = null;
     public static GameBoard gameBoard;
+    public static String username = "";
+
 
 
     public void setSocketHandler(ChatLoginHandler socketHandler){

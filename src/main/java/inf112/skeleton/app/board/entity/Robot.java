@@ -155,11 +155,11 @@ public class Robot extends Entity {
             this.position[0] = (int) (this.pos.x * 64);
             this.position[1] = (int) (this.pos.y * 64);
             if (this.tileTo.x != this.pos.x) {
-                long diff = (long) ((((float)tileWidth) / movementDelay) * (t - this.timeMoved));
+                long diff = (long) ((((float) tileWidth) / movementDelay) * (t - this.timeMoved));
                 this.position[0] += (this.tileTo.x < this.pos.x ? 0 - diff : diff);
             }
             if (this.tileTo.y != this.pos.y) {
-                long diff = (long) ((((float)tileHeight) / movementDelay) * (t - this.timeMoved));
+                long diff = (long) ((((float) tileHeight) / movementDelay) * (t - this.timeMoved));
                 this.position[1] += (this.tileTo.y < this.pos.y ? 0 - diff : diff);
             }
 
@@ -270,10 +270,7 @@ public class Robot extends Entity {
         } else if (facing == EAST) {
             currentAnimation = facing_east;
         }
-        final GlyphLayout layout = new GlyphLayout(font, player.name);
-        final float fontX = position[0] + (64 - layout.width) / 2;
-        font.setColor(Color.RED);
-        font.draw(batch, player.name, fontX, position[1] + 78);
+
         stateTime += Gdx.graphics.getDeltaTime();
 
         if (processMovement(System.currentTimeMillis())) {
@@ -288,5 +285,13 @@ public class Robot extends Entity {
             batch.draw(currentFrame, position[0], position[1], getWidth(), getHeight());
         }
 //        batch.draw(image, position[0], position[1], getWidth(), getHeight());
+    }
+
+    @Override
+    public void renderName(SpriteBatch batch) {
+        final GlyphLayout layout = new GlyphLayout(font, player.name);
+        final float fontX = position[0] + (64 - layout.width) / 2;
+        font.setColor(Color.RED);
+        font.draw(batch, player.name, fontX, position[1] + 78);
     }
 }
