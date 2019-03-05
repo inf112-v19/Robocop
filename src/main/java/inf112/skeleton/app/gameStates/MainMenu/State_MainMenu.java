@@ -31,6 +31,10 @@ public class State_MainMenu extends GameState {
 
     public State_MainMenu(GameStateManager gsm, Channel channel) {
         super(gsm, channel);
+
+        if (channel == null)
+            throw new IllegalArgumentException("<State_MainMenu>: Error upon initialization. Second argument \"channel\" input is null");
+
         this.channel = channel;
         username = "";
 
@@ -42,17 +46,6 @@ public class State_MainMenu extends GameState {
             public void invoke() {
                 playGame("");
             }
-            /*
-            public void invoke() {
-                // Get host IP from user and switch game-state.
-                Gdx.input.getTextInput(new TextInputHandler() {
-                    @Override
-                    public void input(String ip) {
-                        playGame(ip);
-                    }
-                }, "Host IP:", "", "xxx.xxx.xxx.xxx");
-            }
-            */
         });
 
         menu.add("Settings", new Action() {
