@@ -76,5 +76,6 @@ public class HUD {
     public void resize(int width, int height) {
         // TODO: Fix bug where event-listener click-box won't move along with button.
         stage.getViewport().update(width,height);
+        gameChat.resize(width, height);
     }
 }
