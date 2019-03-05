@@ -75,27 +75,27 @@ public class State_Playing extends GameState {
             }
             test1 = temp;
         }
-        if (inputContainer.keys[Input.Keys.NUM_1]) {
-            gameBoard.moveEntityCard(test1, new Card(0, CardMove.FORWARD1));
-        }
-        if (inputContainer.keys[Input.Keys.NUM_2]) {
-            gameBoard.moveEntityCard(test1, new Card(0, CardMove.FORWARD2));
-        }
-        if (inputContainer.keys[Input.Keys.NUM_3]) {
-            gameBoard.moveEntityCard(test1, new Card(0, CardMove.FORWARD3));
-        }
-        if (inputContainer.keys[Input.Keys.R]) {
-            gameBoard.moveEntityCard(test1, new Card(0, CardMove.BACKWARD1));
-        }
-        if (inputContainer.keys[Input.Keys.E]) {
-            gameBoard.moveEntityCard(test1, new Card(0, CardMove.ROTATERIGHT));
-        }
-        if (inputContainer.keys[Input.Keys.Q]) {
-            gameBoard.moveEntityCard(test1, new Card(0, CardMove.ROTATELEFT));
-        }
-        if (inputContainer.keys[Input.Keys.X]) {
-            gameBoard.moveEntityCard(test1, new Card(0, CardMove.ROTATE180));
-        }
+//        if (inputContainer.keys[Input.Keys.NUM_1]) {
+//            gameBoard.moveEntityCard(test1, new Card(0, CardMove.FORWARD1));
+//        }
+//        if (inputContainer.keys[Input.Keys.NUM_2]) {
+//            gameBoard.moveEntityCard(test1, new Card(0, CardMove.FORWARD2));
+//        }
+//        if (inputContainer.keys[Input.Keys.NUM_3]) {
+//            gameBoard.moveEntityCard(test1, new Card(0, CardMove.FORWARD3));
+//        }
+//        if (inputContainer.keys[Input.Keys.R]) {
+//            gameBoard.moveEntityCard(test1, new Card(0, CardMove.BACKWARD1));
+//        }
+//        if (inputContainer.keys[Input.Keys.E]) {
+//            gameBoard.moveEntityCard(test1, new Card(0, CardMove.ROTATERIGHT));
+//        }
+//        if (inputContainer.keys[Input.Keys.Q]) {
+//            gameBoard.moveEntityCard(test1, new Card(0, CardMove.ROTATELEFT));
+//        }
+//        if (inputContainer.keys[Input.Keys.X]) {
+//            gameBoard.moveEntityCard(test1, new Card(0, CardMove.ROTATE180));
+//        }
         if (inputContainer.keys[Input.Keys.W]) {
             gameBoard.moveEntity(Directions.NORTH);
         } else if (inputContainer.keys[Input.Keys.S]) {

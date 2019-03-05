@@ -28,18 +28,12 @@ public class Robot extends Entity {
     private long timeMoved = 0;
     private Vector2 tileTo;
 
-    Animation<TextureRegion> currentAnimation;
-    Animation<TextureRegion> facing_north;
-    Animation<TextureRegion> facing_south;
-    Animation<TextureRegion> facing_west;
-    Animation<TextureRegion> facing_east;
 
 //    Texture facing_north;
 //    Texture facing_north;
 //    Texture facing_west;
 //    Texture facing_east;
 
-    TextureAtlas textureAtlas;
     float stateTime;
 
     public Robot(float x, float y) {
@@ -52,11 +46,7 @@ public class Robot extends Entity {
         this.facing = NORTH;
         this.memory = new LinkedList<Card>();       //Queue that the player can add cards to.
         this.burntMemory = new LinkedList<Card>();  //Queue that the player cannot add cards to themselves.
-        textureAtlas = new TextureAtlas(Gdx.files.internal("robotAllSides.atlas"));
-        facing_north = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_North"), Animation.PlayMode.LOOP);
-        facing_south = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_South"), Animation.PlayMode.LOOP);
-        facing_west = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_West"), Animation.PlayMode.LOOP);
-        facing_east = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_East"), Animation.PlayMode.LOOP);
+
         stateTime = 0f;
 //        image = new Texture("robot.png");
 //        facing_north = new Texture("NORTH.png");
@@ -231,31 +221,10 @@ public class Robot extends Entity {
 
     }
 
+
+
     @Override
     public void render(SpriteBatch batch) {
-        if (facing == NORTH) {
-            currentAnimation = facing_north;
-        } else if (facing == SOUTH) {
-            currentAnimation = facing_south;
-        } else if (facing == WEST) {
-            currentAnimation = facing_west;
-        } else if (facing == EAST) {
-            currentAnimation = facing_east;
-        }
 
-        stateTime += Gdx.graphics.getDeltaTime();
-
-        if (processMovement(System.currentTimeMillis())) {
-//            sprite.setRegion(textureAtlas.findRegion());
-            TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
-
-            batch.draw(currentFrame, position[0], position[1], getWidth(), getHeight());
-
-        } else {
-            TextureRegion currentFrame = currentAnimation.getKeyFrames()[0];
-
-            batch.draw(currentFrame, position[0], position[1], getWidth(), getHeight());
-        }
-//        batch.draw(image, position[0], position[1], getWidth(), getHeight());
     }
 }
