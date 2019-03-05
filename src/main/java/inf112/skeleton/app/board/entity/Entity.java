@@ -4,8 +4,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.Directions;
 
-import static inf112.skeleton.common.specs.Directions.values;
-
 
 public abstract class Entity {
 
@@ -19,69 +17,68 @@ public abstract class Entity {
         this.facing = Directions.NORTH;
     }
 
-    public void moveX(float amount) {
-        this.pos.add(amount, 0);
-    }
-
-    public void moveY(float amount) {
-        this.pos.add(0,amount);
-    }
-
-    public void moveForwardBackward(int i) {
-        switch(facing) {
-            case NORTH:
-                moveY(i);
-                break;
-            case SOUTH:
-                moveY(-i);
-                break;
-            case WEST:
-                moveX(-i);
-                break;
-            case EAST:
-                moveX(i);
-                break;
-        }
-    }
-
-    public void rotateLeft() {
-        facing = values()[(facing.ordinal() + values().length - 1) % values().length];
-    }
-
-    public void rotateRight() {
-        facing = values()[(facing.ordinal() + values().length + 1) % values().length];
-    }
-
-    public void rotate180() {
-        facing = values()[(facing.ordinal() + 2) % values().length];
-    }
-
+    /**
+     * Check for changes unrelated to rendering.
+     */
     public abstract void update();
 
-
+    /**
+     * Render entity into current frame.
+     *
+     * @param batch
+     */
     public abstract void render(SpriteBatch batch);
 
-
+    /**
+     * Get the current position of the entity.
+     *
+     * @return current position
+     */
     public Vector2 getPos() {
         return pos;
     }
 
+    /**
+     * Get the current X coordinate of the enitity.
+     *
+     * @return current X coordinate.
+     */
     public float getX() {
         return pos.x;
     }
 
+    /**
+     * Get the current Y coordinate of the enitity.
+     *
+     * @return current Y coordinate.
+     */
     public float getY() {
         return pos.y;
     }
 
+    /**
+     * Get the entities EntityType
+     *
+     * @return EntityType
+     */
     public EntityType getType() {
         return type;
     }
 
+    /**
+     * Get the Sprite width.
+     *
+     * @return Sprite width
+     */
     public int getWidth() {
         return type.getWidth();
     }
 
+    /**
+     * Get the Sprite height.
+     *
+     * @return Sprite height
+     */
     public int getHeight() {
         return type.getHeight();
     }

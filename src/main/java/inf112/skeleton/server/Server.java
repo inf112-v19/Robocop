@@ -16,9 +16,10 @@ import static org.mockito.Mockito.mock;
 
 public class Server {
     public static final int port = 58008;
-    public static GameServerInstance game = new GameServerInstance();
+    public static GameWorldInstance game = new GameWorldInstance();
 
     public static void run() {
+        // After setting up the socket listener, start an instance of libgdx on the server.
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -37,11 +38,8 @@ public class Server {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            /**
-             * Server is binded to the and all the handlers are set.
-             */
             ServerBootstrap bootstrap = new ServerBootstrap().group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class).childHandler(new ChatServerInitializer());
+                    .channel(NioServerSocketChannel.class).childHandler(new RoboCopServerInitializer());
             System.out.println("Binding to port " + port + "...");
             bootstrap.bind(port).sync().channel().closeFuture().sync();
         } catch (InterruptedException e) {

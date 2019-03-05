@@ -1,27 +1,42 @@
 package inf112.skeleton.server.util;
 
 public class Utility {
-    public static String ucFirst(String str) {
-        str = str.toLowerCase();
-        if (str.length() > 1) {
-            str = str.substring(0, 1).toUpperCase() + str.substring(1);
+    /**
+     * Uppercase first letter of a string
+     * @param string
+     * @return string with first letter uppercase
+     */
+    public static String upperCaseFirst(String string) {
+        string = string.toLowerCase();
+        if (string.length() > 1) {
+            string = string.substring(0, 1).toUpperCase() + string.substring(1);
         } else {
-            return str.toUpperCase();
+            return string.toUpperCase();
         }
-        return str;
+        return string;
     }
 
-    public static String formatPlayerName(String str) {
-        String str1 = ucFirst(str);
+    /**
+     * Format a username to a cleaner format.
+     * @param username
+     * @return formatted username
+     */
+    public static String formatPlayerName(String username) {
+        String str1 = upperCaseFirst(username);
         str1.replace("_", " ");
         return str1;
     }
 
-    public static boolean isStringInt(String s)
+    /**
+     * check if a string is an int.
+     * @param string
+     * @return true if string is an int, false if not.
+     */
+    public static boolean isStringInt(String string)
     {
         try
         {
-            Integer.parseInt(s);
+            Integer.parseInt(string);
             return true;
         } catch (NumberFormatException ex)
         {

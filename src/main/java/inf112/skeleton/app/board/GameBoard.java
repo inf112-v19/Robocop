@@ -91,7 +91,7 @@ public abstract class GameBoard {
 //            throw new NoSuchElementException("Entity does not exist on this gameboard");
 //        }
     }
-
+/**
     public void moveEntityCard(Entity e, Card card) throws NoSuchElementException {
         if (entities.contains(e)) {
             System.out.println("Current location: " + e.getX() + " " + e.getY());
@@ -118,7 +118,7 @@ public abstract class GameBoard {
             throw new NoSuchElementException("Entity does not exist on this gameboard");
         }
     }
-
+*/
     //TODO Fix this borked method.
     private boolean canRobotMove(Robot e, Card card) {
         int curX = (int) e.getX();

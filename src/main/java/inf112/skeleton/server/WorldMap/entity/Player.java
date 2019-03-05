@@ -6,7 +6,7 @@ import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.PlayerInitPacket;
 import inf112.skeleton.common.packet.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Directions;
-import inf112.skeleton.server.ChatServerHandler;
+import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.TileDefinition;
 import inf112.skeleton.server.user.User;
@@ -114,10 +114,10 @@ public class Player {
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(name, currentPos, currentHP);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
-        owner.getChannel().writeAndFlush(ChatServerHandler.gson.toJson(initPacket) + "\r\n");
+        owner.getChannel().writeAndFlush(RoboCopServerHandler.gson.toJson(initPacket) + "\r\n");
         //TODO: send init player to client, then broadcast to all others
 
-        ChatServerHandler.globalMessage("[SERVER] - " + (owner.getRights().getPrefix().equalsIgnoreCase("") ? "" : "[" + owner.getRights().getPrefix() + "] ") + Utility.formatPlayerName(owner.getName().toLowerCase()) + " has just joined!", owner.getChannel(), false);
+        RoboCopServerHandler.globalMessage("[SERVER] - " + (owner.getRights().getPrefix().equalsIgnoreCase("") ? "" : "[" + owner.getRights().getPrefix() + "] ") + Utility.formatPlayerName(owner.getName().toLowerCase()) + " has just joined!", owner.getChannel(), false);
         initAll();
     }
 
@@ -126,7 +126,7 @@ public class Player {
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(name, currentPos, currentHP);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
-        ChatServerHandler.globalMessage(ChatServerHandler.gson.toJson(initPacket), owner.getChannel(), true);
+        RoboCopServerHandler.globalMessage(RoboCopServerHandler.gson.toJson(initPacket), owner.getChannel(), true);
 
     }
 
@@ -139,7 +139,7 @@ public class Player {
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(name, currentPos, currentHP);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
-        newUserChannel.writeAndFlush(ChatServerHandler.gson.toJson(initPacket) + "\r\n");
+        newUserChannel.writeAndFlush(RoboCopServerHandler.gson.toJson(initPacket) + "\r\n");
 //        newUserChannel.writeAndFlush("list:" + Utility.formatPlayerName(owner.getName().toLowerCase()) + "\r\n");
 
         //TODO: send init player to a new connection
@@ -168,7 +168,7 @@ public class Player {
             OutgoingPacket pktId = OutgoingPacket.PLAYER_UPDATE;
             UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(name, direction, movingTiles, currentPos, movingTo);
             Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
-            ChatServerHandler.globalMessage(ChatServerHandler.gson.toJson(updatePacket), owner.getChannel(), true);
+            RoboCopServerHandler.globalMessage(RoboCopServerHandler.gson.toJson(updatePacket), owner.getChannel(), true);
 
         }
 

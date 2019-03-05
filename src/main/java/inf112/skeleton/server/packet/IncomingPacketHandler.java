@@ -4,16 +4,21 @@ import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
-import inf112.skeleton.server.ChatServerHandler;
+import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.login.UserLogging;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
 
-import javax.rmi.CORBA.Util;
-
 public class IncomingPacketHandler {
-    public void handleIncomingPacket(Channel incoming, JsonObject jsonObject, ChatServerHandler handler) {
+
+    /**
+     * Parse received packet and decide what to do with it.
+     * @param incoming
+     * @param jsonObject
+     * @param handler
+     */
+    public void handleIncomingPacket(Channel incoming, JsonObject jsonObject, RoboCopServerHandler handler) {
         IncomingPacket packetId = IncomingPacket.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
             case LOGIN:
@@ -71,7 +76,13 @@ public class IncomingPacketHandler {
         }
     }
 
-    private void handleCommand(User messagingUser, String[] command, ChatServerHandler handler) {
+    /**
+     * Parse command from packet and exectute action.
+     * @param messagingUser
+     * @param command
+     * @param handler
+     */
+    private void handleCommand(User messagingUser, String[] command, RoboCopServerHandler handler) {
         System.out.println(messagingUser.getName() + " sent command: " + command[0]);
 
         switch (command[0]) {
@@ -97,14 +108,27 @@ public class IncomingPacketHandler {
         }
     }
 
-    private void sendMessage(String message, User user, ChatServerHandler handler){
+    /**
+     * Send a message to a user, the message will show up in the chatbox with a "[SERVER]: " prefix.
+     * @param message
+     * @param user
+     * @param handler
+     */
+    private void sendMessage(String message, User user, RoboCopServerHandler handler){
         Packet responsePacket = new Packet(
                 OutgoingPacket.CHATMESSAGE.ordinal(),
                 new ChatMessagePacket("[SERVER]: " +message));
         user.getChannel().writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
     }
 
-    private void AlreadyLoggedIn(Channel incoming, ChatServerHandler handler, String name) {
+    /**
+     * User failed auth because a user with the same name is already loggid in, send a message to the new connection to
+     * inform them.
+     * @param incoming
+     * @param handler
+     * @param name
+     */
+    private void AlreadyLoggedIn(Channel incoming, RoboCopServerHandler handler, String name) {
         OutgoingPacket response = OutgoingPacket.LOGINRESPONSE;
         LoginResponseStatus status = LoginResponseStatus.ALREADY_LOGGEDIN;
         LoginResponsePacket loginResponsePacket =

@@ -15,6 +15,14 @@ public class Player {
     Vector2 initialPos;
     int initalHp;
     Directions initalDirection;
+
+    /**
+     * Player has its own class, which owns a robot, to avoid rendring on socket thread.
+     * @param name
+     * @param pos
+     * @param hp
+     * @param directions
+     */
     public Player(String name, Vector2 pos, int hp, Directions directions) {
         this.name = name;
         this.initalHp = hp;
@@ -22,6 +30,11 @@ public class Player {
         this.initalDirection = directions;
     }
 
+    /**
+     * If robot is not yet created for player it should create it.
+     *
+     * TODO: move packets related to player actions here.
+     */
     public void update() {
         if(robot == null){
             this.robot = new Robot(initialPos.x, initialPos.y, this);
@@ -29,8 +42,14 @@ public class Player {
         }
     }
 
+
+    /**
+     * Accept packet related to any changes to this player, checks if its needed then applies changes.
+     *
+     * TODO: check if data needs changing
+     * @param update
+     */
     public void updateRobot(UpdatePlayerPacket update){
-        //TODO: recive update packet from server, overwrite values in robot. ALSO check what kind of update
         robot.updateMovement(update);
     }
 

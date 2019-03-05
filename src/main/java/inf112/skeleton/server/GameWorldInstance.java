@@ -4,12 +4,10 @@ import com.badlogic.gdx.ApplicationListener;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.user.User;
-import inf112.skeleton.server.util.Utility;
 
 
-public class GameServerInstance implements ApplicationListener {
+public class GameWorldInstance implements ApplicationListener {
 
-    public String printmsg = "Hello";
     public GameBoard gameBoard;
 
     int frame = 0;
@@ -32,10 +30,9 @@ public class GameServerInstance implements ApplicationListener {
         frame++;
         if (frame > 60 / TPS) {
             frame = 0;
-//            System.out.println("Hello World");
-            for (User user : ChatServerHandler.loggedInPlayers) {
+            for (User user : RoboCopServerHandler.loggedInPlayers) {
                 user.player.update();
-//                user.getChannel().writeAndFlush("size:" + ChatServerHandler.loggedInPlayers.size() + "\r\n");
+//                user.getChannel().writeAndFlush("size:" + RoboCopServerHandler.loggedInPlayers.size() + "\r\n");
             }
         }
     }
