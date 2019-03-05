@@ -14,6 +14,7 @@ import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
 import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
+import java.util.concurrent.TimeUnit;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -42,7 +43,20 @@ public class RoboRally extends ApplicationAdapter {
     public void create() {
         batch = new SpriteBatch();
         gsm = new GameStateManager();
-        currentState = State_MainMenu.class;
+
+        long i = 0, j = 1;
+        while(channel == null) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(100);
+                if (++i == j) {
+                    j <<= 1;
+                    System.out.println("RoboRally <create>: Channel not yet set... (waited " + (i / 10.0f) + " seconds)");
+                }
+            } catch (InterruptedException e) {}
+        }
+        if (i > 0)
+            System.out.println("RoboRally <create>: Channel finally set :D Initializing main menu...");
+
         gsm.push(new State_MainMenu(gsm, channel));
         gameBoard = new TiledMapLoader();
 
@@ -57,16 +71,6 @@ public class RoboRally extends ApplicationAdapter {
 
     @Override
     public void render() {
-        if(!(currentState == gsm.peek().getClass())){
-            try {
-                Constructor<?> constructor = currentState.getConstructor(GameStateManager.class, Channel.class);
-                gsm.set((GameState) constructor.newInstance(gsm, channel));
-                System.out.println("gamestate changed");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gsm.update(0);
         gsm.render(batch);
