@@ -2,14 +2,14 @@ package inf112.skeleton.app.card;
 
 public class Card {
     private int priority;
-    private String type;
+    private CardMove type;
 
-    public Card(int priority, String type) {
+    public Card(int priority, CardMove type) {
         this.priority = priority;
         this.type = type;
     }
 
-    public String getType() {
+    public CardMove getType() {
         return type;
     }
 

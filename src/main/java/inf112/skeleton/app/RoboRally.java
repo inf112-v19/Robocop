@@ -1,83 +1,80 @@
 package inf112.skeleton.app;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import inf112.skeleton.app.Action.InputHandler;
+import com.badlogic.gdx.graphics.g2d.*;
+import inf112.skeleton.app.Socket.ChatLoginHandler;
+import inf112.skeleton.app.Socket.Client;
 import inf112.skeleton.app.board.GameBoard;
-import inf112.skeleton.app.board.TileDefinition;
 import inf112.skeleton.app.board.TiledMapLoader;
+import inf112.skeleton.app.gameStates.GameState;
+import inf112.skeleton.app.gameStates.GameStateManager;
+import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
+import inf112.skeleton.app.gameStates.Playing.State_Playing;
+import io.netty.channel.Channel;
+import io.netty.channel.EventLoopGroup;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.TimeUnit;
 
 public class RoboRally extends ApplicationAdapter {
+    public static final int     WIDTH   = 1080,
+                                HEIGHT  = 720;
+    public static final String  TITLE   = "RoboRally";
+    public static Channel channel;
+    public EventLoopGroup nioWorkerGroup;
+
     private SpriteBatch batch;
-    private BitmapFont font;
-    private Viewport viewport;
-    InputHandler inputHandler;
-    OrthographicCamera camera;
+    public GameStateManager gsm;
+    public Class currentState;
+    private ChatLoginHandler socketHandler = null;
+    public static GameBoard gameBoard;
+    public static String username = "";
 
-    GameBoard gameBoard;
 
 
+    public void setSocketHandler(ChatLoginHandler socketHandler){
+        this.socketHandler = socketHandler;
+    }
     @Override
     public void create() {
         batch = new SpriteBatch();
-        font = new BitmapFont();
-        font.setColor(Color.RED);
-
-        camera = new OrthographicCamera();
-        viewport = new FitViewport(1280, 720, camera);
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.update();
-
+        gsm = new GameStateManager();
+        currentState = State_MainMenu.class;
+        gsm.push(new State_MainMenu(gsm, channel));
         gameBoard = new TiledMapLoader();
-        inputHandler = new InputHandler(camera);
-        Gdx.input.setInputProcessor(inputHandler);
+
+        Gdx.gl.glClearColor(1,1,1,1);
     }
+
 
     @Override
     public void dispose() {
         batch.dispose();
-        font.dispose();
     }
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        inputHandler.handleKeys();
-        if (Gdx.input.isTouched()) {
-            camera.translate((-Gdx.input.getDeltaX()) * camera.zoom, (Gdx.input.getDeltaY()) * camera.zoom);
-        }
-        if (Gdx.input.justTouched()) {
-            Vector3 pos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            TileDefinition def = gameBoard.getTileDefinitionByLocation(0, pos.x, pos.y);
-            if(def != null){
-                System.out.printf("You clicked on tile %s with id %d.%n",def.getName(), def.getId());
-
+        if(!(currentState == gsm.peek().getClass())){
+            try {
+                Constructor<?> constructor = currentState.getConstructor(GameStateManager.class, Channel.class);
+                gsm.set((GameState) constructor.newInstance(gsm, channel));
+                System.out.println("gamestate changed");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
         }
-
-        camera.update();
-        gameBoard.render(camera,batch);
-
-        // 秒あたりのフレーム数
-        batch.begin();
-        font.draw(batch, "fps: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight()-20);
-        batch.end();
-
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        gsm.update(0);
+        gsm.render(batch);
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height);
+        gsm.resize(width, height);
     }
 
     @Override

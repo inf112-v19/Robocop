@@ -2,28 +2,55 @@ package inf112.skeleton.app.board.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import inf112.skeleton.app.board.GameBoard;
+import com.badlogic.gdx.math.Vector2;
+import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.common.packet.UpdatePlayerPacket;
+import inf112.skeleton.common.specs.Directions;
 
-public class Player extends Entity {
+import static inf112.skeleton.common.specs.Directions.*;
+import static inf112.skeleton.common.specs.Directions.values;
+public class Player {
+    String name;
+    Robot robot = null;
+    Vector2 initialPos;
+    int initalHp;
+    Directions initalDirection;
 
-
-    Texture image;
-
-
-    public Player(float x, float y, GameBoard board) {
-        super(x, y, EntityType.PLAYER, board);
-        image = new Texture("robot.png");
+    /**
+     * Player has its own class, which owns a robot, to avoid rendring on socket thread.
+     * @param name
+     * @param pos
+     * @param hp
+     * @param directions
+     */
+    public Player(String name, Vector2 pos, int hp, Directions directions) {
+        this.name = name;
+        this.initalHp = hp;
+        this.initialPos = pos;
+        this.initalDirection = directions;
     }
 
-    @Override
+    /**
+     * If robot is not yet created for player it should create it.
+     *
+     * TODO: move packets related to player actions here.
+     */
     public void update() {
-        // Keyhandler? ???
-
+        if(robot == null){
+            this.robot = new Robot(initialPos.x, initialPos.y, this);
+            RoboRally.gameBoard.addEntity(robot);
+        }
     }
 
-    @Override
-    public void render(SpriteBatch batch) {
-        batch.draw(image, pos.x*64, pos.y*64, getWidth(), getHeight());
-        System.out.println("drawn");
+
+    /**
+     * Accept packet related to any changes to this player, checks if its needed then applies changes.
+     *
+     * TODO: check if data needs changing
+     * @param update
+     */
+    public void updateRobot(UpdatePlayerPacket update){
+        robot.updateMovement(update);
     }
+
 }

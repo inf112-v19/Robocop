@@ -15,31 +15,31 @@ public class CardDeck {
     private void InitializeDeck() {
         //RotateRight
         for(int i = 0; i < 18; i++) {
-            deck.add(new Card(80+i*20, "RotateRight"));
+            deck.add(new Card(80+i*20, CardMove.ROTATERIGHT));
         }
         //RotateLeft
         for(int i = 0; i < 18; i++) {
-            deck.add(new Card(70+i*20, "RotateLeft"));
+            deck.add(new Card(70+i*20, CardMove.ROTATELEFT));
         }
         //Rotate180
         for(int i = 0; i < 6; i++) {
-            deck.add(new Card(10+i*10, "Rotate180"));
+            deck.add(new Card(10+i*10, CardMove.ROTATE180));
         }
         //Forward1
         for(int i = 0; i < 18; i++) {
-            deck.add(new Card(490+i*10, "Forward 1"));
+            deck.add(new Card(490+i*10, CardMove.FORWARD1));
         }
         //Forward2
         for(int i = 0; i < 12; i++) {
-            deck.add(new Card(670+i*10, "Forward 2"));
+            deck.add(new Card(670+i*10, CardMove.FORWARD2));
         }
         //Forward3
         for(int i = 0; i < 6; i++) {
-            deck.add(new Card(790+i*10, "Forward 3"));
+            deck.add(new Card(790+i*10, CardMove.FORWARD3));
         }
         //Back1
         for(int i = 0; i < 6; i++) {
-            deck.add(new Card(430+i*10, "Backward 1"));
+            deck.add(new Card(430+i*10, CardMove.BACKWARD1));
         }
         Collections.shuffle(deck);
     }

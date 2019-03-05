@@ -1,18 +1,21 @@
-package inf112.skeleton.app.robot;
+package inf112.skeleton.server.WorldMap.entity;
 
-import inf112.skeleton.app.card.CardDeck;
-import inf112.skeleton.app.card.Card;
+import inf112.skeleton.common.specs.Directions;
+
+import inf112.skeleton.server.card.Card;
+import inf112.skeleton.server.card.CardDeck;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Random;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class robotTest {
     Robot robot;
     {
-        robot = new Robot(1, null);
+        robot = new Robot(0,0);
     }
 
     Random random;
@@ -83,7 +86,7 @@ public class robotTest {
     @Test
     public void rotateRightGeneralCase() {
         for (int i = 0; i < 100000; i++) {
-            Robot robotRight = new Robot(2, null);
+            Robot robotRight = new Robot(1,1);
             int r = random.nextInt(1000);
             for (int j = 0; j < r; j++) {
                 robotRight.rotateRight();
@@ -110,7 +113,7 @@ public class robotTest {
     @Test
     public void rotateLeftGeneralCase() {
         for (int i = 0; i < 100000; i++) {
-            Robot robotLeft = new Robot(3, null);
+            Robot robotLeft = new Robot(2, 2);
             int r = random.nextInt(1000);
             for (int j = 0; j < r; j++) {
                 robotLeft.rotateLeft();
