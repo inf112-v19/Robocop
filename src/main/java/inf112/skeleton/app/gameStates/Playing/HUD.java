@@ -28,7 +28,8 @@ public class HUD {
 
     private Status status;
     public HUD(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, final Channel channel) {
-        gsm = gameStateManager;
+        this.gsm = gameStateManager;
+        this.channel = channel;
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()));
         inputMultiplexer.addProcessor(stage);
 
@@ -58,8 +59,6 @@ public class HUD {
         status = new Status(gsm,inputMultiplexer,channel);
         status.add("Person1");
         status.add("Person2");
-
-        //status.setPosition(400,300);
     }
 
     public void dispose() {
