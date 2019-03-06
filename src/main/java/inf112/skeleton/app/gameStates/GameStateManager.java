@@ -5,6 +5,7 @@ package inf112.skeleton.app.gameStates;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.Stack;
 
@@ -27,23 +28,33 @@ public class GameStateManager {
     }
 
     public void set(GameState state) {
-        states.pop();
+        try {
+            states.pop();
+        } catch (EmptyStackException e) {}
         states.push(state);
         state.focus();
     }
     public GameState peek(){
-        return states.peek();
+        try {
+            return states.peek();
+        } catch (EmptyStackException e) {
+            return null;
+        }
     }
 
 
     public void update(float dt) {
-        GameState currentState = states.peek();
-        currentState.handleInput();
-        currentState.update(dt);
+        try {
+            GameState currentState = states.peek();
+            currentState.handleInput();
+            currentState.update(dt);
+        } catch (EmptyStackException e) {}
     }
 
     public void render(SpriteBatch sb) {
-        states.peek().render(sb);
+        try {
+            states.peek().render(sb);
+        } catch (EmptyStackException e) {}
     }
 
     public void dispose() {

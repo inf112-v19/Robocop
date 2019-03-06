@@ -18,12 +18,18 @@ import inf112.skeleton.app.Action.Action;
 import inf112.skeleton.app.GUI.Menu;
 import inf112.skeleton.common.packet.LoginPacket;
 import inf112.skeleton.common.packet.Packet;
+import inf112.skeleton.common.status.LoginResponseStatus;
 import io.netty.channel.Channel;
+
+import java.util.concurrent.TimeUnit;
+
+import static inf112.skeleton.common.status.LoginResponseStatus.NO_RESPONSE_YET;
 
 public class State_MainMenu extends GameState {
     private Menu menu;
     private Channel channel;
     private Gson gson;
+    public LoginResponseStatus loginStatus;
 
     InputMultiplexer inputMultiplexer;
     TextField inputField;
@@ -31,6 +37,10 @@ public class State_MainMenu extends GameState {
 
     public State_MainMenu(GameStateManager gsm, Channel channel) {
         super(gsm, channel);
+
+        if (channel == null)
+            throw new IllegalArgumentException("<State_MainMenu>: Error upon initialization. Second argument \"channel\" input is null");
+
         this.channel = channel;
         username = "";
 
@@ -42,17 +52,6 @@ public class State_MainMenu extends GameState {
             public void invoke() {
                 playGame("");
             }
-            /*
-            public void invoke() {
-                // Get host IP from user and switch game-state.
-                Gdx.input.getTextInput(new TextInputHandler() {
-                    @Override
-                    public void input(String ip) {
-                        playGame(ip);
-                    }
-                }, "Host IP:", "", "xxx.xxx.xxx.xxx");
-            }
-            */
         });
 
         menu.add("Settings", new Action() {
@@ -62,7 +61,7 @@ public class State_MainMenu extends GameState {
         });
         menu.add("End game", new Action() {
             public void invoke() {
-                System.out.println("Clicked \"End game\"");
+                Gdx.app.exit();
             }
         });
 
@@ -74,12 +73,10 @@ public class State_MainMenu extends GameState {
         inputField.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
+                username = inputField.getText();
                 if ((key == '\r' || key == '\n')) {
-                    String inputText = inputField.getText();
-                    if (!inputText.equals("")) {
-                        username = inputText;
-                    }
                     menu.stage.setKeyboardFocus(null);
+                    playGame("");
                 }
             }
         });
@@ -98,17 +95,38 @@ public class State_MainMenu extends GameState {
         usernameTab.setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2+112);
 
         menu.stage.addActor(usernameTab);
+        gson = new Gson();
     }
 
     protected void playGame(String ip) {
         // TODO: Validate IP and connect
         System.out.println(ip);
-        Packet packet = new Packet(0, new LoginPacket(username, "oiajwdioj"));
-        gson = new Gson();
-        System.out.println("sending: " + gson.toJson(packet));
-        channel.writeAndFlush(gson.toJson(packet)+"\r\n");
-        RoboRally.username = username;
-        gsm.set(new State_Playing(gsm, channel));
+        String packetData = gson.toJson(new Packet(0, new LoginPacket(username, "oiajwdioj")));
+        System.out.println("sending: " + packetData);
+
+        loginStatus = NO_RESPONSE_YET;
+        channel.writeAndFlush(packetData+"\r\n");
+
+        long i = 0, j = 1;
+        while(loginStatus == NO_RESPONSE_YET) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(100);
+                if (++i == j) {
+                    j <<= 1;
+                    System.out.println("State_MainMenu <playGame>: Logging in... (waited " + (i / 10.0f) + " seconds)");
+                }
+            } catch (InterruptedException e) {
+            }
+        }
+        switch(loginStatus) {
+            case LOGIN_SUCCESS:
+                RoboRally.username = username;
+                gsm.set(new State_Playing(gsm, channel));
+                break;
+            case ALREADY_LOGGEDIN:
+                System.out.println("User already logged in");
+                break;
+        }
     }
 
 

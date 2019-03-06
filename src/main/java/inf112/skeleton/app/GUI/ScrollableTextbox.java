@@ -190,4 +190,8 @@ public class ScrollableTextbox {
     public void setPosition(int x, int y) {
         display.setPosition(x, y);
     }
+
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height);
+    }
 }

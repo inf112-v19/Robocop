@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
+import inf112.skeleton.app.gameStates.GameState;
+import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
 import inf112.skeleton.app.gameStates.Playing.HUD;
 import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.common.packet.*;
@@ -26,47 +28,39 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
 
 
     public void handleIncomingPacket(JsonObject jsonObject) throws Exception {
+        System.out.println("Handling incomming packet...");
         OutgoingPacket packetId = OutgoingPacket.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
             case LOGINRESPONSE:
-                LoginResponsePacket responsePacket = gson.fromJson(jsonObject.get("data"), LoginResponsePacket.class);
-                switch (LoginResponseStatus.values()[responsePacket.getStatusCode()]) {
-                    case LOGIN_SUCCESS:
-//                        ChatGUI.main(args);
-                        game.currentState = State_Playing.class;
-
-
-//                        ChatLogin.window.frmChat.dispose();
-                        break;
-                    case ALREADY_LOGGEDIN:
-                        ChatLogin.label_3.setText(responsePacket.getResponseMsg());
-                        break;
+                GameState currentGameState = game.gsm.peek();
+                if (currentGameState != null && currentGameState instanceof State_MainMenu) {
+                    // Read login-packet response and update the loginStatus variable in main menu.
+                    ((State_MainMenu) currentGameState).loginStatus = LoginResponseStatus.values()[
+                            gson.fromJson(jsonObject.get("data"), LoginResponsePacket.class).getStatusCode()];
                 }
                 break;
+
             case INIT_PLAYER:
-                System.out.println("create player");
-                PlayerInitPacket pkt = gson.fromJson(jsonObject.get("data"), PlayerInitPacket.class);
-
-                RoboRally.gameBoard.addPlayer(pkt);
-
+                RoboRally.gameBoard.addPlayer(gson.fromJson(jsonObject.get("data"), PlayerInitPacket.class));
                 break;
+
             case CHATMESSAGE:
                 if (ScrollableTextbox.textbox != null) {
                     ChatMessagePacket chatMessagePacket = gson.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
                     ScrollableTextbox.textbox.push(chatMessagePacket);
                 }
                 break;
+
             case PLAYER_UPDATE:
                 UpdatePlayerPacket playerUpdate = gson.fromJson(jsonObject.get("data"), UpdatePlayerPacket.class);
                 Player toUpdate = RoboRally.gameBoard.getPlayer(playerUpdate.getName());
                 toUpdate.updateRobot(playerUpdate);
                 break;
+
             default:
 //                ChatGUI.textArea.append("resp: " + jsonObject.get("data") + "\n");
                 break;
-
         }
-
     }
 
     @Override
