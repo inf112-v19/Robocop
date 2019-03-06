@@ -21,7 +21,7 @@ Før du spiller for første gang, legg klistremerkene på flaggene, men ett numm
 5.	Avgjør tilfeldig hvem som skal starte. Spilleren som starter setter sin Archive marker og robot i Dock 1 i Docking Bay,       med roboten vendt mot hovedkortet, og spilleren til venstre gjør det samme med Dock 2, og så videre med klokken til alle       robotene er på en Dock.
 
 
-##Hvordan spille:
+## Hvordan spille:
 **Gjør følgende for hver tur:**
 
 1.	Dele ut programkortene
