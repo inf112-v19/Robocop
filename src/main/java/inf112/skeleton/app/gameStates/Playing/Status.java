@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -15,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import io.netty.channel.Channel;
 
@@ -47,7 +45,7 @@ public class Status {
     Stage stage;
 
     BitmapFont font;
-    Drawable image_Lives, image_Damage;
+    TextButton.TextButtonStyle style_Lives, style_Damage;
     TextField.TextFieldStyle txtStyle;
 
     HashMap<String, SingleStatus> statusUpdater;
@@ -66,17 +64,23 @@ public class Status {
         font.setColor(Color.BLACK);
         font.getData().setScale(1.7f);
 
-        image_Lives = new TextureRegionDrawable(new TextureRegion(
+        Drawable d;
+
+        d =  new TextureRegionDrawable(new TextureRegion(
                 new Texture(Gdx.files.internal("status_Life.png"))));
-        image_Damage = new TextureRegionDrawable(new TextureRegion(
+        style_Lives = new TextButton.TextButtonStyle(d,d,d,font);
+        style_Lives.fontColor = Color.BLACK;
+
+        d =  new TextureRegionDrawable(new TextureRegion(
                 new Texture(Gdx.files.internal("status_DamageNoExclSquished.png"))));
+        style_Damage = new TextButton.TextButtonStyle(d,d,d,font);
+        style_Damage.fontColor = Color.BLACK;
 
         txtStyle = new TextField.TextFieldStyle();
         txtStyle.font = new BitmapFont();
         txtStyle.fontColor = Color.BLACK;
 
         statusUpdater = new HashMap<>();
-
         statusbar = new Table();
 
         stage.addActor(statusbar);
@@ -86,27 +90,21 @@ public class Status {
         TextButton btn_lives, btn_damage;
         TextField txt_roboName;
 
-        btn_lives = new TextButton("3", new TextButton.TextButtonStyle(image_Lives, image_Lives, image_Lives, font));
-        btn_damage = new TextButton("0", new TextButton.TextButtonStyle(image_Damage, image_Damage, image_Damage, font));
-
-
-        btn_lives.getStyle().fontColor = Color.BLACK;
-        btn_damage.getStyle().fontColor = Color.BLACK;
-
+        btn_lives = new TextButton("3", style_Lives);
+        btn_damage = new TextButton("0", style_Damage);
         txt_roboName = new TextField(roboName, txtStyle);
 
         statusbar.add(txt_roboName).size(100,height).right();
         statusbar.add(btn_lives).size(height,height);
         statusbar.add(btn_damage).size(height,height);
         statusbar.row();
-        statusUpdater.put(roboName, new SingleStatus(btn_lives, btn_damage));
 
+        statusUpdater.put(roboName, new SingleStatus(btn_lives, btn_damage));
 
         statusbar.setSize(100 + 2 * height,height * statusUpdater.size());
         statusbar.setPosition(
                 Gdx.graphics.getWidth()-statusbar.getWidth(),
                 Gdx.graphics.getHeight()-statusbar.getHeight()-25);
-
     }
 
     public void updateLives(String roboName, int lives) {
