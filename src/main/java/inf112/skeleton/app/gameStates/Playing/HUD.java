@@ -19,7 +19,6 @@ import io.netty.channel.Channel;
 
 public class HUD {
     private BitmapFont font;
-    private SpriteBatch hudBatch; // Sprite batch which won't follow the camera...
     private ButtonGenerator btngen;
     private TextButton to_mainMenu;
     private GameStateManager gsm;
@@ -31,9 +30,6 @@ public class HUD {
         gsm = gameStateManager;
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()));
         inputMultiplexer.addProcessor(stage);
-
-        hudBatch = new SpriteBatch();
-        hudBatch.setProjectionMatrix(stage.getCamera().combined);
 
         font = new BitmapFont();
         font.setColor(Color.RED);
@@ -67,8 +63,9 @@ public class HUD {
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(stage.getCamera().combined);
         stage.draw();
-        sb.begin();
         gameChat.render(sb);
+
+        sb.begin();
         font.draw(sb , "fps: " + Gdx.graphics.getFramesPerSecond(),stage.getWidth()-60, stage.getHeight()-10);
         sb.end();
     }
