@@ -35,7 +35,11 @@ public class GameStateManager {
         state.focus();
     }
     public GameState peek(){
-        return states.peek();
+        try {
+            return states.peek();
+        } catch (EmptyStackException e) {
+            return null;
+        }
     }
 
 
