@@ -26,6 +26,7 @@ public class HUD {
     private ScrollableTextbox gameChat;
     Channel channel;
 
+    private Status status;
     public HUD(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, final Channel channel) {
         gsm = gameStateManager;
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()));
@@ -54,6 +55,11 @@ public class HUD {
 
         stage.addActor(to_mainMenu);
 
+        status = new Status(gsm,inputMultiplexer,channel);
+        status.add("Person1");
+        status.add("Person2");
+
+        //status.setPosition(400,300);
     }
 
     public void dispose() {
@@ -64,6 +70,7 @@ public class HUD {
         sb.setProjectionMatrix(stage.getCamera().combined);
         stage.draw();
         gameChat.render(sb);
+        status.render(sb);
 
         sb.begin();
         font.draw(sb , "fps: " + Gdx.graphics.getFramesPerSecond(),stage.getWidth()-60, stage.getHeight()-10);
