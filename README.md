@@ -7,7 +7,7 @@ Currently throws "WARNING: An illegal reflective access operation has occurred",
 when the java version used is >8. This has no effect on function or performance, and is just a warning.
 
 
-##How to run
+## How to run
 1. ensure all dependencies are met: ```$ mvn install```
 2. build the package: ```$ mvn package```
 3. run the server: ```$ java -jar target/Server.jar```
