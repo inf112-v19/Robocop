@@ -54,5 +54,24 @@ Frvær: Sverre, jobber med en stor innlveringsoppgave i et annet fag.
 2.Flere møter\
 3.Flere cards på project-boardet
 
+## Deloppgave 2: krav
+**Pressisering av krav fra kunden, hva blir de faktiske oppgavene?**\
+Trenger grunnleggende og fungerene mulitiplayer.\
+Bevegelse i roboter.\
+Logg in meny, snakkeboks og animert robot.\
+Klassediagram.\
+Alle kravene til nå har blitt fullført. 
 
+**Teamets prioritering av oppgavene**\
+Prioritener er å fullføre alle kravene.
 
+**Hvordan vil dere verifisere at kravene er oppfyllt?**\ 
+For å verifiere at kravene er oppfyllt tenker vi at alt skal fungere slik som det skal. 
+
+**Oppdatere hvilke krav dere har prioritert?**\
+1.Bruke spillkort\
+2.Backup\
+Vi har jobbet med kommunikasjon mellom flere spillere, roboter som eiges av en spiller, vi har også ordnet med bevegelse til roboter. Har også ordnet med meny, snakkeboks og animert robot. Klassediagram er også ordnet. 
+
+## Deloppgave 4: krav
+**Legg inn klassediagram**
