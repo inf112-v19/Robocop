@@ -1,14 +1,10 @@
 package inf112.skeleton.server.WorldMap.entity;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.server.Server;
-import inf112.skeleton.server.WorldMap.TileDefinition;
+import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.card.Card;
 
 import java.util.LinkedList;

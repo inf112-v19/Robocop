@@ -1,4 +1,4 @@
-package inf112.skeleton.server.WorldMap;
+package inf112.skeleton.common.specs;
 
 import java.util.HashMap;
 

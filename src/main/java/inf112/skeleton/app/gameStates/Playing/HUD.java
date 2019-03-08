@@ -52,7 +52,9 @@ public class HUD {
 
         gameChat = new ScrollableTextbox(100,inputMultiplexer, channel);
         gameChat.push(new ChatMessagePacket("Welcome to RoboRally. Hope you enjoy this game -RoboCop"));
-
+        gameChat.push(new ChatMessagePacket("[INFO]: Available commands: "));
+        gameChat.push(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
+        gameChat.push(new ChatMessagePacket("[INFO]:     \"!players\""));
         stage.addActor(to_mainMenu);
 
         status = new Status(gsm,inputMultiplexer,channel);

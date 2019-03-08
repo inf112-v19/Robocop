@@ -14,9 +14,9 @@ import inf112.skeleton.common.packet.MovementPacket;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.PlayerInitPacket;
 import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.TileDefinition;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,7 +43,7 @@ public abstract class GameBoard {
 
         }
         for (Entity entity : entities) {
-            entity.renderName(batch);
+            entity.renderName(batch, camera.zoom);
 
         }
     }

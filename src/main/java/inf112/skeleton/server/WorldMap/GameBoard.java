@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.card.CardMove;
 import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Entity;
 
 import java.util.ArrayList;

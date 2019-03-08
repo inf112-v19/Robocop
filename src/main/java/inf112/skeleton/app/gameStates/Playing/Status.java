@@ -67,12 +67,12 @@ public class Status {
         Drawable d;
 
         d =  new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("status_Life.png"))));
+                new Texture(Gdx.files.internal("graphics/ui/status_Life.png"))));
         style_Lives = new TextButton.TextButtonStyle(d,d,d,font);
         style_Lives.fontColor = Color.BLACK;
 
         d =  new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("status_DamageNoExclSquished.png"))));
+                new Texture(Gdx.files.internal("graphics/ui/status_DamageNoExclSquished.png"))));
         style_Damage = new TextButton.TextButtonStyle(d,d,d,font);
         style_Damage.fontColor = Color.BLACK;
 
