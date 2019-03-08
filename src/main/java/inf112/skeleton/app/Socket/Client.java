@@ -25,9 +25,6 @@ public class Client {
                         Lwjgl3ApplicationConfiguration application = new Lwjgl3ApplicationConfiguration();
                         application.setWindowedMode(RoboRally.WIDTH, RoboRally.HEIGHT);
                         application.setTitle(RoboRally.TITLE);
-                        //cfg.title = RoboRally.TITLE;
-                        //cfg.width = RoboRally.WIDTH;
-                        //cfg.height = RoboRally.HEIGHT;
                         game.nioWorkerGroup = group;
                         new Lwjgl3Application(game, application);
                         game.channel.closeFuture();
