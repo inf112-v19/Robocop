@@ -1,13 +1,9 @@
 package inf112.skeleton.app.GUI;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -16,34 +12,26 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.gameStates.GameStateManager;
-import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import io.netty.channel.Channel;
 
 import java.util.LinkedList;
 
 import static inf112.skeleton.app.card.CardMove.GREY;
-import static inf112.skeleton.app.card.CardMove.None;
 
 public class PlayerDeck {
-    Stage stage, altStage;
-    Table chooseFrom, chooseTo;
+    private GameStateManager gsm;
+    private InputMultiplexer inputMultiplexer;
+    private Channel channel;
 
-    GameStateManager gsm;
-    InputMultiplexer inputMultiplexer;
-    Channel channel;
+    private Stage stage, altStage;
+    private Table chooseFrom, chooseTo;
+    private LinkedList<ImageButton> chooseFromButtons, chooseToButtons, greyButtons;
+    private Drawable greyCardDrawable = new Card(0,GREY).getDrawable();
+    private TextButton btn_chooseCards, btn_done;
 
+    private int numberOfChosenButtons;
 
-    LinkedList<ImageButton> chooseFromButtons, chooseToButtons, greyButtons;
-    int numberOfChosenButtons;
-
-    Drawable greyCardDrawable = new Card(0,GREY).getDrawable();
-
-
-    TextButton btn_chooseCards, btn_done;
-
-
-
-    final int   numCardsFrom = 9,
+    private final int   numCardsFrom = 9,
                 numCardsTo = 5,
                 cardWidth = 110,
                 cardHeight = (int)(cardWidth * 1.386);
@@ -80,7 +68,6 @@ public class PlayerDeck {
                 swapStages();
             }
         });
-
 
         ImageButton tmpButton;
 
@@ -121,23 +108,18 @@ public class PlayerDeck {
 
         chooseTo = new Table();
         chooseTo.setSize(numCardsTo*(cardWidth - 8 * 2), cardHeight - 8 * 2);
-
         chooseTo.setPosition(stage.getViewport().getScreenWidth()-chooseTo.getWidth()-7, 2);
-
-        updateDisplays();
-
-
-
-
 
         stage.addActor(chooseFrom);
         stage.addActor(chooseTo);
         altStage.addActor(btn_chooseCards);
 
         inputMultiplexer.addProcessor(stage);
+
+        updateDisplays();
     }
 
-    public void swapStages() {
+    private void swapStages() {
         Stage tmpStage = stage;
         stage = altStage;
         altStage = tmpStage;
@@ -146,7 +128,7 @@ public class PlayerDeck {
         inputMultiplexer.addProcessor(stage);
     }
 
-    public void updateDisplays() {
+    private void updateDisplays() {
         chooseFrom.clearChildren();
         chooseTo.clearChildren();
 
