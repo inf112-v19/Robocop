@@ -36,7 +36,7 @@ public class Card {
             drawables = new HashMap<>();
             for (CardMove move : CardMove.values())
                 drawables.put(move, new TextureRegionDrawable(new TextureRegion(
-                        new Texture(Gdx.files.internal("cards/" + move.name() + ".png")))));
+                        new Texture(Gdx.files.internal("graphics/ui/cards/" + move.name() + ".png")))));
         }
         return drawables.get(type);
     }
