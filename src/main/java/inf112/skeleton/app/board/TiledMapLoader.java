@@ -16,7 +16,7 @@ public class TiledMapLoader extends GameBoard {
 
     public TiledMapLoader() {
         super();
-        tiledMap = new TmxMapLoader().load("board/Board.tmx");
+        tiledMap = new TmxMapLoader().load("board/Cross.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
     }
