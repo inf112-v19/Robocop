@@ -3,7 +3,7 @@ package inf112.skeleton.app.gameStates.Playing;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import inf112.skeleton.app.Action.InputContainer;
 import inf112.skeleton.app.RoboRally;
@@ -27,7 +27,7 @@ public class State_Playing extends GameState {
     public State_Playing(GameStateManager gsm, Channel channel) {
         super(gsm, channel);
         this.channel = channel;
-        viewport = new ExtendViewport(WIDTH,HEIGHT, camera);
+        viewport = new FillViewport(WIDTH,HEIGHT, camera);
         camera.setToOrtho(false, WIDTH, HEIGHT);
         camera.update();
 
