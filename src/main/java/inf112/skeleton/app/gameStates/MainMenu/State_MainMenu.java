@@ -108,7 +108,7 @@ public class State_MainMenu extends GameState {
         loginStatus = NO_RESPONSE_YET;
         channel.writeAndFlush(packetData+"\r\n");
 
-        // Wait until a response is given by the ChatLoginHandler
+        // Wait until a response is given by the GameSocketHandler
         long i = 0, j = 1;
         while(loginStatus == NO_RESPONSE_YET) {
             try {

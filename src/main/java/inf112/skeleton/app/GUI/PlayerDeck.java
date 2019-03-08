@@ -70,7 +70,7 @@ public class PlayerDeck {
             }
         });
 
-        // Wait until a the player is initialized by the ChatLoginHandler
+        // Wait until a the player is initialized by the GameSocketHandler
         long msWaited = 100, totalWaited = 0;
         Card[] cards;
         while(true) {
