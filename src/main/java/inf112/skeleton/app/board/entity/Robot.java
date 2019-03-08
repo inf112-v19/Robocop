@@ -179,10 +179,11 @@ public class Robot extends Entity {
      * @param batch
      */
     @Override
-    public void renderName(SpriteBatch batch) {
+    public void renderName(SpriteBatch batch, float scale) {
         final GlyphLayout layout = new GlyphLayout(font, player.name);
         final float fontX = position[0] + (64 - layout.width) / 2;
         font.setColor(Color.RED);
-        font.draw(batch, player.name, fontX, position[1] + 78);
+        font.getData().setScale(scale);
+        font.draw(batch, player.name, fontX, position[1] + (78+(10*scale-1)-10));
     }
 }

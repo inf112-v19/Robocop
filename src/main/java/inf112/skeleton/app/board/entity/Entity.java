@@ -83,5 +83,5 @@ public abstract class Entity {
         return type.getHeight();
     }
 
-    public abstract void renderName(SpriteBatch batch);
+    public abstract void renderName(SpriteBatch batch, float scale);
 }

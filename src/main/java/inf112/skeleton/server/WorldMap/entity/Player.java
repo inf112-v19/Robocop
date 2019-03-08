@@ -8,7 +8,7 @@ import inf112.skeleton.common.packet.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.WorldMap.GameBoard;
-import inf112.skeleton.server.WorldMap.TileDefinition;
+import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
