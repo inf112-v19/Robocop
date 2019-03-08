@@ -1,7 +1,5 @@
 package inf112.skeleton.app.gameStates.MainMenu;
 
-// Source: https://youtu.be/24p1Mvx6KFg
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.google.gson.Gson;
-import inf112.skeleton.app.ChatGUI;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
@@ -31,9 +28,9 @@ public class State_MainMenu extends GameState {
     private Gson gson;
     public LoginResponseStatus loginStatus;
 
-    InputMultiplexer inputMultiplexer;
-    TextField inputField;
-    String username;
+    private InputMultiplexer inputMultiplexer;
+    private TextField usernameInputField;
+    private String username;
 
     public State_MainMenu(GameStateManager gsm, Channel channel) {
         super(gsm, channel);
@@ -47,13 +44,13 @@ public class State_MainMenu extends GameState {
         inputMultiplexer = new InputMultiplexer();
         Gdx.input.setInputProcessor(inputMultiplexer);
 
+        // Create main menu
         menu = new Menu();
         menu.add("Play", new Action() {
             public void invoke() {
-                playGame("");
+                playGame();
             }
         });
-
         menu.add("Settings", new Action() {
             public void invoke() {
                 System.out.println("Clicked settings-button");
@@ -65,32 +62,35 @@ public class State_MainMenu extends GameState {
             }
         });
 
+        // Create an input-field for specifying username.
+        // 1. Create skin
+        Skin usernameInputSkin = new Skin(Gdx.files.internal("graphics/ui/uiskin.json"));
 
-        Skin inputFieldSkin = new Skin(Gdx.files.internal("graphics/ui/uiskin.json"));
+        // 2. Create text-box informing the user to type their username
+        TextField usernameFixedLabel = new TextField("Username", usernameInputSkin);
+        usernameFixedLabel.setDisabled(true);
 
-        inputField = new TextField("", inputFieldSkin);
-        inputField.setMessageText("Username");
-        inputField.setTextFieldListener(new TextField.TextFieldListener() {
+        // 3. Create an input-field which updates the set username for every key typed.
+        usernameInputField = new TextField("", usernameInputSkin);
+        usernameInputField.setMessageText("Username");
+        usernameInputField.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
-                username = inputField.getText();
+                username = usernameInputField.getText();
                 if ((key == '\r' || key == '\n')) {
                     menu.stage.setKeyboardFocus(null);
-                    playGame("");
+                    playGame();
                 }
             }
         });
 
-
+        // 4. Put the text-box and input field into a table for easy position/size management.
         Table usernameTab = new Table();
-        TextField   usernameCellLeft = new TextField("Username: ", inputFieldSkin);
-        usernameCellLeft.setDisabled(true);
 
-        usernameTab.add(usernameCellLeft).width(100).height(40);
-        usernameTab.add(inputField).width(200).height(40);
+        usernameTab.add(usernameFixedLabel).width(100).height(40);
+        usernameTab.add(usernameInputField).width(200).height(40);
         usernameTab.row();
 
-        //usernameTab.setFillParent(true);
         usernameTab.center();
         usernameTab.setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2+112);
 
@@ -98,15 +98,16 @@ public class State_MainMenu extends GameState {
         gson = new Gson();
     }
 
-    protected void playGame(String ip) {
-        // TODO: Validate IP and connect
-        System.out.println(ip);
+    // Send login request to server and change game-state if login successful
+    protected void playGame() {
         String packetData = gson.toJson(new Packet(0, new LoginPacket(username, "oiajwdioj")));
         System.out.println("sending: " + packetData);
 
+        // Send login request
         loginStatus = NO_RESPONSE_YET;
         channel.writeAndFlush(packetData+"\r\n");
 
+        // Wait until a response is given by the ChatLoginHandler
         long i = 0, j = 1;
         while(loginStatus == NO_RESPONSE_YET) {
             try {
@@ -118,6 +119,8 @@ public class State_MainMenu extends GameState {
             } catch (InterruptedException e) {
             }
         }
+
+        // Change game-state if successful login.
         switch(loginStatus) {
             case LOGIN_SUCCESS:
                 RoboRally.username = username;
