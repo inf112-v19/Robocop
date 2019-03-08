@@ -28,12 +28,12 @@ public class ChatLoginHandler extends SimpleChannelInboundHandler<String> {
 
 
     public void handleIncomingPacket(JsonObject jsonObject) throws Exception {
-        System.out.println("Handling incomming packet...");
+        System.out.println("Handling incoming packet...");
         OutgoingPacket packetId = OutgoingPacket.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
             case LOGINRESPONSE:
                 GameState currentGameState = game.gsm.peek();
-                if (currentGameState != null && currentGameState instanceof State_MainMenu) {
+                if (currentGameState instanceof State_MainMenu) {
                     // Read login-packet response and update the loginStatus variable in main menu.
                     ((State_MainMenu) currentGameState).loginStatus = LoginResponseStatus.values()[
                             gson.fromJson(jsonObject.get("data"), LoginResponsePacket.class).getStatusCode()];

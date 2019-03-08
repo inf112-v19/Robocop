@@ -4,17 +4,20 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.app.card.Card;
+import inf112.skeleton.app.card.CardDeck;
 import inf112.skeleton.common.packet.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Directions;
 
 import static inf112.skeleton.common.specs.Directions.*;
 import static inf112.skeleton.common.specs.Directions.values;
 public class Player {
-    String name;
+    public String name;
     Robot robot = null;
     Vector2 initialPos;
     int initalHp;
     Directions initalDirection;
+    public Card[] cards;
 
     /**
      * Player has its own class, which owns a robot, to avoid rendring on socket thread.
@@ -28,6 +31,12 @@ public class Player {
         this.initalHp = hp;
         this.initialPos = pos;
         this.initalDirection = directions;
+
+        // Tmp...
+        CardDeck deck = new CardDeck();
+        this.cards = new Card[9];
+        for(int i = 0 ; i < 9 ; i++)
+            this.cards[i] = deck.dealCard();
     }
 
     /**
