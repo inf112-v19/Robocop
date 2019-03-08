@@ -1,7 +1,5 @@
 package inf112.skeleton.app.gameStates.MainMenu;
 
-// Source: https://youtu.be/24p1Mvx6KFg
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -64,13 +62,12 @@ public class State_MainMenu extends GameState {
             }
         });
 
-        // Create a input-field for specifying username.
-
+        // Create an input-field for specifying username.
         // 1. Create skin
         Skin usernameInputSkin = new Skin(Gdx.files.internal("graphics/ui/uiskin.json"));
 
-        // 2. Create text-box informing the user to type in their username
-        TextField   usernameFixedLabel = new TextField("Username: ", usernameInputSkin);
+        // 2. Create text-box informing the user to type their username
+        TextField usernameFixedLabel = new TextField("Username", usernameInputSkin);
         usernameFixedLabel.setDisabled(true);
 
         // 3. Create an input-field which updates the set username for every key typed.
@@ -103,7 +100,7 @@ public class State_MainMenu extends GameState {
 
     // Send login request to server and change game-state if login successful
     protected void playGame() {
-        // Create login request
+        // Create login request packet
         String packetData = gson.toJson(new Packet(0, new LoginPacket(username, "oiajwdioj")));
         System.out.println("sending: " + packetData);
 
@@ -124,7 +121,7 @@ public class State_MainMenu extends GameState {
             }
         }
 
-        // Change gamestate if successful login.
+        // Change game-state if successful login.
         switch(loginStatus) {
             case LOGIN_SUCCESS:
                 RoboRally.username = username;

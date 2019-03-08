@@ -7,5 +7,7 @@ public enum CardMove {
     FORWARD1,
     FORWARD2,
     FORWARD3,
-    BACKWARD1
+    BACKWARD1,
+    GREY,
+    None,
 }
