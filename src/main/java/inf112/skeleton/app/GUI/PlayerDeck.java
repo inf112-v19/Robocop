@@ -166,5 +166,8 @@ public class PlayerDeck {
     public void render(Batch sb) {
         stage.draw();
     }
-    public void resize(int width, int height) {};
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height);
+        altStage.getViewport().update(width, height);
+    };
 }
