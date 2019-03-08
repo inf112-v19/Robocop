@@ -72,6 +72,3 @@ For å verifiere at kravene er oppfyllt tenker vi at alt skal fungere slik som d
 1.Bruke spillkort\
 2.Backup\
 Vi har jobbet med kommunikasjon mellom flere spillere, roboter som eiges av en spiller, vi har også ordnet med bevegelse til roboter. Har også ordnet med meny, snakkeboks og animert robot. Klassediagram er også ordnet. 
-
-## Deloppgave 4: krav
-**Legg inn klassediagram**
