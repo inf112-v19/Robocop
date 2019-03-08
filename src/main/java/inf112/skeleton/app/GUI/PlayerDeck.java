@@ -15,6 +15,7 @@ import inf112.skeleton.app.gameStates.GameStateManager;
 import io.netty.channel.Channel;
 
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 
 import static inf112.skeleton.app.card.CardMove.GREY;
 
@@ -69,10 +70,28 @@ public class PlayerDeck {
             }
         });
 
+        // Wait until a the player is initialized by the ChatLoginHandler
+        long msWaited = 100, totalWaited = 0;
+        Card[] cards;
+        while(true) {
+            try {
+                cards = RoboRally.gameBoard.getPlayer(RoboRally.username.toLowerCase()).cards;
+                break;
+            } catch (NullPointerException npe) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(msWaited);
+                    totalWaited += msWaited;
+                    msWaited <<= 1;
+                    System.out.println("PlayerDeck <init>: Waiting until player initialized... (waited " + (totalWaited / 1000f) + " seconds)");
+                } catch (InterruptedException ie) {
+                }
+            }
+        }
+
         ImageButton tmpButton;
 
         // Initialize the deck of cards which may be chosen.
-        for(Card card : RoboRally.gameBoard.getPlayer(RoboRally.username).cards) {
+        for(Card card : cards) {
             tmpButton = new ImageButton(card.getDrawable());
             tmpButton.addListener(new ChangeListener() {
                 @Override
