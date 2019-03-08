@@ -207,4 +207,8 @@ public abstract class GameBoard {
     public Player getPlayer(String name) {
         return this.players.get(name);
     }
+
+    public Player[] getAllPlayers() {
+        return (Player[]) players.values().toArray();
+    }
 }
