@@ -82,13 +82,13 @@ public class ScrollableTextbox {
         display.setDebug(false);
         display.setSize(tableWidth, tableHeight);
         display.background(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("chatStyleOpac.png")))));
+                new Texture(Gdx.files.internal("graphics/ui/chatStyleOpac.png")))));
         stage.addActor(display);
         updateDisplay();
     }
 
     private void init_inputField() {
-        inputField = new TextField("", new Skin(Gdx.files.internal("uiskin.json")));
+        inputField = new TextField("", new Skin(Gdx.files.internal("graphics/ui/uiskin.json")));
         inputField.setMessageText(RoboRally.username + ": ");
         inputField.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
@@ -123,9 +123,9 @@ public class ScrollableTextbox {
 
     private void init_scrollButtons() {
         button_up = new ImageButton(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("triangleBlack.png")))));
+                new Texture(Gdx.files.internal("graphics/ui/triangleBlack.png")))));
         button_down = new ImageButton(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("triangleBlackRot.png")))));
+                new Texture(Gdx.files.internal("graphics/ui/triangleBlackRot.png")))));
 
         button_up.addListener(
                 new ChangeListener() {

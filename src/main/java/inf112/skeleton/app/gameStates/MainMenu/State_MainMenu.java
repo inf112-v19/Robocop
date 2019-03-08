@@ -66,7 +66,7 @@ public class State_MainMenu extends GameState {
         });
 
 
-        Skin inputFieldSkin = new Skin(Gdx.files.internal("uiskin.json"));
+        Skin inputFieldSkin = new Skin(Gdx.files.internal("graphics/ui/uiskin.json"));
 
         inputField = new TextField("", inputFieldSkin);
         inputField.setMessageText("Username");

@@ -1,5 +1,6 @@
 package inf112.skeleton.server.WorldMap;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -15,7 +16,7 @@ public class TiledMapLoader extends GameBoard {
 
     public TiledMapLoader() {
         super();
-        tiledMap = new TmxMapLoader().load("Board.tmx");
+        tiledMap = new TmxMapLoader().load("board/Board.tmx");
 //        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
     }

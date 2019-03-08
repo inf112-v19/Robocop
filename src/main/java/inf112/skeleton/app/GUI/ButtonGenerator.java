@@ -13,7 +13,7 @@ public class ButtonGenerator {
     private static final Color  fontColorNormal     = new Color(0f, 0f, 0f, 1f),
             fontColorPressed    = new Color(30f, 30f, 30f, 1f);
     private static final float  fontScale           = 3f;
-    private static final String buttonStyleLink = "textButtonStyle.png";
+    private static final String buttonStyleLink = "graphics/ui/textButtonStyle.png";
     Drawable textButtonBackground;
     TextButton.TextButtonStyle textButtonStyle;
     BitmapFont font;
