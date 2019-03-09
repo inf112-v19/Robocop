@@ -9,10 +9,10 @@ import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
-public class ChatLoginInitializer extends ChannelInitializer<SocketChannel> {
+public class GameSocketInitializer extends ChannelInitializer<SocketChannel> {
     private RoboRally game;
 
-    public ChatLoginInitializer(RoboRally game){
+    public GameSocketInitializer(RoboRally game){
         this.game = game;
     }
 
@@ -26,7 +26,7 @@ public class ChatLoginInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("decoder", new StringDecoder());
         pipeline.addLast("encoder", new StringEncoder());
 
-        pipeline.addLast("handler", new ChatLoginHandler(game));
+        pipeline.addLast("handler", new GameSocketHandler(game));
     }
 
 }
