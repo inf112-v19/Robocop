@@ -3,6 +3,7 @@ package inf112.skeleton.server.user;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import io.netty.channel.Channel;
@@ -60,7 +61,7 @@ public class User {
     }
 
     public void sendPacket(Packet data){
-        sendString(RoboCopServerHandler.gson.toJson(data));
+        sendString(Tools.GSON.toJson(data));
     }
     public String getPassword() {
         return password;

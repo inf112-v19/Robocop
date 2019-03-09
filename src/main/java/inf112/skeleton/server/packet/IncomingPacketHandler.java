@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
+import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.login.UserLogging;
 import inf112.skeleton.server.user.User;
@@ -22,7 +23,7 @@ public class IncomingPacketHandler {
         IncomingPacket packetId = IncomingPacket.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
             case LOGIN:
-                LoginPacket loginpkt = handler.gson.fromJson(jsonObject.get("data"), LoginPacket.class);
+                LoginPacket loginpkt = Tools.GSON.fromJson(jsonObject.get("data"), LoginPacket.class);
                 User loggingIn = UserLogging.login(loginpkt, incoming);
                 if (loggingIn != null) {
                     if (!handler.loggedInPlayers.contains(loggingIn)) {
@@ -37,7 +38,7 @@ public class IncomingPacketHandler {
                         LoginResponsePacket loginResponsePacket =
                                 new LoginResponsePacket(status.ordinal(), loggingIn.name, "Success");
                         Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
-                        incoming.writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
+                        incoming.writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
                         loggingIn.setLoggedIn(true);
 
                         loggingIn.player.sendInit();
@@ -55,7 +56,7 @@ public class IncomingPacketHandler {
                 break;
             case CHAT_MESSAGE:
 
-                ChatMessagePacket msgPacket = handler.gson.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
+                ChatMessagePacket msgPacket = Tools.GSON.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
                 User messagingUser = handler.getEntityFromLoggedIn(incoming);
                 if (msgPacket.getMessage().startsWith("!")) {
                     String[] command = msgPacket.getMessage().substring(1).split(" ");
@@ -66,7 +67,7 @@ public class IncomingPacketHandler {
                     Packet responsePacket = new Packet(chatMessage.ordinal(), chatMessagePacket);
 
                     for (User entity : handler.loggedInPlayers) {
-                        entity.getChannel().writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
+                        entity.getChannel().writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
                     }
                 }
                 break;
@@ -121,7 +122,7 @@ public class IncomingPacketHandler {
         Packet responsePacket = new Packet(
                 OutgoingPacket.CHATMESSAGE.ordinal(),
                 new ChatMessagePacket("[SERVER]: " +message));
-        user.getChannel().writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
+        user.getChannel().writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
     }
 
     /**
@@ -137,7 +138,7 @@ public class IncomingPacketHandler {
         LoginResponsePacket loginResponsePacket =
                 new LoginResponsePacket(status.ordinal(), name, "User already logged in");
         Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
-        incoming.writeAndFlush(handler.gson.toJson(responsePacket) + "\r\n");
+        incoming.writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
     }
 
 }

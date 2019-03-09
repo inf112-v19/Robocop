@@ -2,6 +2,10 @@ package inf112.skeleton.server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import inf112.skeleton.common.packet.OutgoingPacket;
+import inf112.skeleton.common.packet.Packet;
+import inf112.skeleton.common.packet.PlayerRemovePacket;
+import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.login.UserLogging;
 import inf112.skeleton.server.packet.IncomingPacketHandler;
 import inf112.skeleton.server.user.User;
@@ -19,7 +23,6 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     public static final Collection<User> loggedInPlayers = new ArrayList<>(); // Users who have logged in
 
 
-    public static Gson gson = new Gson();
     private IncomingPacketHandler incomingPacketHandler = new IncomingPacketHandler();
     GameWorldInstance game;
 
@@ -51,12 +54,15 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
+        OutgoingPacket pktId = OutgoingPacket.REMOVE_PLAYER;
+        PlayerRemovePacket data = new PlayerRemovePacket(Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()));
+        Packet pkt = new Packet(pktId, data);
+        globalMessage("[SERVER] - " + Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()) + " has left the channel!", incoming, true);
         UserLogging.logoff(getEntityFromLoggedIn(incoming)); //Save the user in a json file
         for (User entity : loggedInPlayers) { //looping through all the other users and telling them that this user has left. Also removing the user from the list.
             if (entity.getChannel() == incoming)
                 continue;
-            entity.getChannel().writeAndFlush("[SERVER] - " + Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()) + " has left the channel! \r\n");
-            entity.getChannel().writeAndFlush("listremove:" + Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()) + "\r\n");
+            entity.sendPacket(pkt);
         }
         /**
          * Removing the user from the collections
@@ -132,7 +138,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
         if (arg1.startsWith("{")) {
 //                GsonBuilder gsonBuilder = new GsonBuilder();
 //                gsonBuilder.registerTypeAdapter(PacketReciever.class, new PacketTypeAdapter());
-            JsonObject jsonObject = gson.fromJson(arg1, JsonObject.class);
+            JsonObject jsonObject = Tools.GSON.fromJson(arg1, JsonObject.class);
             incomingPacketHandler.handleIncomingPacket(incoming, jsonObject, this);
             return;
         }
