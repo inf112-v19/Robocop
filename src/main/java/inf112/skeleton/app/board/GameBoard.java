@@ -9,10 +9,7 @@ import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.board.entity.Robot;
 import inf112.skeleton.app.card.Card;
 import inf112.skeleton.app.card.CardMove;
-import inf112.skeleton.common.packet.IncomingPacket;
-import inf112.skeleton.common.packet.MovementPacket;
-import inf112.skeleton.common.packet.Packet;
-import inf112.skeleton.common.packet.PlayerInitPacket;
+import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.TileDefinition;
 
@@ -57,7 +54,9 @@ public abstract class GameBoard {
             entity.update();
 
         }
+    }
 
+    public void recieveCard(CardPacket packet) {
 
     }
 

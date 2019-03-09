@@ -6,4 +6,5 @@ public enum OutgoingPacket {
     INIT_ALLPLAYERS, //TODO: IMplement
     CHATMESSAGE,
     PLAYER_UPDATE,
+    CARD_PACKET,
 }

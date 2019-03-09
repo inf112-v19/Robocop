@@ -56,6 +56,10 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 toUpdate.updateRobot(playerUpdate);
                 break;
 
+            case CARD_PACKET:
+                CardPacket packet = CardPacket.parseJSON(jsonObject);
+                RoboRally.gameBoard.recieveCard(packet);
+                break;
             default:
                 System.err.println("Unhandled packet: " + packetId.name());
                 System.out.println("data: " + jsonObject.get("data"));

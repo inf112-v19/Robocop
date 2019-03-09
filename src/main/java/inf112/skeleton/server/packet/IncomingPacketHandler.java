@@ -70,6 +70,9 @@ public class IncomingPacketHandler {
                     }
                 }
                 break;
+            case MOVEMENT_ACTION:
+
+                break;
             default:
                 System.err.println("Unhandled packet: " + packetId.name());
                 System.out.println("data: " + jsonObject.get("data"));
