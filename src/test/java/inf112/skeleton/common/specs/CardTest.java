@@ -1,4 +1,4 @@
-package inf112.skeleton.app.card;
+package inf112.skeleton.common.specs;
 
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
@@ -8,7 +8,7 @@ import java.util.Random;
 
 import static inf112.skeleton.common.specs.CardType.values;
 
-public class cardTest {
+public class CardTest {
     Random random;
     {
         random = new Random();
@@ -16,7 +16,7 @@ public class cardTest {
 
     @Test
     public void creatingCardAndGettingValuesBack() {
-        for(int i = 0; i < 100000; i++) {
+        for(int i = 0; i < 1000; i++) {
             int randomPriorityInt = random.nextInt();
             CardType type = values()[random.nextInt(values().length)];
             Card card = new Card(randomPriorityInt, type);
@@ -28,7 +28,7 @@ public class cardTest {
 
     @Test
     public void cardToStringMethod() {
-        for(int i = 0; i < 100000; i++) {
+        for(int i = 0; i < 1000; i++) {
             int randomPriorityInt = random.nextInt();
             CardType type = values()[random.nextInt(values().length)];
             Card card = new Card(randomPriorityInt, type);
