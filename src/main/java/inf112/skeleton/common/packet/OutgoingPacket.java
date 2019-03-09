@@ -8,4 +8,5 @@ public enum OutgoingPacket {
     CHATMESSAGE,
     PLAYER_UPDATE,
     CARD_PACKET,
+    CARD_HAND_PACKET,
 }

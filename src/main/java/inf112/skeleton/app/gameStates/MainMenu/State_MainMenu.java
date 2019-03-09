@@ -101,6 +101,8 @@ public class State_MainMenu extends GameState {
         // Create login request packet
         String packetData = Tools.GSON.toJson(new Packet(0, new LoginPacket(username, "oiajwdioj")));
         System.out.println("sending: " + packetData);
+        RoboRally.username = username;
+
 
         // Send login request
         loginStatus = NO_RESPONSE_YET;
@@ -122,11 +124,11 @@ public class State_MainMenu extends GameState {
         // Change game-state if successful login.
         switch(loginStatus) {
             case LOGIN_SUCCESS:
-                RoboRally.username = username;
                 gsm.set(new State_Playing(gsm, channel));
                 break;
             case ALREADY_LOGGEDIN:
                 System.out.println("User already logged in");
+                RoboRally.username = null;
                 break;
         }
     }

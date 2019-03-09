@@ -1,15 +1,12 @@
 package inf112.skeleton.app.Socket;
 
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
-import inf112.skeleton.app.gameStates.Playing.HUD;
-import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
@@ -57,7 +54,11 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
 
             case CARD_PACKET:
                 CardPacket packet = CardPacket.parseJSON(jsonObject);
-                RoboRally.gameBoard.recieveCard(packet);
+                RoboRally.gameBoard.receiveCard(packet);
+                break;
+            case CARD_HAND_PACKET:
+                CardHandPacket cardHandPacket = Tools.GSON.fromJson(jsonObject.get("data"), CardHandPacket.class);
+                RoboRally.gameBoard.receiveCardHand(cardHandPacket);
                 break;
             case REMOVE_PLAYER:
                 PlayerRemovePacket playerRemovePacket = PlayerRemovePacket.parseJSON(jsonObject);
