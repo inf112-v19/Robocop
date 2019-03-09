@@ -3,6 +3,7 @@ package inf112.skeleton.common.packet;
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.utility.Tools;
+import inf112.skeleton.common.specs.Card;
 
 public class CardPacket implements PacketData {
     int priority;
@@ -11,6 +12,11 @@ public class CardPacket implements PacketData {
     public CardPacket(int priority, CardType type) {
         this.priority = priority;
         this.type = type;
+    }
+
+    public CardPacket(Card card) {
+        this.priority = card.getPriority();
+        this.type = card.getType();
     }
 
     public static CardPacket parseJSON(JsonObject jsonObject) {

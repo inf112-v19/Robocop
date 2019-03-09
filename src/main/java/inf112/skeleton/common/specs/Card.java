@@ -1,24 +1,25 @@
-package inf112.skeleton.app.card;
+package inf112.skeleton.common.specs;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import inf112.skeleton.common.specs.CardType;
 
 import java.util.HashMap;
 
 public class Card {
     private int priority;
-    private CardMove type;
-    private HashMap<CardMove, Drawable> drawables;
+    private CardType type;
+    private HashMap<CardType, Drawable> drawables;
 
-    public Card(int priority, CardMove type) {
+    public Card(int priority, CardType type) {
         this.priority = priority;
         this.type = type;
     }
 
-    public CardMove getType() {
+    public CardType getType() {
         return type;
     }
 
@@ -34,7 +35,7 @@ public class Card {
         // Fetch all card-textures if unfetched
         if (drawables == null) {
             drawables = new HashMap<>();
-            for (CardMove move : CardMove.values())
+            for (CardType move : CardType.values())
                 drawables.put(move, new TextureRegionDrawable(new TextureRegion(
                         new Texture(Gdx.files.internal("graphics/ui/cards/" + move.name() + ".png")))));
         }

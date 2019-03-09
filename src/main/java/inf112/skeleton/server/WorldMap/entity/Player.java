@@ -7,12 +7,13 @@ import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.common.specs.TileDefinition;
+import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
 
-import static inf112.skeleton.common.specs.CardType.FORWARD1;
 import static inf112.skeleton.common.specs.Directions.*;
+import static inf112.skeleton.server.GameWorldInstance.deck;
 
 
 public class Player {
@@ -28,9 +29,10 @@ public class Player {
 
 
     private int delayMove = 400;
-    private int delayMessage = 4000;
+    private int delayMessage = 1000;
     private long timeInit;
     private long timeMoved = 0;
+    boolean shouldSendCards = true;
 
     public Player(String name, Vector2 pos, int hp, Directions directions, User owner) {
         this.name = name;
@@ -67,19 +69,33 @@ public class Player {
     public void update() {
         if (processMovement(System.currentTimeMillis())) {
         }
-        if ((System.currentTimeMillis() - this.timeInit) >= this.delayMessage) {
+        if ((System.currentTimeMillis() - this.timeInit) >= this.delayMessage && shouldSendCards) {
             this.timeInit = System.currentTimeMillis();
-            sendCards();
+            sendCardHand();
+            shouldSendCards = false;
         }
     }
 
-    public void sendCards() {
+    public void sendCard() {
         OutgoingPacket packetId = OutgoingPacket.CARD_PACKET;
-        CardPacket data = new CardPacket(10, FORWARD1);
+        CardPacket data = new CardPacket(deck.dealCard());
+        Packet packet = new Packet(packetId, data);
+
+        System.out.println("sending packet " + packet.toString());
+        owner.sendPacket(packet);
+
+    }
+
+    public void sendCardHand() {
+        OutgoingPacket packetId = OutgoingPacket.CARD_HAND_PACKET;
+        Card[] sendDeck = new Card[9];
+        for(int i = 0; i < sendDeck.length; i++) {
+            sendDeck[i] = deck.dealCard();
+        }
+        CardHandPacket data = new CardHandPacket(sendDeck);
         Packet packet = new Packet(packetId, data);
 
         owner.sendPacket(packet);
-
     }
 
 

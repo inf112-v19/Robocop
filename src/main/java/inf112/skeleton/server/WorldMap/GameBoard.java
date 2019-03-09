@@ -2,8 +2,6 @@ package inf112.skeleton.server.WorldMap;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import inf112.skeleton.app.card.Card;
-import inf112.skeleton.app.card.CardMove;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Entity;
@@ -58,34 +56,10 @@ public abstract class GameBoard {
         }
     }
 
-    public void moveEntityCard(Entity e, Card card) throws NoSuchElementException {
-        if(entities.contains(e)) {
-            CardMove type = card.getType();
-            if(type == CardMove.ROTATERIGHT) {
-                e.rotateRight();
-            } else if(type == CardMove.ROTATELEFT) {
-                e.rotateLeft();
-            } else if(type == CardMove.ROTATE180) {
-                e.rotate180();
-            } else if(type == CardMove.FORWARD1) {
-                e.moveForwardBackward(1);
-            } else if(type == CardMove.FORWARD2) {
-                e.moveForwardBackward(2);
-            } else if(type == CardMove.FORWARD3) {
-                e.moveForwardBackward(3);
-            } else if(type == CardMove.BACKWARD1) {
-                e.moveForwardBackward(-1);
-            }
-        } else {
-            throw new NoSuchElementException("Entity does not exist on this gameboard");
-        }
-    }
-
     public abstract void dispose();
 
     /**
      * Gets a tile by pixel position within the board, at a specified layer.
-     * 指定したレイヤーのボード上のピクセル位置を使ってタイルを見つけます。
      *
      * @param layer
      * @param x
@@ -102,7 +76,6 @@ public abstract class GameBoard {
 
     /**
      * Gets a tile at a specified coordinate on the game board.
-     * ボード上の座標を使ってタイルを見つけます。
      *
      * @param layer
      * @param col

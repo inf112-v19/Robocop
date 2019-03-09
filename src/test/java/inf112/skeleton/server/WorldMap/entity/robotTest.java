@@ -2,9 +2,8 @@ package inf112.skeleton.server.WorldMap.entity;
 
 import inf112.skeleton.common.specs.Directions;
 
-import inf112.skeleton.server.card.Card;
+import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.server.card.CardDeck;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Random;
