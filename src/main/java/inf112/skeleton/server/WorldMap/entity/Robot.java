@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.server.Server;
 import inf112.skeleton.common.specs.TileDefinition;
-import inf112.skeleton.server.card.Card;
+import inf112.skeleton.common.specs.Card;
 
 import java.util.LinkedList;
 import java.util.Queue;

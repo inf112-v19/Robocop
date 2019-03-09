@@ -7,5 +7,6 @@ public enum CardType {
     FORWARD1,
     FORWARD2,
     FORWARD3,
-    BACKWARD1
+    BACKWARD1,
+    GREY,
 }
