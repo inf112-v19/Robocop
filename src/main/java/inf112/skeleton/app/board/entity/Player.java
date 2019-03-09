@@ -62,4 +62,9 @@ public class Player {
         robot.updateMovement(update);
     }
 
+
+    public Robot getRobot(){
+        return this.robot;
+    }
+
 }

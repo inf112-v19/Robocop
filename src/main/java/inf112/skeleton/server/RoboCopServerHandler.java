@@ -2,6 +2,7 @@ package inf112.skeleton.server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import inf112.skeleton.common.packet.ChatMessagePacket;
 import inf112.skeleton.common.packet.OutgoingPacket;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.PlayerRemovePacket;
@@ -55,14 +56,17 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
         OutgoingPacket pktId = OutgoingPacket.REMOVE_PLAYER;
-        PlayerRemovePacket data = new PlayerRemovePacket(Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()));
+        PlayerRemovePacket data = new PlayerRemovePacket(getEntityFromLoggedIn(incoming).getName());
         Packet pkt = new Packet(pktId, data);
-        globalMessage("[SERVER] - " + Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()) + " has left the channel!", incoming, true);
+
+        String message = "[SERVER] - " + Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()) + " has left the channel!";
         UserLogging.logoff(getEntityFromLoggedIn(incoming)); //Save the user in a json file
         for (User entity : loggedInPlayers) { //looping through all the other users and telling them that this user has left. Also removing the user from the list.
             if (entity.getChannel() == incoming)
                 continue;
             entity.sendPacket(pkt);
+            entity.sendChatMessage(message);
+            System.out.println("removing player");
         }
         /**
          * Removing the user from the collections

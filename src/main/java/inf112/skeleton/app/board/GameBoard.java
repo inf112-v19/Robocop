@@ -20,8 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class GameBoard {
 
-    protected ArrayList<Entity> entities;
-    protected Map<String, Player> players;
+     protected ArrayList<Entity> entities;
+     protected Map<String, Player> players;
 
 
     public GameBoard() {
@@ -89,34 +89,35 @@ public abstract class GameBoard {
 //            throw new NoSuchElementException("Entity does not exist on this gameboard");
 //        }
     }
-/**
-    public void moveEntityCard(Entity e, Card card) throws NoSuchElementException {
-        if (entities.contains(e)) {
-            System.out.println("Current location: " + e.getX() + " " + e.getY());
-            if (canRobotMove((Robot) e, card)) {
-                CardMove type = card.getType();
-                if (type == CardMove.ROTATERIGHT) {
-                    e.rotateRight();
-                } else if (type == CardMove.ROTATELEFT) {
-                    e.rotateLeft();
-                } else if (type == CardMove.ROTATE180) {
-                    e.rotate180();
-                } else if (type == CardMove.FORWARD1) {
-                    e.moveForwardBackward(1);
-                } else if (type == CardMove.FORWARD2) {
-                    e.moveForwardBackward(2);
-                } else if (type == CardMove.FORWARD3) {
-                    e.moveForwardBackward(3);
-                } else if (type == CardMove.BACKWARD1) {
-                    e.moveForwardBackward(-1);
-                }
-                System.out.println("Moved to location: " + e.getX() + " " + e.getY());
-            }
-        } else {
-            throw new NoSuchElementException("Entity does not exist on this gameboard");
-        }
-    }
-*/
+
+    /**
+     * public void moveEntityCard(Entity e, Card card) throws NoSuchElementException {
+     * if (entities.contains(e)) {
+     * System.out.println("Current location: " + e.getX() + " " + e.getY());
+     * if (canRobotMove((Robot) e, card)) {
+     * CardMove type = card.getType();
+     * if (type == CardMove.ROTATERIGHT) {
+     * e.rotateRight();
+     * } else if (type == CardMove.ROTATELEFT) {
+     * e.rotateLeft();
+     * } else if (type == CardMove.ROTATE180) {
+     * e.rotate180();
+     * } else if (type == CardMove.FORWARD1) {
+     * e.moveForwardBackward(1);
+     * } else if (type == CardMove.FORWARD2) {
+     * e.moveForwardBackward(2);
+     * } else if (type == CardMove.FORWARD3) {
+     * e.moveForwardBackward(3);
+     * } else if (type == CardMove.BACKWARD1) {
+     * e.moveForwardBackward(-1);
+     * }
+     * System.out.println("Moved to location: " + e.getX() + " " + e.getY());
+     * }
+     * } else {
+     * throw new NoSuchElementException("Entity does not exist on this gameboard");
+     * }
+     * }
+     */
     //TODO Fix this borked method.
     private boolean canRobotMove(Robot e, Card card) {
         int curX = (int) e.getX();
@@ -199,11 +200,13 @@ public abstract class GameBoard {
 
 
     public void addPlayer(PlayerInitPacket pkt) {
-        this.players.put(pkt.getName(),new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), Directions.SOUTH));
+        this.players.put(pkt.getName(), new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), Directions.SOUTH));
     }
 
     public void removePlayer(PlayerRemovePacket pkt) {
-        this.players.remove(pkt.getName());
+        Player leavingPlayer = this.getPlayer(pkt.getName());
+        this.entities.remove(leavingPlayer.getRobot());
+        this.players.remove(leavingPlayer);
     }
 
     public Player getPlayer(String name) {
