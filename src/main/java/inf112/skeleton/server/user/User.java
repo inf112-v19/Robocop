@@ -53,6 +53,9 @@ public class User {
         this.name = name;
     }
 
+    public void sendString(String string){
+        getChannel().writeAndFlush( string + "\r\n");
+    }
     public String getPassword() {
         return password;
     }
