@@ -10,14 +10,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import inf112.skeleton.app.RoboRally;
-import inf112.skeleton.app.card.Card;
+import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import io.netty.channel.Channel;
 
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
-import static inf112.skeleton.app.card.CardMove.GREY;
+import static inf112.skeleton.common.specs.CardType.GREY;
 
 public class PlayerDeck {
     private GameStateManager gsm;
@@ -70,12 +70,12 @@ public class PlayerDeck {
             }
         });
 
-        // Wait until a the player is initialized by the ChatLoginHandler
+        // Wait until a the player is initialized by the GameSocketHandler
         long msWaited = 100, totalWaited = 0;
         Card[] cards;
         while(true) {
             try {
-                cards = RoboRally.gameBoard.getPlayer(RoboRally.username.toLowerCase()).cards;
+                cards = RoboRally.gameBoard.myPlayer.cards;
                 break;
             } catch (NullPointerException npe) {
                 try {

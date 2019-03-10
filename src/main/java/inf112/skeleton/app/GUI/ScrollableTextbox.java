@@ -18,12 +18,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.google.gson.Gson;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.ChatMessagePacket;
 import inf112.skeleton.common.packet.IncomingPacket;
-import inf112.skeleton.common.packet.LoginPacket;
 import inf112.skeleton.common.packet.Packet;
+import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
 
 /*
@@ -50,7 +49,6 @@ public class ScrollableTextbox {
 
     int tableWidth = 600,
             tableHeight = 140;
-    Gson gson = new Gson();
     public static ScrollableTextbox textbox = null;
 
 
@@ -98,7 +96,7 @@ public class ScrollableTextbox {
                     if (!inputText.equals("")) {
 //                        push(inputText);
                         Packet packet = new Packet(IncomingPacket.CHAT_MESSAGE.ordinal(), new ChatMessagePacket(inputText));
-                        channel.writeAndFlush(gson.toJson(packet) + "\r\n");
+                        channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
 
                     }
                     inputField.setText("");

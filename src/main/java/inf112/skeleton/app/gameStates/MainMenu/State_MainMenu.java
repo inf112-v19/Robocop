@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.google.gson.Gson;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
@@ -16,6 +15,7 @@ import inf112.skeleton.app.GUI.Menu;
 import inf112.skeleton.common.packet.LoginPacket;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.status.LoginResponseStatus;
+import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
 
 import java.util.concurrent.TimeUnit;
@@ -25,7 +25,6 @@ import static inf112.skeleton.common.status.LoginResponseStatus.NO_RESPONSE_YET;
 public class State_MainMenu extends GameState {
     private Menu menu;
     private Channel channel;
-    private Gson gson;
     public LoginResponseStatus loginStatus;
 
     private InputMultiplexer inputMultiplexer;
@@ -95,19 +94,21 @@ public class State_MainMenu extends GameState {
         usernameTab.setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2+112);
 
         menu.stage.addActor(usernameTab);
-        gson = new Gson();
     }
 
     // Send login request to server and change game-state if login successful
     protected void playGame() {
-        String packetData = gson.toJson(new Packet(0, new LoginPacket(username, "oiajwdioj")));
+        // Create login request packet
+        String packetData = Tools.GSON.toJson(new Packet(0, new LoginPacket(username, "oiajwdioj")));
         System.out.println("sending: " + packetData);
+        RoboRally.username = username;
+
 
         // Send login request
         loginStatus = NO_RESPONSE_YET;
         channel.writeAndFlush(packetData+"\r\n");
 
-        // Wait until a response is given by the ChatLoginHandler
+        // Wait until a response is given by the GameSocketHandler
         long i = 0, j = 1;
         while(loginStatus == NO_RESPONSE_YET) {
             try {
@@ -123,11 +124,11 @@ public class State_MainMenu extends GameState {
         // Change game-state if successful login.
         switch(loginStatus) {
             case LOGIN_SUCCESS:
-                RoboRally.username = username;
                 gsm.set(new State_Playing(gsm, channel));
                 break;
             case ALREADY_LOGGEDIN:
                 System.out.println("User already logged in");
+                RoboRally.username = null;
                 break;
         }
     }

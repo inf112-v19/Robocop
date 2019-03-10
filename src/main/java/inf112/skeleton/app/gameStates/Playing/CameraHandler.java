@@ -1,6 +1,7 @@
 package inf112.skeleton.app.gameStates.Playing;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import inf112.skeleton.app.Action.InputContainer;
 

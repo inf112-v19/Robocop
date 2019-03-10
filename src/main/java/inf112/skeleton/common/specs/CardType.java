@@ -1,6 +1,6 @@
-package inf112.skeleton.app.card;
+package inf112.skeleton.common.specs;
 
-public enum CardMove {
+public enum CardType {
     ROTATERIGHT,
     ROTATELEFT,
     ROTATE180,
@@ -9,5 +9,4 @@ public enum CardMove {
     FORWARD3,
     BACKWARD1,
     GREY,
-    None,
 }

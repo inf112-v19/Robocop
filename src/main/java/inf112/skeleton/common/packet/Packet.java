@@ -12,4 +12,15 @@ public class Packet {
         this.id = id;
         this.data = data;
     }
+
+    public Packet(IncomingPacket id, PacketData data){
+
+        this.id = id.ordinal();
+        this.data = data;
+    }
+
+    public Packet(OutgoingPacket id, PacketData data){
+        this.id = id.ordinal();
+        this.data = data;
+    }
 }

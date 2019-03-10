@@ -4,7 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import inf112.skeleton.app.Socket.ChatLoginHandler;
+import inf112.skeleton.app.Socket.GameSocketHandler;
 import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TiledMapLoader;
 import inf112.skeleton.app.gameStates.GameStateManager;
@@ -24,12 +24,12 @@ public class RoboRally extends ApplicationAdapter {
     private SpriteBatch batch;
     public GameStateManager gsm;
     public Class currentState;
-    private ChatLoginHandler socketHandler = null;
+    private GameSocketHandler socketHandler = null;
     public static GameBoard gameBoard;
     public static String username = "";
 
 
-    public void setSocketHandler(ChatLoginHandler socketHandler) {
+    public void setSocketHandler(GameSocketHandler socketHandler) {
         this.socketHandler = socketHandler;
     }
 
