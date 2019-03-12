@@ -2,10 +2,8 @@ package inf112.skeleton.app.board.entity;
 
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.specs.Card;
-import inf112.skeleton.common.packet.CardHandPacket;
-import inf112.skeleton.common.packet.CardPacket;
-import inf112.skeleton.common.packet.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Directions;
 
 public class Player {
@@ -15,6 +13,7 @@ public class Player {
     int initalHp;
     Directions initalDirection;
     public Card[] cards;
+    public Card[] selectedCards;
 
     /**
      * Player has its own class, which owns a robot, to avoid rendring on socket thread.
@@ -28,12 +27,6 @@ public class Player {
         this.initalHp = hp;
         this.initialPos = pos;
         this.initalDirection = directions;
-
-        // Tmp...
-        /**CardDeck deck = new CardDeck();
-        this.cards = new Card[9];
-        for(int i = 0 ; i < 9 ; i++)
-            this.cards[i] = deck.dealCard();*/
     }
 
     /**
@@ -74,6 +67,23 @@ public class Player {
      */
     public void receiveCardHandPacket(CardHandPacket packet) {
         this.cards = packet.getHand();
+    }
+
+    public Packet sendSelectedHand() {
+        if(!hasSelectedCards()) {
+            return null;
+        }
+        OutgoingPacket packetId = OutgoingPacket.CARD_HAND_PACKET;
+        CardHandPacket data = new CardHandPacket(selectedCards);
+        return new Packet(packetId, data);
+    }
+
+    public boolean hasSelectedCards() {
+        for(int i = 0; i < selectedCards.length; i++) {
+            if(selectedCards[i] == null)
+                return false;
+        }
+        return true;
     }
 
 

@@ -24,6 +24,7 @@ public class Client {
 
                         Lwjgl3ApplicationConfiguration application = new Lwjgl3ApplicationConfiguration();
                         application.setWindowedMode(RoboRally.WIDTH, RoboRally.HEIGHT);
+                        application.setWindowSizeLimits(1024,576,7680,4320);
                         application.setTitle(RoboRally.TITLE);
                         game.nioWorkerGroup = group;
                         new Lwjgl3Application(game, application);

@@ -58,11 +58,8 @@ public class HUD {
                 }
         );
 
-        gameChat = new ScrollableTextbox(100,inputMultiplexer, channel);
-        gameChat.push(new ChatMessagePacket("Welcome to RoboRally. Hope you enjoy this game -RoboCop"));
-        gameChat.push(new ChatMessagePacket("[INFO]: Available commands: "));
-        gameChat.push(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
-        gameChat.push(new ChatMessagePacket("[INFO]:     \"!players\""));
+        setupGameChatAndPushWelcome();
+
         stage.addActor(to_mainMenu);
 
         status = new Status(gsm,inputMultiplexer,channel);
@@ -107,5 +104,13 @@ public class HUD {
         if(playerDeck != null) {
             playerDeck.resize(width, height);
         }
+    }
+
+    private void setupGameChatAndPushWelcome() {
+        gameChat = new ScrollableTextbox(100,inputMultiplexer, channel);
+        gameChat.push(new ChatMessagePacket("Welcome to RoboRally. Hope you enjoy this game -RoboCop"));
+        gameChat.push(new ChatMessagePacket("[INFO]: Available commands: "));
+        gameChat.push(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
+        gameChat.push(new ChatMessagePacket("[INFO]:     \"!players\""));
     }
 }
