@@ -5,8 +5,8 @@ import inf112.skeleton.app.gameStates.GameStateManager;
 import io.netty.channel.Channel;
 
 public class MenuTab {
-    private GameStateManager gsm;
-    private Channel channel;
+    protected GameStateManager gsm;
+    protected Channel channel;
     public Table display;
 
 
