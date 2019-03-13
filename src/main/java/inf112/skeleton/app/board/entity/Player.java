@@ -4,7 +4,12 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.specs.Card;
+import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.utility.Tools;
+
+import java.rmi.NoSuchObjectException;
+import java.util.ArrayList;
 
 public class Player {
     public String name;
@@ -13,7 +18,7 @@ public class Player {
     int initalHp;
     Directions initalDirection;
     public Card[] cards;
-    public Card[] selectedCards;
+    public ArrayList<Card> selectedCards;
 
     /**
      * Player has its own class, which owns a robot, to avoid rendring on socket thread.
@@ -27,6 +32,11 @@ public class Player {
         this.initalHp = hp;
         this.initialPos = pos;
         this.initalDirection = directions;
+        this.selectedCards = new ArrayList<>(5);
+        //Tmp
+        for(int i = 0; i < 5; i++) {
+            selectedCards.add(new Card(999, CardType.FORWARD3));
+        }
     }
 
     /**
@@ -69,22 +79,21 @@ public class Player {
         this.cards = packet.getHand();
     }
 
-    public Packet sendSelectedHand() {
-        if(!hasSelectedCards()) {
-            return null;
+    /**
+     * Creates a packet containing move instructions from the selected cards.
+     * @return True if packet could be constructed and has been sent, false otherwise.
+     */
+    public boolean sendNextSelectedCard() {
+        if(selectedCards.get(0) == null) {
+            return false;
         }
-        OutgoingPacket packetId = OutgoingPacket.CARD_HAND_PACKET;
-        CardHandPacket data = new CardHandPacket(selectedCards);
-        return new Packet(packetId, data);
-    }
-
-    public boolean hasSelectedCards() {
-        for(int i = 0; i < selectedCards.length; i++) {
-            if(selectedCards[i] == null)
-                return false;
-        }
+        CardPacket data = new CardPacket(selectedCards.get(0));
+        Packet packet = new Packet(OutgoingPacket.CARD_PACKET.ordinal(), data);
+        RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+        selectedCards.remove(0);
         return true;
     }
+
 
 
     /**

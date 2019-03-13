@@ -21,11 +21,13 @@ public class Player {
     Vector2 currentPos;
     Vector2 movingTo;
     User owner;
+    Card[] selectedCards;
 
     int currentHP;
     Directions direction;
     GameBoard gameBoard;
     int movingTiles = 0;
+
 
 
     private int delayMove = 400;
@@ -41,6 +43,7 @@ public class Player {
         this.movingTo = new Vector2(currentPos.x, currentPos.y);
         this.direction = directions;
         this.owner = owner;
+        this.selectedCards = new Card[5];
         this.timeInit = System.currentTimeMillis();
     }
 

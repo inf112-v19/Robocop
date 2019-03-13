@@ -55,7 +55,6 @@ public class IncomingPacketHandler {
                 }
                 break;
             case CHAT_MESSAGE:
-
                 ChatMessagePacket msgPacket = Tools.GSON.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
                 User messagingUser = handler.getEntityFromLoggedIn(incoming);
                 if (msgPacket.getMessage().startsWith("!")) {
@@ -71,8 +70,8 @@ public class IncomingPacketHandler {
                     }
                 }
                 break;
-            case MOVEMENT_ACTION:
-
+            case CARD_PACKET:
+                System.out.println("hello world!");
                 break;
             default:
                 System.err.println("Unhandled packet: " + packetId.name());
