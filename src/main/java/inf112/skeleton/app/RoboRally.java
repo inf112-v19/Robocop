@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf112.skeleton.app.Socket.GameSocketHandler;
 import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TiledMapLoader;
+import inf112.skeleton.app.board.entity.Sprites;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
 import io.netty.channel.Channel;
@@ -36,6 +37,7 @@ public class RoboRally extends ApplicationAdapter {
     public void create() {
         batch = new SpriteBatch();
         gsm = new GameStateManager();
+        Sprites.setup();
 
         long i = 0, j = 1;
         while (channel == null) {
