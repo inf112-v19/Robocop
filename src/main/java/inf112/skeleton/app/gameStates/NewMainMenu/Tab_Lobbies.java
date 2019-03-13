@@ -1,14 +1,20 @@
 package inf112.skeleton.app.gameStates.NewMainMenu;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import inf112.skeleton.app.gameStates.GameStateManager;
+import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
 import io.netty.channel.Channel;
 
 import java.util.HashMap;
@@ -22,23 +28,34 @@ public class Tab_Lobbies extends MenuTab {
     HashMap<String, ImageTextButton> lobbyButtons;
     HashMap<String, Table> lobbyViews;
 
+    ImageTextButton.ImageTextButtonStyle lobbyButtonStyleFocused, lobbyButtonStyleUnfocused;
     ImageTextButton currentLobby;
 
 
-    // lb = Lobbies, lv = Lobby view
+    BitmapFont font;
+
+
+    // lb = Lobbies, lv = Lobby view, mp = mini-map
     private final int   lb_width = 382,
                         lb_tabHeight = 45,
                         lb_headerHeight = 50,
                         padding_between = 20,
-                        lv_width = 652;
+                        lv_width = 652,
+                        lv_tabHeight = 35,
+                        lv_headerHeight = 50,
+                        mp_width = 250,
+                        mp_height = 150,
+                        mp_posX = 360;
 
     public Tab_Lobbies(GameStateManager gsm, Channel channel) {
         super(gsm, channel);
+        font = new BitmapFont();
+        font.getData().setScale(1.5f);
 
         lobbyButtons = new HashMap<>();
         lobbyViews = new HashMap<>();
 
-        // Add Lobbies (Left side of screen)
+        // Add Lobbies table (Left side of screen)
         lobbies = new Table();
         lobbies.setSize(lb_width, height);
         lobbies.setBackground(new TextureRegionDrawable(new TextureRegion(
@@ -55,8 +72,131 @@ public class Tab_Lobbies extends MenuTab {
                 .size(lb_width-4, 1).padTop(1);
         lobbies.row();
 
-        // tmp
         display.add(lobbies).size(lb_width, height);
-        display.row();
+
+
+
+        // Set style of lobby buttons
+        lobbyView_bg = new TextureRegionDrawable(new TextureRegion(
+                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/LobbiesView_bg.png"))));
+
+        Drawable tmp;
+
+        tmp = new TextureRegionDrawable(new TextureRegion(
+                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/LobbyButtonFocused.png"))));
+        lobbyButtonStyleFocused = new ImageTextButton.ImageTextButtonStyle(tmp, tmp, tmp, font);
+        lobbyButtonStyleFocused.fontColor = Color.BLACK;
+
+        tmp = new TextureRegionDrawable(new TextureRegion(
+                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/LobbyButtonUnfocused.png"))));
+        lobbyButtonStyleUnfocused = new ImageTextButton.ImageTextButtonStyle(tmp, tmp, tmp, font);
+        lobbyButtonStyleUnfocused.fontColor = Color.BLACK;
+
+
+
+        // tmp
+
+        MapInfo mapInfo = new MapInfo(
+                "Map_Default",
+                "Steffen",
+                null,
+                3,
+                8,
+                4,
+                8,
+                MapDifficulty.Expert,
+                new TextureRegionDrawable(new TextureRegion(
+                        new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Map_Preview.png"))))
+                );
+        mapInfo.description = "Hello my fellow friends.\nThis map is not something for the faint hearted.\n" +
+                "You will face fears you could never imagine.\n\nAre you ready for it?";
+        addLobby(mapInfo);
+
+        mapInfo.mapName = "Map_2";
+        mapInfo.hostName = "Henning";
+        mapInfo.description = "yeah boii, here we go!";
+        addLobby(mapInfo);
+
+        mapInfo.mapName = "Horrorhouse";
+        mapInfo.hostName = "Anna Kvam";
+        mapInfo.numPlayers = 1;
+        mapInfo.difficulty = MapDifficulty.Intermediate;
+        mapInfo.description = "Some description here...\n\nTODO: Make it better";
+        addLobby(mapInfo);
+    }
+
+    public void addLobby(MapInfo mapInfo) {
+        // Create button which may be used to choose this map
+        ImageTextButton btn_lobbyTab = new ImageTextButton(mapInfo.mapName, lobbyButtonStyleUnfocused);
+        btn_lobbyTab.padLeft(20).left();
+        lobbyButtons.put(mapInfo.mapName, btn_lobbyTab);
+        lobbies.add(btn_lobbyTab).size(lb_width-4, lb_tabHeight);
+        lobbies.row();
+        btn_lobbyTab.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                if (currentLobby != actor) {
+                    // Display map information
+                    display.clearChildren();
+                    display.add(lobbies).padRight(padding_between);
+                    display.add(lobbyViews.get(((ImageTextButton)actor).getText().toString()))
+                            .size(lv_width, height).left();
+
+                    // Change button-focus
+                    if (currentLobby != null)
+                        currentLobby.setStyle(lobbyButtonStyleUnfocused);
+                    currentLobby = (ImageTextButton)actor;
+                    currentLobby.setStyle(lobbyButtonStyleFocused);
+                }
+            }
+        });
+
+
+        // Add map information displayed when button is clicked.
+        Table map = new Table();
+        map.setBackground(lobbyView_bg);
+        map.setSize(lv_width, height);
+        map.pad(10,5,5,5);
+        map.columnDefaults(2);
+
+        Label.LabelStyle txtStyle = new Label.LabelStyle(font, Color.BLACK);
+
+        // Force wanted table width to center header + add header
+        map.add().size(lv_width-10, 0).colspan(2).row();
+        map.add(new Label(mapInfo.mapName, txtStyle)).height(lv_headerHeight).colspan(3).row();
+
+
+        // Add general information about the lobby
+        Table generalInfo = new Table();
+
+        generalInfo.top().left();
+        generalInfo.add(new Label("Host: " + mapInfo.hostName, txtStyle)).height(lv_tabHeight).left().row();
+        generalInfo.add(new Label("Players: " + mapInfo.numPlayers + "/" + mapInfo.maxPlayers, txtStyle)).height(lv_tabHeight).left().row();
+        generalInfo.add(new Label("Recommended players: " + mapInfo.minRecommendedPlayers + "-" + mapInfo.maxRecommendedPlayers, txtStyle)).height(lv_tabHeight).left().row();
+        generalInfo.add(new Label("Level: " + mapInfo.difficulty.name(), txtStyle)).height(lv_tabHeight).left().row();
+
+        map.top().left();
+        map.add(generalInfo).size(mp_posX, height/3).left();
+
+        // Add minimap
+        map.add(new Image(mapInfo.minimap_preview)).size(mp_width, mp_height).left().top().row();
+
+
+        // Add description
+        map.add(new Label("Description:", txtStyle)).height(lv_tabHeight).left().colspan(2).row();
+        map.add(new Label(mapInfo.description, txtStyle)).colspan(2).left().expandY().row();
+
+
+        // Add join-button
+        ImageTextButton btn_join = new ImageTextButton("Join", lobbyButtonStyleFocused);
+        btn_join.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                gsm.push(new State_MainMenu(gsm, channel));
+            }
+        });
+        map.add(btn_join).center().colspan(2).row();
+
+        lobbyViews.put(mapInfo.mapName, map);
     }
 }
