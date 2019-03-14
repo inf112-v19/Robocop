@@ -1,7 +1,6 @@
 package inf112.skeleton.app.board.entity;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.specs.Card;
@@ -9,7 +8,6 @@ import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
 
-import java.rmi.NoSuchObjectException;
 import java.util.ArrayList;
 
 public class Player {
@@ -97,10 +95,9 @@ public class Player {
         if(selectedCards.size() == 0) {
             return false;
         }
-        CardPacket data = new CardPacket(selectedCards.get(0));
-        Packet packet = new Packet(OutgoingPacket.CARD_PACKET.ordinal(), data);
+        CardPacket data = new CardPacket(selectedCards.remove(0));
+        Packet packet = new Packet(toServer.CARD_PACKET.ordinal(), data);
         RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
-        selectedCards.remove(0);
         return true;
     }
 
