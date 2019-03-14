@@ -20,7 +20,7 @@ public class IncomingPacketHandler {
      * @param handler
      */
     public void handleIncomingPacket(Channel incoming, JsonObject jsonObject, RoboCopServerHandler handler) {
-        toServer packetId = toServer.values()[jsonObject.get("id").getAsInt()];
+        ToServer packetId = ToServer.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
             case LOGIN:
                 LoginPacket loginpkt = Tools.GSON.fromJson(jsonObject.get("data"), LoginPacket.class);
@@ -33,7 +33,7 @@ public class IncomingPacketHandler {
                         }
 
                         handler.loggedInPlayers.add(loggingIn);
-                        fromServer response = fromServer.LOGINRESPONSE;
+                        FromServer response = FromServer.LOGINRESPONSE;
                         LoginResponseStatus status = LoginResponseStatus.LOGIN_SUCCESS;
                         LoginResponsePacket loginResponsePacket =
                                 new LoginResponsePacket(status.ordinal(), loggingIn.name, "Success");
@@ -61,7 +61,7 @@ public class IncomingPacketHandler {
                     String[] command = msgPacket.getMessage().substring(1).split(" ");
                     handleCommand(messagingUser, command, handler);
                 } else {
-                    fromServer chatMessage = fromServer.CHATMESSAGE;
+                    FromServer chatMessage = FromServer.CHATMESSAGE;
                     ChatMessagePacket chatMessagePacket = new ChatMessagePacket(messagingUser.getName() + ": " + msgPacket.getMessage());
                     Packet responsePacket = new Packet(chatMessage.ordinal(), chatMessagePacket);
 
@@ -119,7 +119,7 @@ public class IncomingPacketHandler {
      */
     private void sendMessage(String message, User user, RoboCopServerHandler handler){
         Packet responsePacket = new Packet(
-                fromServer.CHATMESSAGE.ordinal(),
+                FromServer.CHATMESSAGE.ordinal(),
                 new ChatMessagePacket("[SERVER]: " +message));
         user.getChannel().writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
     }
@@ -132,7 +132,7 @@ public class IncomingPacketHandler {
      * @param name
      */
     private void AlreadyLoggedIn(Channel incoming, RoboCopServerHandler handler, String name) {
-        fromServer response = fromServer.LOGINRESPONSE;
+        FromServer response = FromServer.LOGINRESPONSE;
         LoginResponseStatus status = LoginResponseStatus.ALREADY_LOGGEDIN;
         LoginResponsePacket loginResponsePacket =
                 new LoginResponsePacket(status.ordinal(), name, "User already logged in");

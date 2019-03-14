@@ -1,7 +1,7 @@
 package inf112.skeleton.server;
 
 import com.google.gson.JsonObject;
-import inf112.skeleton.common.packet.fromServer;
+import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.PlayerRemovePacket;
 import inf112.skeleton.common.utility.Tools;
@@ -37,7 +37,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
         /**
-         * Adding the toServer channel to the collection of users who are not logged in.
+         * Adding the ToServer channel to the collection of users who are not logged in.
          */
         System.out.println("receieved conntstion");
         User user = new User(incoming);
@@ -53,7 +53,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
-        fromServer pktId = fromServer.REMOVE_PLAYER;
+        FromServer pktId = FromServer.REMOVE_PLAYER;
         PlayerRemovePacket data = new PlayerRemovePacket(getEntityFromLoggedIn(incoming).getName());
         Packet pkt = new Packet(pktId, data);
 

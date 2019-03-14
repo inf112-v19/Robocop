@@ -1,6 +1,6 @@
 package inf112.skeleton.common.packet;
 
-public enum fromServer {
+public enum FromServer {
     LOGINRESPONSE,
     INIT_PLAYER,
     INIT_ALLPLAYERS, //TODO: IMplement

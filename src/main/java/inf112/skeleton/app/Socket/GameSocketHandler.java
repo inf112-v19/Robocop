@@ -24,7 +24,7 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
 
     public void handleIncomingPacket(JsonObject jsonObject) {
         System.out.println("Handling incoming packet...");
-        fromServer packetId = fromServer.values()[jsonObject.get("id").getAsInt()];
+        FromServer packetId = FromServer.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
             case LOGINRESPONSE:
                 GameState currentGameState = game.gsm.peek();

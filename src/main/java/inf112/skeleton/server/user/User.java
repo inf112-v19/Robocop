@@ -2,7 +2,7 @@ package inf112.skeleton.server.user;
 
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.ChatMessagePacket;
-import inf112.skeleton.common.packet.fromServer;
+import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
@@ -66,7 +66,7 @@ public class User {
     }
 
     public void sendChatMessage(String message) {
-        fromServer pktId = fromServer.CHATMESSAGE;
+        FromServer pktId = FromServer.CHATMESSAGE;
         ChatMessagePacket data = new ChatMessagePacket(message);
         Packet pkt = new Packet(pktId, data);
         sendPacket(pkt);

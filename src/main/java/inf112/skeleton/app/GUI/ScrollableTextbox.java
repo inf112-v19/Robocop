@@ -20,7 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.ChatMessagePacket;
-import inf112.skeleton.common.packet.toServer;
+import inf112.skeleton.common.packet.ToServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
@@ -95,7 +95,7 @@ public class ScrollableTextbox {
                     String inputText = inputField.getText();
                     if (!inputText.equals("")) {
 //                        push(inputText);
-                        Packet packet = new Packet(toServer.CHAT_MESSAGE.ordinal(), new ChatMessagePacket(inputText));
+                        Packet packet = new Packet(ToServer.CHAT_MESSAGE.ordinal(), new ChatMessagePacket(inputText));
                         channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
 
                     }

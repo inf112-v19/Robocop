@@ -96,7 +96,7 @@ public class Player {
             return false;
         }
         CardPacket data = new CardPacket(selectedCards.remove(0));
-        Packet packet = new Packet(toServer.CARD_PACKET.ordinal(), data);
+        Packet packet = new Packet(ToServer.CARD_PACKET.ordinal(), data);
         RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
         return true;
     }

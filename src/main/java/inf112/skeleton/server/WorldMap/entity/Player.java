@@ -80,7 +80,7 @@ public class Player {
     }
 
     public void sendCard() {
-        fromServer packetId = fromServer.CARD_PACKET;
+        FromServer packetId = FromServer.CARD_PACKET;
         CardPacket data = new CardPacket(deck.dealCard());
         Packet packet = new Packet(packetId, data);
 
@@ -90,7 +90,7 @@ public class Player {
     }
 
     public void sendCardHand() {
-        fromServer packetId = fromServer.CARD_HAND_PACKET;
+        FromServer packetId = FromServer.CARD_HAND_PACKET;
         Card[] sendDeck = new Card[9];
         for(int i = 0; i < sendDeck.length; i++) {
             sendDeck[i] = deck.dealCard();
@@ -144,7 +144,7 @@ public class Player {
 
 
     public void sendInit() {
-        fromServer initPlayer = fromServer.INIT_PLAYER;
+        FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(name, currentPos, currentHP);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
@@ -156,7 +156,7 @@ public class Player {
     }
 
     public void initAll() {
-        fromServer initPlayer = fromServer.INIT_PLAYER;
+        FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(name, currentPos, currentHP);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
@@ -169,7 +169,7 @@ public class Player {
     }
 
     public void sendToNewClient(Channel newUserChannel) {
-        fromServer initPlayer = fromServer.INIT_PLAYER;
+        FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(name, currentPos, currentHP);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
@@ -199,7 +199,7 @@ public class Player {
                     break;
             }
 
-            fromServer pktId = fromServer.PLAYER_UPDATE;
+            FromServer pktId = FromServer.PLAYER_UPDATE;
             UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(name, direction, movingTiles, currentPos, movingTo);
             Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
             RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);
