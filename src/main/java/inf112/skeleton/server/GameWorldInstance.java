@@ -24,6 +24,7 @@ public class GameWorldInstance implements ApplicationListener {
         return lobbies.containsKey(name);
     }
 
+
     @Override
     public void create() {
         gameBoard = new TiledMapLoader();
@@ -47,7 +48,7 @@ public class GameWorldInstance implements ApplicationListener {
 
     public void tick() {
         for (User user : RoboCopServerHandler.loggedInPlayers) {
-            user.player.update();
+            user.player.update(gameBoard);
         }
 
     }

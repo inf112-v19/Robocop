@@ -4,15 +4,19 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Entity;
+import inf112.skeleton.server.WorldMap.entity.TileObject;
 
 import java.util.ArrayList;
 
 public abstract class GameBoard {
 
     protected ArrayList<Entity> entities;
+    public ArrayList<TileObject> mapObjects;
 
     public GameBoard() {
         entities = new ArrayList<>();
+        mapObjects = new ArrayList<>();
+
     }
 
     public void addEntity(Entity e) {
@@ -28,10 +32,15 @@ public abstract class GameBoard {
 
     public void update() {
         for (Entity entity : entities) {
-            entity.update();
+            entity.update(this);
 
         }
+
+        for (TileObject obj : mapObjects) {
+            obj.update();
+        }
     }
+
 
     public abstract void dispose();
 
