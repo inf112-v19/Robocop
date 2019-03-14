@@ -12,6 +12,7 @@ public class GameWorldInstance implements ApplicationListener {
     public GameBoard gameBoard;
     public static CardDeck deck = new CardDeck();
 
+
     int frame = 0;
     final int TPS = 16;
 
@@ -38,7 +39,7 @@ public class GameWorldInstance implements ApplicationListener {
 
     public void tick() {
         for (User user : RoboCopServerHandler.loggedInPlayers) {
-            user.player.update();
+            user.player.update(gameBoard);
         }
 
     }

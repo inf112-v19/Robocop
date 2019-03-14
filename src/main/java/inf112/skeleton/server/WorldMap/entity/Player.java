@@ -24,7 +24,6 @@ public class Player {
 
     int currentHP;
     Directions direction;
-    GameBoard gameBoard;
     int movingTiles = 0;
 
 
@@ -66,7 +65,7 @@ public class Player {
     }
 
 
-    public void update() {
+    public void update(GameBoard gameBoard) {
         if (processMovement(System.currentTimeMillis())) {
         }
         if ((System.currentTimeMillis() - this.timeInit) >= this.delayMessage && shouldSendCards) {
@@ -74,6 +73,7 @@ public class Player {
             sendCardHand();
             shouldSendCards = false;
         }
+
     }
 
     public void sendCard() {
@@ -131,11 +131,11 @@ public class Player {
     }
 
     private boolean canMove(float amountX, float amountY) {
-        TileDefinition def = gameBoard.getTileDefinitionByCoordinate(0, (int) (currentPos.x + amountX), (int) (currentPos.y + amountY));
-        System.out.println(def.getName());
-        if (gameBoard.getWidth() < currentPos.x + amountX || currentPos.x + amountX < 0 ||
-                gameBoard.getHeight() < currentPos.y + amountY || currentPos.y + amountY < 0 || !def.isCollidable())
-            return false;
+//        TileDefinition def = gameBoard.getTileDefinitionByCoordinate(0, (int) (currentPos.x + amountX), (int) (currentPos.y + amountY));
+//        System.out.println(def.getName());
+//        if (gameBoard.getWidth() < currentPos.x + amountX || currentPos.x + amountX < 0 ||
+//                gameBoard.getHeight() < currentPos.y + amountY || currentPos.y + amountY < 0 || !def.isCollidable())
+//            return false;
         return true;
     }
 

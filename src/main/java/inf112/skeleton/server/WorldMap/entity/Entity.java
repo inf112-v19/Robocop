@@ -3,6 +3,7 @@ package inf112.skeleton.server.WorldMap.entity;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.server.WorldMap.GameBoard;
 
 import static inf112.skeleton.common.specs.Directions.values;
 
@@ -56,7 +57,7 @@ public abstract class Entity {
         facing = values()[(facing.ordinal() + 2) % values().length];
     }
 
-    public abstract void update();
+    public abstract void update(GameBoard gameBoard);
 
 
     public abstract void render(SpriteBatch batch);

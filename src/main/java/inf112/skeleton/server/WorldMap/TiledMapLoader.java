@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import inf112.skeleton.common.specs.TileDefinition;
+import inf112.skeleton.server.WorldMap.entity.TileObject;
 
 import java.util.ArrayList;
 
@@ -19,7 +20,6 @@ public class TiledMapLoader extends GameBoard {
     public TiledMapLoader() {
         super();
         tiledMap = new TmxMapLoader().load("board/Cross.tmx");
-        mapObjects = new ArrayList<>();
 //        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         TiledMapTileLayer enitylayer = ((TiledMapTileLayer) tiledMap.getLayers().get("Entities"));
         for (int x = 0; x < getWidth(); x++) {
@@ -28,7 +28,8 @@ public class TiledMapLoader extends GameBoard {
                 if (cell != null) {
                     TiledMapTile tile = cell.getTile();
                     if (tile != null) {
-                        mapObjects.add(tile);
+                        mapObjects.add(new TileObject(tile, x, y));
+                        System.out.println("Found object: "+ TileDefinition.getTileById(tile.getId()).getName());
                     }
                 }
             }
