@@ -2,6 +2,7 @@ package inf112.skeleton.server.WorldMap;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Entity;
@@ -12,6 +13,7 @@ import java.util.NoSuchElementException;
 public abstract class GameBoard {
 
     protected ArrayList<Entity> entities;
+    protected ArrayList<TiledMapTile> mapObjects;
 
     public GameBoard() {
         entities = new ArrayList<>();
