@@ -1,6 +1,7 @@
 package inf112.skeleton.app.board.entity;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.specs.Card;
@@ -64,7 +65,7 @@ public class Player {
     public void receiveCardPacket(CardPacket packet) {
         for(int i = 0; i < cards.length; i++) {
             if(cards[i] == null) {
-                cards[i] = new Card(packet.getPriority(),packet.getType());
+                cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packet.getPriority());
                 return;
             }
         }
@@ -76,7 +77,16 @@ public class Player {
      * @param packet An array of cards.
      */
     public void receiveCardHandPacket(CardHandPacket packet) {
-        this.cards = packet.getHand();
+        int[] foo = packet.getHand();
+        if(cards == null) {
+            cards = new Card[9];
+        }
+        if (foo.length != cards.length) {
+            return;
+        }
+        for(int i = 0; i < foo.length; i++) {
+            cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(foo[i]);
+        }
     }
 
     /**

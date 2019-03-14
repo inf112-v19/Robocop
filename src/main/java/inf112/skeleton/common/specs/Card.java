@@ -41,4 +41,17 @@ public class Card {
         }
         return drawables.get(type);
     }
+
+    public boolean equals(Object b) {
+        if(!(b instanceof Card)) {
+            return false;
+        }
+        if(b == this) {
+            return true;
+        }
+        if(((Card) b).priority == this.priority && ((Card) b).type == this.type) {
+            return true;
+        }
+        return false;
+    }
 }

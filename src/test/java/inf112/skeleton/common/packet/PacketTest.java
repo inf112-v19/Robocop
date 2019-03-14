@@ -5,6 +5,7 @@ import inf112.skeleton.common.specs.Card;
 import static inf112.skeleton.common.specs.CardType.values;
 
 import inf112.skeleton.common.utility.Tools;
+import inf112.skeleton.server.card.CardDeck;
 import org.junit.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,11 +18,16 @@ public class PacketTest {
 
     @Test
     public void cardPacketCreateGetTest() {
+        CardDeck deck = new CardDeck();
         for(int i = 0; i < 1000; i++) {
-            Card card = new Card(random.nextInt(10000), values()[random.nextInt(values().length)]);
+            if(deck.size() < 1) {       //I choose to do the test like this, instead of adding dealt cards back into
+                deck = new CardDeck();  //the deck, as the deck will spend time shuffling each and every time that happens.
+            }
+            Card card = deck.dealCard();
             CardPacket packet = new CardPacket(card);
             Assert.assertEquals(card.getPriority(), packet.getPriority());
-            Assert.assertEquals(card.getType(), packet.getType());
+            Assert.assertEquals(card.getType(),
+                    Tools.CARD_RECONSTRUCTOR.reconstructCard(packet.getPriority()).getType());
         }
     }
 
