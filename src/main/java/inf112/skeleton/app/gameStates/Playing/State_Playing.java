@@ -15,8 +15,8 @@ import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import io.netty.channel.Channel;
 
-import static inf112.skeleton.app.RoboRally.HEIGHT;
-import static inf112.skeleton.app.RoboRally.WIDTH;
+import static inf112.skeleton.app.RoboRally.height;
+import static inf112.skeleton.app.RoboRally.width;
 
 public class State_Playing extends GameState {
     private Viewport viewport;
@@ -31,8 +31,8 @@ public class State_Playing extends GameState {
     public State_Playing(GameStateManager gsm, Channel channel) {
         super(gsm, channel);
         this.channel = channel;
-        viewport = new FillViewport(WIDTH,HEIGHT, camera);
-        camera.setToOrtho(false, WIDTH, HEIGHT);
+        viewport = new FillViewport(width, height, camera);
+        camera.setToOrtho(false, width, height);
         camera.update();
 
         inputContainer = new InputContainer();

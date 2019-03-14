@@ -13,13 +13,13 @@ public class Packet {
         this.data = data;
     }
 
-    public Packet(IncomingPacket id, PacketData data){
+    public Packet(ToServer id, PacketData data){
 
         this.id = id.ordinal();
         this.data = data;
     }
 
-    public Packet(OutgoingPacket id, PacketData data){
+    public Packet(FromServer id, PacketData data){
         this.id = id.ordinal();
         this.data = data;
     }

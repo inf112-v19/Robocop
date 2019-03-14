@@ -16,7 +16,6 @@ public class Client {
     public static EventLoopGroup group;
 
     public static void main(String[] args) throws InterruptedException {
-
         game = new RoboRally();
         if (System.getProperty("os.name").startsWith("Mac")) {
 
@@ -29,7 +28,8 @@ public class Client {
             ChannelFuture f = bootstrap.connect("localhost", 58008).sync();
             game.channel = f.channel(); // creating a connection with the server
             Lwjgl3ApplicationConfiguration application = new Lwjgl3ApplicationConfiguration();
-            application.setWindowedMode(RoboRally.WIDTH, RoboRally.HEIGHT);
+            application.setWindowedMode(RoboRally.width, RoboRally.height);
+            application.setWindowSizeLimits(1024, 576, 7680, 4320);
             application.setTitle(RoboRally.TITLE);
 
             game.nioWorkerGroup = group;
@@ -47,7 +47,8 @@ public class Client {
                         try {
 
                             Lwjgl3ApplicationConfiguration application = new Lwjgl3ApplicationConfiguration();
-                            application.setWindowedMode(RoboRally.WIDTH, RoboRally.HEIGHT);
+                            application.setWindowedMode(RoboRally.width, RoboRally.height);
+                            application.setWindowSizeLimits(1024, 576, 7680, 4320);
                             application.setTitle(RoboRally.TITLE);
                             game.nioWorkerGroup = group;
 

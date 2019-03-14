@@ -2,8 +2,11 @@ package inf112.skeleton.app;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import inf112.skeleton.app.Action.InputContainer;
 import inf112.skeleton.app.Socket.GameSocketHandler;
 import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TiledMapLoader;
@@ -17,7 +20,7 @@ import io.netty.channel.EventLoopGroup;
 import java.util.concurrent.TimeUnit;
 
 public class RoboRally extends ApplicationAdapter {
-    public static int WIDTH = 1080, HEIGHT = 720;
+    public static int width = 1080, height = 720;
     public static final String TITLE = "RoboRally";
     public static Channel channel;
     public EventLoopGroup nioWorkerGroup;
@@ -69,6 +72,12 @@ public class RoboRally extends ApplicationAdapter {
     @Override
     public void render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.O)) {
+            System.out.println("sending next card");
+            System.out.println(RoboRally.gameBoard.myPlayer.sendNextSelectedCard());
+        }
+
         gsm.update(0);
         gsm.render(batch);
     }
@@ -76,8 +85,8 @@ public class RoboRally extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         //Save updated dimensions for new stages.
-        WIDTH = width;
-        HEIGHT = height;
+        RoboRally.width = width;
+        RoboRally.height = height;
         //Change dimensions for existing stages.
         gsm.resize(width, height);
     }
