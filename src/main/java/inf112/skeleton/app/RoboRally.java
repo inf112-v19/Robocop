@@ -71,6 +71,7 @@ public class RoboRally extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.O)) {
+            System.out.println("sending next card");
             System.out.println(RoboRally.gameBoard.myPlayer.sendNextSelectedCard());
         }
 

@@ -94,7 +94,7 @@ public class Player {
      * @return True if packet could be constructed and has been sent, false otherwise.
      */
     public boolean sendNextSelectedCard() {
-        if(selectedCards.get(0) == null) {
+        if(selectedCards.size() == 0) {
             return false;
         }
         CardPacket data = new CardPacket(selectedCards.get(0));
