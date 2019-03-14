@@ -136,6 +136,7 @@ public class PlayerDeck {
         inputMultiplexer.addProcessor(stage);
 
         updateDisplays();
+        swapStages();
     }
 
     private void swapStages() {
