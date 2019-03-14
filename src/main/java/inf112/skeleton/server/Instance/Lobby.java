@@ -45,5 +45,7 @@ public class Lobby {
         return count;
     }
 
-
+    public String getName() {
+        return name;
+    }
 }

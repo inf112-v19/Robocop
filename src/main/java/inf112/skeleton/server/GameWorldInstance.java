@@ -24,6 +24,13 @@ public class GameWorldInstance implements ApplicationListener {
         return lobbies.containsKey(name);
     }
 
+    public Lobby getLobby(String name) {
+        return lobbies.get(name);
+    }
+
+    public void addLobby(Lobby lobby){
+        lobbies.put(lobby.getName(), lobby);
+    }
 
     @Override
     public void create() {
