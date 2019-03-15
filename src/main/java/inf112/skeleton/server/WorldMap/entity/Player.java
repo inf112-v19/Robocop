@@ -47,6 +47,29 @@ public class Player {
         this.timeInit = System.currentTimeMillis();
     }
 
+    public Directions getDirection() {
+        return this.direction;
+    }
+
+    public void rotateLeft() {
+        direction = values()[(direction.ordinal() + values().length - 1) % values().length];
+        sendUpdate();
+    }
+
+    public void rotateRight() {
+        direction = values()[(direction.ordinal() + values().length + 1) % values().length];
+        sendUpdate();
+    }
+
+    public void rotate180() {
+        direction = values()[(direction.ordinal() + 2) % values().length];
+        sendUpdate();
+    }
+
+    public int getCurrentHP() {
+        return this.currentHP;
+    }
+
 
     public boolean processMovement(long t) {
         if (this.currentPos.x == this.movingTo.x && this.currentPos.y == this.movingTo.y) {
@@ -166,6 +189,10 @@ public class Player {
 
     public void sendUpdate() {
         //TODO: send updated values to all connections
+        FromServer pktId = FromServer.PLAYER_UPDATE;
+        UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(name, direction, movingTiles, currentPos, movingTo);
+        Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
+        RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);
     }
 
     public void sendToNewClient(Channel newUserChannel) {

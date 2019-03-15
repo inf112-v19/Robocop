@@ -7,6 +7,7 @@ import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
+import inf112.skeleton.server.card.CardDeck;
 
 import java.util.ArrayList;
 
@@ -34,7 +35,7 @@ public class Player {
         this.selectedCards = new ArrayList<>(5);
         //Tmp
         for(int i = 0; i < 5; i++) {
-            selectedCards.add(new Card(999, CardType.FORWARD3));
+            selectedCards.add(new Card(790, CardType.FORWARD3));
         }
     }
 
@@ -92,13 +93,19 @@ public class Player {
      * @return True if packet could be constructed and has been sent, false otherwise.
      */
     public boolean sendNextSelectedCard() {
-        if(selectedCards.size() == 0) {
+        CardDeck deck = new CardDeck();
+        CardPacket data = new CardPacket(deck.dealCard());
+        Packet packet = new Packet(ToServer.CARD_PACKET.ordinal(), data);
+        RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+        return true;
+    }
+        /*if(selectedCards.size() == 0) {
             return false;
         }
         CardPacket data = new CardPacket(selectedCards.remove(0));
         Packet packet = new Packet(ToServer.CARD_PACKET.ordinal(), data);
         RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
-        return true;
+        return true;/*
     }
 
 

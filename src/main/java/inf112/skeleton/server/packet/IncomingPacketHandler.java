@@ -2,6 +2,8 @@ package inf112.skeleton.server.packet;
 
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
+import inf112.skeleton.common.specs.Card;
+import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
@@ -71,12 +73,36 @@ public class IncomingPacketHandler {
                 }
                 break;
             case CARD_PACKET:
-                System.out.println("hello world!");
+                CardPacket cardPacket = Tools.GSON.fromJson(jsonObject.get("data"), CardPacket.class);
+                User user = handler.getEntityFromLoggedIn(incoming);
+                Card card = Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority());
+                if(card.getType() == CardType.ROTATELEFT) {
+                    user.player.rotateLeft();
+                } else if (card.getType() == CardType.ROTATERIGHT) {
+                    user.player.rotateRight();
+                } else if (card.getType() == CardType.ROTATE180) {
+                    user.player.rotate180();
+                } else {
+                    user.player.startMovement(user.player.getDirection(), translateMoveAmount(card));
+                }
+                System.out.println(card);
                 break;
             default:
                 System.err.println("Unhandled packet: " + packetId.name());
                 System.out.println("data: " + jsonObject.get("data"));
         }
+    }
+
+    private int translateMoveAmount(Card card) {
+        if(card.getType() == CardType.FORWARD1)
+            return 1;
+        if(card.getType() == CardType.FORWARD2)
+            return 2;
+        if(card.getType() == CardType.FORWARD3)
+            return 3;
+        if(card.getType() == CardType.BACKWARD1)
+            return -1;
+        return 0;
     }
 
     /**
@@ -97,7 +123,9 @@ public class IncomingPacketHandler {
                     if(Directions.fromString(command[1].toUpperCase()) != null){
                         Directions direction = Directions.valueOf(command[1].toUpperCase());
                         if(Utility.isStringInt(command[2])){
+
                             messagingUser.player.startMovement(direction, Integer.parseInt(command[2]));
+
                             return;
                         }
                     }
