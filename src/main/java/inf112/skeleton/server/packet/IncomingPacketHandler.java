@@ -76,6 +76,7 @@ public class IncomingPacketHandler {
                 CardPacket cardPacket = Tools.GSON.fromJson(jsonObject.get("data"), CardPacket.class);
                 User user = handler.getEntityFromLoggedIn(incoming);
                 Card card = Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority());
+
                 if(card.getType() == CardType.ROTATELEFT) {
                     user.player.rotateLeft();
                 } else if (card.getType() == CardType.ROTATERIGHT) {
@@ -94,14 +95,10 @@ public class IncomingPacketHandler {
     }
 
     private int translateMoveAmount(Card card) {
-        if(card.getType() == CardType.FORWARD1)
-            return 1;
-        if(card.getType() == CardType.FORWARD2)
-            return 2;
-        if(card.getType() == CardType.FORWARD3)
-            return 3;
-        if(card.getType() == CardType.BACKWARD1)
-            return -1;
+        if(card.getType() == CardType.FORWARD1) { return 1; }
+        if(card.getType() == CardType.FORWARD2) { return 2; }
+        if(card.getType() == CardType.FORWARD3) { return 3; }
+        if(card.getType() == CardType.BACKWARD1) { return -1; }
         return 0;
     }
 
