@@ -6,6 +6,7 @@ import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameState;
+import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.status.LoginResponseStatus;
@@ -28,9 +29,9 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
         switch (packetId) {
             case LOGINRESPONSE:
                 GameState currentGameState = game.gsm.peek();
-                if (currentGameState instanceof State_MainMenu) {
+                if (currentGameState instanceof State_Login) {
                     // Read login-packet response and update the loginStatus variable in main menu.
-                    ((State_MainMenu) currentGameState).loginStatus = LoginResponseStatus.values()[
+                    ((State_Login) currentGameState).loginStatus = LoginResponseStatus.values()[
                             Tools.GSON.fromJson(jsonObject.get("data"), LoginResponsePacket.class).getStatusCode()];
                 }
                 break;

@@ -9,8 +9,7 @@ import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TiledMapLoader;
 import inf112.skeleton.app.board.entity.Sprites;
 import inf112.skeleton.app.gameStates.GameStateManager;
-import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
-import inf112.skeleton.app.gameStates.NewMainMenu.MainMenu;
+import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 
@@ -54,7 +53,7 @@ public class RoboRally extends ApplicationAdapter {
         if (i > 0)
             System.out.println("RoboRally <create>: Channel finally set :D Initializing main menu...");
 
-        gsm.push(new MainMenu(gsm, channel));
+        gsm.push(new State_Login(gsm, channel));
         gameBoard = new TiledMapLoader();
 
         Gdx.gl.glClearColor(1, 1, 1, 1);
