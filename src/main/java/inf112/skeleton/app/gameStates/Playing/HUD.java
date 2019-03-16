@@ -15,7 +15,7 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.GUI.ButtonGenerator;
 import inf112.skeleton.app.GUI.ScrollableTextbox;
-import inf112.skeleton.app.gameStates.NewMainMenu.MainMenu;
+import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
 import inf112.skeleton.common.packet.ChatMessagePacket;
 import io.netty.channel.Channel;
 
@@ -53,7 +53,7 @@ public class HUD {
                 new ChangeListener() {
                     @Override
                     public void changed(ChangeEvent event, Actor actor) {
-                        gsm.set(new MainMenu(gsm, channel));
+                        gsm.set(new State_MainMenu(gsm, channel));
                     }
                 }
         );

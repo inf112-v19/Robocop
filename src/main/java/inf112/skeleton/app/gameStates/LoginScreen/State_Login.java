@@ -1,29 +1,24 @@
 package inf112.skeleton.app.gameStates.LoginScreen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
-import inf112.skeleton.app.gameStates.NewMainMenu.MainMenu;
-import inf112.skeleton.app.gameStates.Playing.State_Playing;
+import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
 import inf112.skeleton.common.packet.LoginPacket;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
-
-import java.util.concurrent.TimeUnit;
 
 import static inf112.skeleton.common.status.LoginResponseStatus.NO_RESPONSE_YET;
 
@@ -178,7 +173,7 @@ public class State_Login extends GameState {
                     return;
                 case LOGIN_SUCCESS:
                     RoboRally.username = username;
-                    gsm.set(new MainMenu(gsm, channel));
+                    gsm.set(new State_MainMenu(gsm, channel));
                     return;
                 case ALREADY_LOGGEDIN:
                     messageToUser.getStyle().fontColor = Color.RED;

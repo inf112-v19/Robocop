@@ -1,4 +1,4 @@
-package inf112.skeleton.app.gameStates.NewMainMenu;
+package inf112.skeleton.app.gameStates.MainMenu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;

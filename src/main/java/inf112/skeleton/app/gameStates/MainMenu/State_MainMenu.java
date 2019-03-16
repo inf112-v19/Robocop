@@ -1,4 +1,4 @@
-package inf112.skeleton.app.gameStates.NewMainMenu;
+package inf112.skeleton.app.gameStates.MainMenu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -11,14 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import io.netty.channel.Channel;
@@ -30,7 +26,7 @@ enum MenuStates {
     Lobbies,
 }
 
-public class MainMenu extends GameState {
+public class State_MainMenu extends GameState {
     private final Color color_primary   = new Color(0.6f,0.4f,0.2f,1),
                         color_secondary = new Color(0.773f, 0.612f, 0.424f, 1);
     private Stage stage;
@@ -56,7 +52,7 @@ public class MainMenu extends GameState {
                         main_height         = 615,
                         main_padding        = 13;
 
-    public MainMenu(GameStateManager gsm, Channel channel) {
+    public State_MainMenu(GameStateManager gsm, Channel channel) {
         super(gsm, channel);
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
         shape = new ShapeRenderer();
