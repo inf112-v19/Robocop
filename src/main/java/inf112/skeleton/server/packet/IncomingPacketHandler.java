@@ -2,6 +2,8 @@ package inf112.skeleton.server.packet;
 
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
+import inf112.skeleton.common.specs.Card;
+import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
@@ -20,7 +22,7 @@ public class IncomingPacketHandler {
      * @param handler
      */
     public void handleIncomingPacket(Channel incoming, JsonObject jsonObject, RoboCopServerHandler handler) {
-        IncomingPacket packetId = IncomingPacket.values()[jsonObject.get("id").getAsInt()];
+        ToServer packetId = ToServer.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
             case LOGIN:
                 LoginPacket loginpkt = Tools.GSON.fromJson(jsonObject.get("data"), LoginPacket.class);
@@ -33,7 +35,7 @@ public class IncomingPacketHandler {
                         }
 
                         handler.loggedInPlayers.add(loggingIn);
-                        OutgoingPacket response = OutgoingPacket.LOGINRESPONSE;
+                        FromServer response = FromServer.LOGINRESPONSE;
                         LoginResponseStatus status = LoginResponseStatus.LOGIN_SUCCESS;
                         LoginResponsePacket loginResponsePacket =
                                 new LoginResponsePacket(status.ordinal(), loggingIn.name, "Success");
@@ -55,14 +57,13 @@ public class IncomingPacketHandler {
                 }
                 break;
             case CHAT_MESSAGE:
-
                 ChatMessagePacket msgPacket = Tools.GSON.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
                 User messagingUser = handler.getEntityFromLoggedIn(incoming);
                 if (msgPacket.getMessage().startsWith("!")) {
                     String[] command = msgPacket.getMessage().substring(1).split(" ");
                     handleCommand(messagingUser, command, handler);
                 } else {
-                    OutgoingPacket chatMessage = OutgoingPacket.CHATMESSAGE;
+                    FromServer chatMessage = FromServer.CHATMESSAGE;
                     ChatMessagePacket chatMessagePacket = new ChatMessagePacket(messagingUser.getName() + ": " + msgPacket.getMessage());
                     Packet responsePacket = new Packet(chatMessage.ordinal(), chatMessagePacket);
 
@@ -71,13 +72,34 @@ public class IncomingPacketHandler {
                     }
                 }
                 break;
-            case MOVEMENT_ACTION:
+            case CARD_PACKET:
+                CardPacket cardPacket = Tools.GSON.fromJson(jsonObject.get("data"), CardPacket.class);
+                User user = handler.getEntityFromLoggedIn(incoming);
+                Card card = Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority());
 
+                if(card.getType() == CardType.ROTATELEFT) {
+                    user.player.rotateLeft();
+                } else if (card.getType() == CardType.ROTATERIGHT) {
+                    user.player.rotateRight();
+                } else if (card.getType() == CardType.ROTATE180) {
+                    user.player.rotate180();
+                } else {
+                    user.player.startMovement(user.player.getDirection(), translateMoveAmount(card));
+                }
+                System.out.println(card);
                 break;
             default:
                 System.err.println("Unhandled packet: " + packetId.name());
                 System.out.println("data: " + jsonObject.get("data"));
         }
+    }
+
+    private int translateMoveAmount(Card card) {
+        if(card.getType() == CardType.FORWARD1) { return 1; }
+        if(card.getType() == CardType.FORWARD2) { return 2; }
+        if(card.getType() == CardType.FORWARD3) { return 3; }
+        if(card.getType() == CardType.BACKWARD1) { return -1; }
+        return 0;
     }
 
     /**
@@ -98,7 +120,9 @@ public class IncomingPacketHandler {
                     if(Directions.fromString(command[1].toUpperCase()) != null){
                         Directions direction = Directions.valueOf(command[1].toUpperCase());
                         if(Utility.isStringInt(command[2])){
+
                             messagingUser.player.startMovement(direction, Integer.parseInt(command[2]));
+
                             return;
                         }
                     }
@@ -120,7 +144,7 @@ public class IncomingPacketHandler {
      */
     private void sendMessage(String message, User user, RoboCopServerHandler handler){
         Packet responsePacket = new Packet(
-                OutgoingPacket.CHATMESSAGE.ordinal(),
+                FromServer.CHATMESSAGE.ordinal(),
                 new ChatMessagePacket("[SERVER]: " +message));
         user.getChannel().writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
     }
@@ -133,7 +157,7 @@ public class IncomingPacketHandler {
      * @param name
      */
     private void AlreadyLoggedIn(Channel incoming, RoboCopServerHandler handler, String name) {
-        OutgoingPacket response = OutgoingPacket.LOGINRESPONSE;
+        FromServer response = FromServer.LOGINRESPONSE;
         LoginResponseStatus status = LoginResponseStatus.ALREADY_LOGGEDIN;
         LoginResponsePacket loginResponsePacket =
                 new LoginResponsePacket(status.ordinal(), name, "User already logged in");

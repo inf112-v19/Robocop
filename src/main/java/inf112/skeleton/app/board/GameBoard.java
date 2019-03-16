@@ -83,7 +83,7 @@ public abstract class GameBoard {
 
     public void moveEntity(Directions dir) throws NoSuchElementException {
 
-        Packet packet = new Packet(IncomingPacket.MOVEMENT_ACTION.ordinal(), new MovementPacket(dir, 1));
+        Packet packet = new Packet(ToServer.MOVEMENT_ACTION.ordinal(), new MovementPacket(dir, 1));
         RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
 //        if (entities.contains(e)) {
 //            switch (dir) {

@@ -21,11 +21,13 @@ public class Player {
     Vector2 currentPos;
     Vector2 movingTo;
     User owner;
+    Card[] selectedCards;
 
     int currentHP;
     Directions direction;
     GameBoard gameBoard;
     int movingTiles = 0;
+
 
 
     private int delayMove = 400;
@@ -41,7 +43,31 @@ public class Player {
         this.movingTo = new Vector2(currentPos.x, currentPos.y);
         this.direction = directions;
         this.owner = owner;
+        this.selectedCards = new Card[5];
         this.timeInit = System.currentTimeMillis();
+    }
+
+    public Directions getDirection() {
+        return this.direction;
+    }
+
+    public void rotateLeft() {
+        direction = values()[(direction.ordinal() + values().length - 1) % values().length];
+        sendUpdate();
+    }
+
+    public void rotateRight() {
+        direction = values()[(direction.ordinal() + values().length + 1) % values().length];
+        sendUpdate();
+    }
+
+    public void rotate180() {
+        direction = values()[(direction.ordinal() + 2) % values().length];
+        sendUpdate();
+    }
+
+    public int getCurrentHP() {
+        return this.currentHP;
     }
 
 
@@ -77,7 +103,7 @@ public class Player {
     }
 
     public void sendCard() {
-        OutgoingPacket packetId = OutgoingPacket.CARD_PACKET;
+        FromServer packetId = FromServer.CARD_PACKET;
         CardPacket data = new CardPacket(deck.dealCard());
         Packet packet = new Packet(packetId, data);
 
@@ -87,7 +113,7 @@ public class Player {
     }
 
     public void sendCardHand() {
-        OutgoingPacket packetId = OutgoingPacket.CARD_HAND_PACKET;
+        FromServer packetId = FromServer.CARD_HAND_PACKET;
         Card[] sendDeck = new Card[9];
         for(int i = 0; i < sendDeck.length; i++) {
             sendDeck[i] = deck.dealCard();
@@ -141,7 +167,7 @@ public class Player {
 
 
     public void sendInit() {
-        OutgoingPacket initPlayer = OutgoingPacket.INIT_PLAYER;
+        FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(name, currentPos, currentHP);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
@@ -153,7 +179,7 @@ public class Player {
     }
 
     public void initAll() {
-        OutgoingPacket initPlayer = OutgoingPacket.INIT_PLAYER;
+        FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(name, currentPos, currentHP);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
@@ -163,10 +189,14 @@ public class Player {
 
     public void sendUpdate() {
         //TODO: send updated values to all connections
+        FromServer pktId = FromServer.PLAYER_UPDATE;
+        UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(name, direction, movingTiles, currentPos, movingTo);
+        Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
+        RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);
     }
 
     public void sendToNewClient(Channel newUserChannel) {
-        OutgoingPacket initPlayer = OutgoingPacket.INIT_PLAYER;
+        FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(name, currentPos, currentHP);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
@@ -196,7 +226,7 @@ public class Player {
                     break;
             }
 
-            OutgoingPacket pktId = OutgoingPacket.PLAYER_UPDATE;
+            FromServer pktId = FromServer.PLAYER_UPDATE;
             UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(name, direction, movingTiles, currentPos, movingTo);
             Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
             RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);

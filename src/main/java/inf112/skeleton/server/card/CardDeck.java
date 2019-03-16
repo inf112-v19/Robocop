@@ -49,7 +49,7 @@ public class CardDeck {
 
     public Card dealCard() {
         if(!deck.isEmpty())
-            return deck.remove();
+            return deck.removeFirst();
         return null;
     }
 
@@ -59,8 +59,9 @@ public class CardDeck {
     }
 
     public void reAddMultipleCards(LinkedList<Card> cards) {
-        for(int i = 0; i < cards.size(); i++) {
-            deck.add(cards.remove());
+        int size = cards.size();
+        for(int i = 0; i < size; i++) {
+            deck.add(cards.removeFirst());
         }
         reshuffle();
     }

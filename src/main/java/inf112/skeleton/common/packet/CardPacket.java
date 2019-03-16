@@ -7,16 +7,13 @@ import inf112.skeleton.common.specs.Card;
 
 public class CardPacket implements PacketData {
     int priority;
-    CardType type;
 
-    public CardPacket(int priority, CardType type) {
+    public CardPacket(int priority) {
         this.priority = priority;
-        this.type = type;
     }
 
     public CardPacket(Card card) {
         this.priority = card.getPriority();
-        this.type = card.getType();
     }
 
     public static CardPacket parseJSON(JsonObject jsonObject) {
@@ -27,15 +24,9 @@ public class CardPacket implements PacketData {
         return priority;
     }
 
-    public CardType getType() {
-        return type;
-    }
-
     public void setPriority(int priority) {
         this.priority = priority;
     }
 
-    public void setType(CardType type) {
-        this.type = type;
-    }
+    public void setPriority(Card card) { this.priority = card.getPriority(); }
 }
