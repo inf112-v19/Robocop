@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
+import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
 import io.netty.channel.Channel;
 
 import java.util.HashMap;
@@ -42,6 +43,7 @@ public class State_MainMenu extends GameState {
     HashMap<String, ImageTextButton> tabButtons;
 
     ImageTextButton currentTab;
+    Channel channel;
 
 
     private final int   pad_leftRight       = 7,
@@ -52,8 +54,9 @@ public class State_MainMenu extends GameState {
                         main_height         = 615,
                         main_padding        = 13;
 
-    public State_MainMenu(GameStateManager gsm, Channel channel) {
-        super(gsm, channel);
+    public State_MainMenu(GameStateManager gameStateManager, Channel ch) {
+        super(gameStateManager, ch);
+        channel = ch;
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
         shape = new ShapeRenderer();
 
@@ -63,31 +66,10 @@ public class State_MainMenu extends GameState {
         tabs = new HashMap<>();
         tabButtons = new HashMap<>();
 
-        // Add header 1 (Text: "RoboCop"):
-        h1 = new Table();
-        h1.setBackground(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/h1.png")))));
-        h1.setSize(stage.getWidth(), h1_height);
-        layout.add(h1).expandX().height(h1_height);
-        layout.row();
-
-
-        // Add header 2 (Textbuttons: "Welcome", "Lobbies"):
-        h2 = new Table();
-        h2.setBackground(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/h2.png")))));
-        h2.setSize(stage.getWidth(), h2_height);
-        h2.left();
-        h2.add().width(0).padLeft(5);
-
-        layout.add(h2).expandX().height(h2_height);
-        layout.row();
-
-
-        // Add button styles for header 2
+        // Add button styles
         Drawable    d_btn_f = new TextureRegionDrawable(new TextureRegion(
-                        new Texture(Gdx.files.internal("graphics/ui/MainMenu/btn_rounded_focused.png")))),
-                    d_btn = new TextureRegionDrawable(new TextureRegion(
+                new Texture(Gdx.files.internal("graphics/ui/MainMenu/btn_rounded_focused.png")))),
+                d_btn = new TextureRegionDrawable(new TextureRegion(
                         new Texture(Gdx.files.internal("graphics/ui/MainMenu/btn_rounded_nonfocused.png"))));
 
         h2_btn_style_focused = new ImageTextButton.ImageTextButtonStyle(d_btn_f, d_btn_f, d_btn_f, new BitmapFont());
@@ -95,6 +77,36 @@ public class State_MainMenu extends GameState {
         h2_btn_style_unfocused = new ImageTextButton.ImageTextButtonStyle(d_btn, d_btn, d_btn, new BitmapFont());
         h2_btn_style_unfocused.fontColor = Color.BLACK;
 
+        // Add header 1 (Text: "RoboCop"):
+        h1 = new Table();
+        h1.setBackground(new TextureRegionDrawable(new TextureRegion(
+                new Texture(Gdx.files.internal("graphics/ui/MainMenu/h1.png")))));
+        h1.setSize(stage.getWidth(), h1_height);
+        h1.left();
+
+        ImageTextButton logoutButton = new ImageTextButton("Logout", h2_btn_style_focused);
+        logoutButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                gsm.set(new State_Login(gsm, channel));
+            }
+        });
+        layout.add(h1).expand().height(h1_height).row();
+
+        // Add header 2 (Textbuttons: "Welcome", "Lobbies", "Logout"):
+        Table h2_cover = new Table();
+        h2_cover.setSize(stage.getWidth(), h2_height);
+        h2_cover.setBackground(new TextureRegionDrawable(new TextureRegion(
+                new Texture(Gdx.files.internal("graphics/ui/MainMenu/h2.png")))));
+
+        h2 = new Table();
+        h2.setSize(stage.getWidth() - 113, h2_height);
+        h2.left();
+        h2.add().width(0).padLeft(5);
+
+        h2_cover.add(h2).size(stage.getWidth() - 113, h2_height);
+        h2_cover.add(logoutButton).size(100, h2_height-2).row();
+        layout.add(h2_cover).size(stage.getWidth(), h2_height).row();
 
         // Add bar with main content:
         main = new Table();
@@ -102,15 +114,12 @@ public class State_MainMenu extends GameState {
                 new Texture(Gdx.files.internal("graphics/ui/MainMenu/main.png")))));
         main.setSize(stage.getWidth(), main_height);
         main.left();
-        layout.add(main).expand();
-        layout.row();
+        layout.add(main).expand().row();
 
         // Add tabs
         addTab("Welcome", new Tab_Welcome(gsm, channel));
         addTab("Welcome2", new Tab_Welcome(gsm, channel));
         addTab("Lobbies", new Tab_Lobbies(gsm, channel));
-
-
 
         stage.addActor(layout);
 
