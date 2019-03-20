@@ -4,4 +4,5 @@ public enum LoginResponseStatus {
     LOGIN_SUCCESS,
     ALREADY_LOGGEDIN,
     NO_RESPONSE_YET,
+    WRONG_LOGINDETAILS,
 }
