@@ -2,19 +2,23 @@ package inf112.skeleton.common.packet;
 
 
 import com.badlogic.gdx.math.Vector2;
+import inf112.skeleton.common.specs.Directions;
 
 public class PlayerInitPacket implements PacketData {
     Vector2 pos;
     Vector2 movingTo;
     int health;
     String name;
+    Directions facing;
 
-    public PlayerInitPacket(String name, Vector2 pos, int health) {
+    public PlayerInitPacket(String name, Vector2 pos, int health, Directions facing) {
         this.name = name;
         this.pos = pos;
         this.movingTo = new Vector2(pos.x, pos.y);
         this.health = health;
+        this.facing = facing;
     }
+
 
     public String getName() {
         return name;
@@ -46,5 +50,13 @@ public class PlayerInitPacket implements PacketData {
 
     public void setHealth(int health) {
         this.health = health;
+    }
+
+    public Directions getFacing() {
+        return facing;
+    }
+
+    public void setFacing(Directions facing) {
+        this.facing = facing;
     }
 }

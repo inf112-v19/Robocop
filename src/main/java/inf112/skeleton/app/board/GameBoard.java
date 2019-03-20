@@ -211,10 +211,10 @@ public abstract class GameBoard {
         System.out.println(pkt.getName());
         System.out.println(pkt.getName().equalsIgnoreCase(RoboRally.username));
         if(pkt.getName().equalsIgnoreCase(RoboRally.username)) {
-            this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), Directions.SOUTH);
+            this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing());
             return;
         }
-        this.players.put(pkt.getName(), new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), Directions.SOUTH));
+        this.players.put(pkt.getName(), new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing()));
     }
 
     public void removePlayer(PlayerRemovePacket pkt) {

@@ -11,6 +11,9 @@ import inf112.skeleton.server.Instance.Lobby;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import io.netty.channel.Channel;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class User {
     public String name;
     public Channel channel;
@@ -18,6 +21,7 @@ public class User {
     public String password;
     public UserPrivilege userRights;
     public Player player;
+    public ArrayList<String> friendsList;
 
 
     public User(Channel channel) {
@@ -106,5 +110,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void createFriendsList() {
+        this.friendsList = new ArrayList<>();
+    }
+
+    public ArrayList<String> getFriendsList() {
+        return friendsList;
     }
 }
