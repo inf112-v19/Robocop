@@ -15,6 +15,8 @@ import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import io.netty.channel.Channel;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +30,7 @@ public class PlayerDeck {
     private Stage stage, altStage;
     private Table chooseFrom, chooseTo;
     private LinkedList<ImageButton> chooseFromButtons, chooseToButtons, greyButtons;
+    private HashMap<ImageButton, Card> pCards;
     private Drawable greyCardDrawable = new Card(0,GREY).getDrawable();
     private TextButton btn_chooseCards, btn_done;
 
@@ -51,6 +54,7 @@ public class PlayerDeck {
         chooseFromButtons = new LinkedList<>();
         chooseToButtons = new LinkedList<>();
         greyButtons = new LinkedList<>();
+        pCards = new HashMap<>();
 
         // Create buttons to let the user collapse the player-deck
         ButtonGenerator bg = new ButtonGenerator();
@@ -69,6 +73,9 @@ public class PlayerDeck {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 swapStages();
+                RoboRally.gameBoard.myPlayer.getRobot().cardsChosen = new ArrayList<>();
+                for (ImageButton cardButton : chooseToButtons)
+                    RoboRally.gameBoard.myPlayer.getRobot().cardsChosen.add(pCards.get(cardButton));
             }
         });
 
@@ -116,6 +123,7 @@ public class PlayerDeck {
                 }
             });
             chooseFromButtons.add(tmpButton);
+            pCards.put(tmpButton, card);
         }
 
         // Initialize the deck of cards which is already chosen.
@@ -138,6 +146,7 @@ public class PlayerDeck {
         inputMultiplexer.addProcessor(stage);
 
         updateDisplays();
+        swapStages();
     }
 
     private void swapStages() {

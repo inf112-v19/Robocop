@@ -5,7 +5,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.UpdatePlayerPacket;
+import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.Directions;
+
+import java.util.ArrayList;
 
 import static inf112.skeleton.common.specs.Directions.*;
 
@@ -25,11 +28,14 @@ public class Robot extends Entity {
     Animation<TextureRegion> facing_south;
     Animation<TextureRegion> facing_west;
     Animation<TextureRegion> facing_east;
+    int colour=3;
 
     TextureAtlas textureAtlas;
     float stateTime;
     Player player;
     BitmapFont font = new BitmapFont();
+
+    public ArrayList<Card> cardsChosen;
 
     public Robot(float x, float y, Player player) {
         super(x, y, EntityType.ROBOT);
@@ -39,11 +45,6 @@ public class Robot extends Entity {
         this.position[1] = (int) y * 64;
         this.health = 5;
         this.facing = NORTH;
-        textureAtlas = new TextureAtlas(Gdx.files.internal("robotAllSides.atlas"));
-        facing_north = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_North"), Animation.PlayMode.LOOP);
-        facing_south = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_South"), Animation.PlayMode.LOOP);
-        facing_west = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_West"), Animation.PlayMode.LOOP);
-        facing_east = new Animation(0.1f, textureAtlas.findRegions("robotAllSides_East"), Animation.PlayMode.LOOP);
         stateTime = 0f;
         this.player = player;
     }
@@ -146,15 +147,7 @@ public class Robot extends Entity {
 
     @Override
     public void render(SpriteBatch batch) {
-        if (facing == NORTH) {
-            currentAnimation = facing_north;
-        } else if (facing == SOUTH) {
-            currentAnimation = facing_south;
-        } else if (facing == WEST) {
-            currentAnimation = facing_west;
-        } else if (facing == EAST) {
-            currentAnimation = facing_east;
-        }
+        currentAnimation = Sprites.animations[colour][facing.ordinal()];
 
         stateTime += Gdx.graphics.getDeltaTime();
         //Is the robot currently moving
