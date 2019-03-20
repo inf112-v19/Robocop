@@ -73,9 +73,12 @@ public class PlayerDeck {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 swapStages();
-                RoboRally.gameBoard.myPlayer.getRobot().cardsChosen = new ArrayList<>();
+                /*RoboRally.gameBoard.myPlayer.getRobot().cardsChosen = new ArrayList<>();
                 for (ImageButton cardButton : chooseToButtons)
-                    RoboRally.gameBoard.myPlayer.getRobot().cardsChosen.add(pCards.get(cardButton));
+                    RoboRally.gameBoard.myPlayer.getRobot().cardsChosen.add(pCards.get(cardButton));*/
+                for (ImageButton cardButton : chooseToButtons) {
+                    RoboRally.gameBoard.myPlayer.selectedCards.add(pCards.get(cardButton));
+                }
             }
         });
 
