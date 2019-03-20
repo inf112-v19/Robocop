@@ -1,4 +1,4 @@
-package inf112.skeleton.app.gameStates.NewMainMenu;
+package inf112.skeleton.app.gameStates.MainMenu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import inf112.skeleton.app.gameStates.GameStateManager;
-import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
+import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import io.netty.channel.Channel;
 
 import java.util.HashMap;
@@ -192,7 +192,7 @@ public class Tab_Lobbies extends MenuTab {
         btn_join.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                gsm.push(new State_MainMenu(gsm, channel));
+                gsm.push(new State_Playing(gsm, channel));
             }
         });
         map.add(btn_join).center().colspan(2).row();

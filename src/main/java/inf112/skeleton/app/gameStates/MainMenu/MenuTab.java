@@ -1,4 +1,4 @@
-package inf112.skeleton.app.gameStates.NewMainMenu;
+package inf112.skeleton.app.gameStates.MainMenu;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import inf112.skeleton.app.gameStates.GameStateManager;
