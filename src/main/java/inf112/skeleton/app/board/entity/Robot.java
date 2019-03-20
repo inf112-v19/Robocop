@@ -5,7 +5,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.UpdatePlayerPacket;
+import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.Directions;
+
+import java.util.ArrayList;
 
 import static inf112.skeleton.common.specs.Directions.*;
 
@@ -31,6 +34,8 @@ public class Robot extends Entity {
     float stateTime;
     Player player;
     BitmapFont font = new BitmapFont();
+
+    public ArrayList<Card> cardsChosen;
 
     public Robot(float x, float y, Player player) {
         super(x, y, EntityType.ROBOT);
