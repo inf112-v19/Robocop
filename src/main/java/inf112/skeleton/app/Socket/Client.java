@@ -47,7 +47,7 @@ public class Client {
                         try {
 
                             Lwjgl3ApplicationConfiguration application = new Lwjgl3ApplicationConfiguration();
-                            application.setWindowedMode(RoboRally.WIDTH, RoboRally.HEIGHT);
+                            application.setWindowedMode(RoboRally.width, RoboRally.height);
                             application.setTitle(RoboRally.TITLE);
                             game.nioWorkerGroup = group;
 
