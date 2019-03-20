@@ -54,6 +54,13 @@ public class IncomingPacketHandler {
                     } else {
                         AlreadyLoggedIn(incoming, handler, loggingIn.name);
                     }
+                } else {
+                    FromServer response = FromServer.LOGINRESPONSE;
+                    LoginResponseStatus status = LoginResponseStatus.WRONG_LOGINDETAILS;
+                    LoginResponsePacket loginResponsePacket =
+                            new LoginResponsePacket(status.ordinal(), "", "Failure");
+                    Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
+                    incoming.writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
                 }
                 break;
             case CHAT_MESSAGE:

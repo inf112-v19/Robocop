@@ -2,17 +2,23 @@ package inf112.skeleton.server.WorldMap;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Entity;
+import inf112.skeleton.server.WorldMap.entity.TileObject;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 public abstract class GameBoard {
 
     protected ArrayList<Entity> entities;
+    public ArrayList<TileObject> mapObjects;
 
     public GameBoard() {
         entities = new ArrayList<>();
+        mapObjects = new ArrayList<>();
+
     }
 
     public void addEntity(Entity e) {
@@ -28,8 +34,33 @@ public abstract class GameBoard {
 
     public void update() {
         for (Entity entity : entities) {
-            entity.update();
+            entity.update(this);
 
+        }
+
+        for (TileObject obj : mapObjects) {
+            obj.update();
+        }
+    }
+
+    public void moveEntity(Entity e, Directions dir) throws NoSuchElementException {
+        if (entities.contains(e)) {
+            switch (dir) {
+                case NORTH:
+                    e.moveY(1);
+                    break;
+                case SOUTH:
+                    e.moveY(-1);
+                    break;
+                case WEST:
+                    e.moveX(-1);
+                    break;
+                case EAST:
+                    e.moveX(1);
+                    break;
+            }
+        } else {
+            throw new NoSuchElementException("Entity does not exist on this gameboard");
         }
     }
 
@@ -37,6 +68,7 @@ public abstract class GameBoard {
 
     /**
      * Gets a tile by pixel position within the board, at a specified layer.
+     *
      * @param layer
      * @param x
      * @param y
@@ -52,6 +84,7 @@ public abstract class GameBoard {
 
     /**
      * Gets a tile at a specified coordinate on the game board.
+     *
      * @param layer
      * @param col
      * @param row

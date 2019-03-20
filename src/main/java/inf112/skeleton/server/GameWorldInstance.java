@@ -1,19 +1,36 @@
 package inf112.skeleton.server;
 
 import com.badlogic.gdx.ApplicationListener;
+import inf112.skeleton.server.Instance.Lobby;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.card.CardDeck;
 import inf112.skeleton.server.user.User;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class GameWorldInstance implements ApplicationListener {
 
     public GameBoard gameBoard;
     public static CardDeck deck = new CardDeck();
+    ConcurrentHashMap<String, Lobby> lobbies = new ConcurrentHashMap<>();
 
-    int frame = 0;
-    final int TPS = 16;
+    private int frame = 0;
+    private final int TPS = 16;
+
+
+    public boolean doesLobbyExist(String name) {
+        return lobbies.containsKey(name);
+    }
+
+    public Lobby getLobby(String name) {
+        return lobbies.get(name);
+    }
+
+    public void addLobby(Lobby lobby){
+        lobbies.put(lobby.getName(), lobby);
+    }
 
     @Override
     public void create() {
@@ -38,7 +55,7 @@ public class GameWorldInstance implements ApplicationListener {
 
     public void tick() {
         for (User user : RoboCopServerHandler.loggedInPlayers) {
-            user.player.update();
+            user.player.update(gameBoard);
         }
 
     }

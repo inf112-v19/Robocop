@@ -39,7 +39,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
         /**
          * Adding the ToServer channel to the collection of users who are not logged in.
          */
-        System.out.println("receieved conntstion");
+        System.out.println("Received new connection");
         User user = new User(incoming);
         user.setLoggedIn(false); //Setting the is logged in boolean to false.
         if (!connections.contains(user)) {
