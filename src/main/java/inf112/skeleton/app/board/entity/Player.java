@@ -33,10 +33,6 @@ public class Player {
         this.initialPos = pos;
         this.initalDirection = directions;
         this.selectedCards = new ArrayList<>(5);
-        //Tmp
-        for(int i = 0; i < 5; i++) {
-            selectedCards.add(new Card(790, CardType.FORWARD3));
-        }
     }
 
     /**
@@ -102,6 +98,7 @@ public class Player {
             return false;
         }
         CardPacket data = new CardPacket(selectedCards.remove(0));
+        System.out.println("Constructed package: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
         Packet packet = new Packet(ToServer.CARD_PACKET.ordinal(), data);
         RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r \n");
         return true;
