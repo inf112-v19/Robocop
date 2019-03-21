@@ -89,11 +89,6 @@ public class Player {
      * @return True if packet could be constructed and has been sent, false otherwise.
      */
     public boolean sendNextSelectedCard() {
-        /*CardDeck deck = new CardDeck();
-        CardPacket data = new CardPacket(deck.dealCard());
-        Packet packet = new Packet(ToServer.CARD_PACKET.ordinal(), data);
-        RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
-        return true;*/
         if(selectedCards.isEmpty()) {
             return false;
         }

@@ -44,7 +44,7 @@ public class Robot extends Entity {
         this.position[0] = (int) x * 64;
         this.position[1] = (int) y * 64;
         this.health = 5;
-        this.facing = NORTH;
+        this.facing = player.initalDirection;
         stateTime = 0f;
         this.player = player;
     }
