@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.utility.Tools;
 
-public class CreateLobbyPacket extends PacketData {
+public class CreateLobbyPacket implements PacketData {
     String lobbyName;
     MapFile mapFile;
 
