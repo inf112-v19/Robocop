@@ -1,5 +1,8 @@
 package inf112.skeleton.common.packet.data;
 
+import com.google.gson.JsonObject;
+import inf112.skeleton.common.utility.Tools;
+
 public class ChatMessagePacket implements PacketData {
     String message;
 
@@ -13,5 +16,9 @@ public class ChatMessagePacket implements PacketData {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public static ChatMessagePacket parseJSON(JsonObject jsonObject) {
+        return Tools.GSON.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
     }
 }

@@ -1,7 +1,9 @@
 package inf112.skeleton.common.packet.data;
 
 import com.badlogic.gdx.math.Vector2;
+import com.google.gson.JsonObject;
 import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.utility.Tools;
 
 public class UpdatePlayerPacket implements PacketData {
     Directions direction;
@@ -56,5 +58,9 @@ public class UpdatePlayerPacket implements PacketData {
 
     public void setToTile(Vector2 toTile) {
         this.toTile = toTile;
+    }
+
+    public static UpdatePlayerPacket parseJSON(JsonObject jsonObject) {
+        return Tools.GSON.fromJson(jsonObject.get("data"), UpdatePlayerPacket.class);
     }
 }

@@ -2,7 +2,9 @@ package inf112.skeleton.common.packet.data;
 
 
 import com.badlogic.gdx.math.Vector2;
+import com.google.gson.JsonObject;
 import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.utility.Tools;
 
 public class PlayerInitPacket implements PacketData {
     Vector2 pos;
@@ -59,4 +61,9 @@ public class PlayerInitPacket implements PacketData {
     public void setFacing(Directions facing) {
         this.facing = facing;
     }
+
+    public static PlayerInitPacket parseJSON(JsonObject jsonObject) {
+        return Tools.GSON.fromJson(jsonObject.get("data"), PlayerInitPacket.class);
+    }
+
 }

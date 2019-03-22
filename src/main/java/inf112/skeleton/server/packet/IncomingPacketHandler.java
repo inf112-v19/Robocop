@@ -27,7 +27,7 @@ public class IncomingPacketHandler {
         ToServer packetId = ToServer.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
             case LOGIN:
-                LoginPacket loginpkt = Tools.GSON.fromJson(jsonObject.get("data"), LoginPacket.class);
+                LoginPacket loginpkt = LoginPacket.parseJSON(jsonObject);
                 User loggingIn = UserLogging.login(loginpkt, incoming);
                 if (loggingIn != null) {
                     if (!handler.loggedInPlayers.contains(loggingIn)) {
@@ -66,7 +66,7 @@ public class IncomingPacketHandler {
                 }
                 break;
             case CHAT_MESSAGE:
-                ChatMessagePacket msgPacket = Tools.GSON.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
+                ChatMessagePacket msgPacket = ChatMessagePacket.parseJSON(jsonObject);
                 User messagingUser = handler.getEntityFromLoggedIn(incoming);
                 if (msgPacket.getMessage().startsWith("!")) {
                     String[] command = msgPacket.getMessage().substring(1).split(" ");
@@ -86,7 +86,7 @@ public class IncomingPacketHandler {
                 break;
             case CREATE_LOBBY:
                 User actionUser = handler.getEntityFromLoggedIn(incoming);
-                CreateLobbyPacket lobbyPacket = Tools.GSON.fromJson(jsonObject.get("data"), CreateLobbyPacket.class);
+                CreateLobbyPacket lobbyPacket = CreateLobbyPacket.parseJSON(jsonObject);
                 actionUser.createLobby(handler.game, lobbyPacket);
                 break;
             default:
