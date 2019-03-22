@@ -1,8 +1,8 @@
-package inf112.skeleton.common.packet;
+package inf112.skeleton.common.packet.data;
 
 import inf112.skeleton.common.specs.Directions;
 
-public class MovementPacket implements PacketData{
+public class MovementPacket implements PacketData {
     Directions direction;
     int lenght;
 

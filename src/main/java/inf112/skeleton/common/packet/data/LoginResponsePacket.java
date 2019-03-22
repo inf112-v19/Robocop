@@ -1,4 +1,4 @@
-package inf112.skeleton.common.packet;
+package inf112.skeleton.common.packet.data;
 
 
 public class LoginResponsePacket implements PacketData {

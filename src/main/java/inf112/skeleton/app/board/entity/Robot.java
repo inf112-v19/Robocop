@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.common.packet.UpdatePlayerPacket;
+import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Directions;
 
 import static inf112.skeleton.common.specs.Directions.*;

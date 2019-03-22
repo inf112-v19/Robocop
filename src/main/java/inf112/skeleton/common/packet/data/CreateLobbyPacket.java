@@ -1,8 +1,8 @@
-package inf112.skeleton.common.packet;
+package inf112.skeleton.common.packet.data;
 
 import inf112.skeleton.common.specs.MapFile;
 
-public class CreateLobbyPacket implements PacketData{
+public class CreateLobbyPacket implements PacketData {
     String lobbyName;
     MapFile mapFile;
 

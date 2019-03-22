@@ -2,6 +2,10 @@ package inf112.skeleton.server.packet;
 
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
+import inf112.skeleton.common.packet.data.ChatMessagePacket;
+import inf112.skeleton.common.packet.data.CreateLobbyPacket;
+import inf112.skeleton.common.packet.data.LoginPacket;
+import inf112.skeleton.common.packet.data.LoginResponsePacket;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
@@ -79,6 +83,11 @@ public class IncomingPacketHandler {
                 break;
             case CARD_PACKET:
                 System.out.println("hello world!");
+                break;
+            case CREATE_LOBBY:
+                User actionUser = handler.getEntityFromLoggedIn(incoming);
+                CreateLobbyPacket lobbyPacket = Tools.GSON.fromJson(jsonObject.get("data"), CreateLobbyPacket.class);
+                actionUser.createLobby(handler.game, lobbyPacket);
                 break;
             default:
                 System.err.println("Unhandled packet: " + packetId.name());

@@ -1,4 +1,4 @@
-package inf112.skeleton.common.packet;
+package inf112.skeleton.common.packet.data;
 
 import inf112.skeleton.common.specs.Card;
 

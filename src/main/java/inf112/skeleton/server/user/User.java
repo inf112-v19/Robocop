@@ -1,7 +1,8 @@
 package inf112.skeleton.server.user;
 
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.common.packet.ChatMessagePacket;
+import inf112.skeleton.common.packet.data.ChatMessagePacket;
+import inf112.skeleton.common.packet.data.CreateLobbyPacket;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.specs.Directions;
@@ -12,7 +13,6 @@ import inf112.skeleton.server.WorldMap.entity.Player;
 import io.netty.channel.Channel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class User {
     public String name;
@@ -50,10 +50,10 @@ public class User {
         this.sendString("Lobby Does not exist");
     }
 
-    public void createLobby(GameWorldInstance game, String lobbyname, String map) {
-        if(!game.doesLobbyExist(lobbyname)){
+    public void createLobby(GameWorldInstance game, CreateLobbyPacket lobbyPacket) {
+        if(!game.doesLobbyExist(lobbyPacket.getLobbyName())){
             //Good lobby does not exist, lets create it!
-            Lobby newLobby = new Lobby(lobbyname, map, this);
+            Lobby newLobby = new Lobby(lobbyPacket.getLobbyName(), lobbyPacket.getMapFile(), this);
             game.addLobby(newLobby);
             //TODO: Send lobby init packet to client
         }
