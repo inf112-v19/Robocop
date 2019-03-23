@@ -2,10 +2,7 @@ package inf112.skeleton.server.packet;
 
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
-import inf112.skeleton.common.packet.data.ChatMessagePacket;
-import inf112.skeleton.common.packet.data.CreateLobbyPacket;
-import inf112.skeleton.common.packet.data.LoginPacket;
-import inf112.skeleton.common.packet.data.LoginResponsePacket;
+import inf112.skeleton.common.packet.data.*;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;

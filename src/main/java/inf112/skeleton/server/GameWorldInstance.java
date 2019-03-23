@@ -18,6 +18,11 @@ public class GameWorldInstance implements ApplicationListener {
 
     private int frame = 0;
     private final int TPS = 16;
+    private boolean inLobby = true;
+    private boolean dealingCards = false;
+    private boolean waitingForSelectedCards = false;
+    private boolean movingRobots = false;
+    private boolean winner = false;
 
 
     public boolean doesLobbyExist(String name) {

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
+import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.Directions;
 
 import java.util.ArrayList;
