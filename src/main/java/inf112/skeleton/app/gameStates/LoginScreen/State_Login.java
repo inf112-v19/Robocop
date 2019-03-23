@@ -14,7 +14,7 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
-import inf112.skeleton.common.packet.LoginPacket;
+import inf112.skeleton.common.packet.data.LoginPacket;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;

@@ -1,5 +1,8 @@
-package inf112.skeleton.common.packet;
+package inf112.skeleton.common.packet.data;
 
+
+import com.google.gson.JsonObject;
+import inf112.skeleton.common.utility.Tools;
 
 public class LoginPacket implements PacketData {
     String username;
@@ -28,4 +31,7 @@ public class LoginPacket implements PacketData {
         this.password = password;
     }
 
+    public static LoginPacket parseJSON(JsonObject jsonObject) {
+        return Tools.GSON.fromJson(jsonObject.get("data"), LoginPacket.class);
+    }
 }

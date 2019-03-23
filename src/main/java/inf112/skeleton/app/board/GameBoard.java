@@ -6,6 +6,7 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Entity;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.board.entity.Robot;
+import inf112.skeleton.common.packet.data.*;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.app.gameStates.Playing.HUD;
 import inf112.skeleton.common.packet.*;

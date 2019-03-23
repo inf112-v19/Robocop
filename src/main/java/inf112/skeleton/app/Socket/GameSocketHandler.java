@@ -8,6 +8,7 @@ import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
 import inf112.skeleton.common.packet.*;
+import inf112.skeleton.common.packet.data.*;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,23 +32,23 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 if (currentGameState instanceof State_Login) {
                     // Read login-packet response and update the loginStatus variable in main menu.
                     ((State_Login) currentGameState).loginStatus = LoginResponseStatus.values()[
-                            Tools.GSON.fromJson(jsonObject.get("data"), LoginResponsePacket.class).getStatusCode()];
+                            LoginResponsePacket.parseJSON(jsonObject).getStatusCode()];
                 }
                 break;
 
             case INIT_PLAYER:
-                RoboRally.gameBoard.addPlayer(Tools.GSON.fromJson(jsonObject.get("data"), PlayerInitPacket.class));
+                RoboRally.gameBoard.addPlayer(PlayerInitPacket.parseJSON(jsonObject));
                 break;
 
             case CHATMESSAGE:
                 if (ScrollableTextbox.textbox != null) {
-                    ChatMessagePacket chatMessagePacket = Tools.GSON.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
+                    ChatMessagePacket chatMessagePacket = ChatMessagePacket.parseJSON(jsonObject);
                     ScrollableTextbox.textbox.push(chatMessagePacket);
                 }
                 break;
 
             case PLAYER_UPDATE:
-                UpdatePlayerPacket playerUpdate = Tools.GSON.fromJson(jsonObject.get("data"), UpdatePlayerPacket.class);
+                UpdatePlayerPacket playerUpdate = UpdatePlayerPacket.parseJSON(jsonObject);
                 Player toUpdate = RoboRally.gameBoard.getPlayer(playerUpdate.getName());
                 toUpdate.updateRobot(playerUpdate);
                 break;
@@ -57,7 +58,7 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 RoboRally.gameBoard.receiveCard(packet);
                 break;
             case CARD_HAND_PACKET:
-                CardHandPacket cardHandPacket = Tools.GSON.fromJson(jsonObject.get("data"), CardHandPacket.class);
+                CardHandPacket cardHandPacket = CardHandPacket.parseJSON(jsonObject);
                 RoboRally.gameBoard.receiveCardHand(cardHandPacket);
                 break;
             case REMOVE_PLAYER:

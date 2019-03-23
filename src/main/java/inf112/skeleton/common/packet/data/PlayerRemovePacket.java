@@ -1,9 +1,9 @@
-package inf112.skeleton.common.packet;
+package inf112.skeleton.common.packet.data;
 
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.utility.Tools;
 
-public class PlayerRemovePacket implements PacketData{
+public class PlayerRemovePacket implements PacketData {
     String name;
 
     public PlayerRemovePacket(String name) {

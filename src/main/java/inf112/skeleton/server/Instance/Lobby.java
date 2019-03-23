@@ -1,15 +1,16 @@
 package inf112.skeleton.server.Instance;
 
+import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.server.user.User;
 
 public class Lobby {
     Game game;
     User[] users = new User[8];
     String name;
-    String map;
+    MapFile map;
     User host;
 
-    public Lobby(String name, String map, User host) {
+    public Lobby(String name, MapFile map, User host) {
         this.name = name;
         this.map = map;
         this.host = host;

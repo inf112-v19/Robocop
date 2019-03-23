@@ -2,6 +2,10 @@ package inf112.skeleton.server.packet;
 
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
+import inf112.skeleton.common.packet.data.ChatMessagePacket;
+import inf112.skeleton.common.packet.data.CreateLobbyPacket;
+import inf112.skeleton.common.packet.data.LoginPacket;
+import inf112.skeleton.common.packet.data.LoginResponsePacket;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
@@ -25,7 +29,7 @@ public class IncomingPacketHandler {
         ToServer packetId = ToServer.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
             case LOGIN:
-                LoginPacket loginpkt = Tools.GSON.fromJson(jsonObject.get("data"), LoginPacket.class);
+                LoginPacket loginpkt = LoginPacket.parseJSON(jsonObject);
                 User loggingIn = UserLogging.login(loginpkt, incoming);
                 if (loggingIn != null) {
                     if (!handler.loggedInPlayers.contains(loggingIn)) {
@@ -64,7 +68,7 @@ public class IncomingPacketHandler {
                 }
                 break;
             case CHAT_MESSAGE:
-                ChatMessagePacket msgPacket = Tools.GSON.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
+                ChatMessagePacket msgPacket = ChatMessagePacket.parseJSON(jsonObject);
                 User messagingUser = handler.getEntityFromLoggedIn(incoming);
                 if (msgPacket.getMessage().startsWith("!")) {
                     String[] command = msgPacket.getMessage().substring(1).split(" ");
@@ -94,6 +98,12 @@ public class IncomingPacketHandler {
                     user.player.startMovement(user.player.getDirection(), translateMoveAmount(card));
                 }
                 System.out.println(card);
+                System.out.println("hello world!");
+                break;
+            case CREATE_LOBBY:
+                User actionUser = handler.getEntityFromLoggedIn(incoming);
+                CreateLobbyPacket lobbyPacket = CreateLobbyPacket.parseJSON(jsonObject);
+                actionUser.createLobby(handler.game, lobbyPacket);
                 break;
             default:
                 System.err.println("Unhandled packet: " + packetId.name());

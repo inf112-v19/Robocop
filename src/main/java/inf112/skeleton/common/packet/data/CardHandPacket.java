@@ -1,6 +1,8 @@
-package inf112.skeleton.common.packet;
+package inf112.skeleton.common.packet.data;
 
+import com.google.gson.JsonObject;
 import inf112.skeleton.common.specs.Card;
+import inf112.skeleton.common.utility.Tools;
 
 public class CardHandPacket implements PacketData {
     public int[] hand;
@@ -22,4 +24,9 @@ public class CardHandPacket implements PacketData {
             this.hand[i] = hand[i].getPriority();
         }
     }
+
+    public static CardHandPacket parseJSON(JsonObject jsonObject) {
+        return Tools.GSON.fromJson(jsonObject.get("data"), CardHandPacket.class);
+    }
+
 }
