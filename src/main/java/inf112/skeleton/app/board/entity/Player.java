@@ -1,5 +1,6 @@
 package inf112.skeleton.app.board.entity;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.*;
@@ -93,12 +94,15 @@ public class Player {
      */
     public boolean sendNextSelectedCard() {
         if(selectedCards.isEmpty()) {
+            Gdx.app.log("Player clientside - sendNextSelectedCard", "Returning false");
             return false;
         }
         CardPacket data = new CardPacket(selectedCards.remove(0));
-        System.out.println("Constructed package: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
+        Gdx.app.log("Player clientside - sendNextSelectedCard", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
         Packet packet = new Packet(ToServer.CARD_PACKET.ordinal(), data);
+        Gdx.app.log("Player clientside - sendNextSelectedCard", "Constructed packet: " + Tools.GSON.toJson(packet));
         RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r \n");
+        Gdx.app.log("Player clientside - sendNextSelectedCard", "Returning true");
         return true;
     }
 

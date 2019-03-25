@@ -1,5 +1,6 @@
 package inf112.skeleton.server.packet;
 
+import com.badlogic.gdx.Gdx;
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.packet.data.*;
@@ -94,8 +95,8 @@ public class IncomingPacketHandler {
                 } else {
                     user.player.startMovement(user.player.getDirection(), translateMoveAmount(card));
                 }
+                Gdx.app.log("IncomingPacketHandler serverside - handleIncomingPacket", "CARD_PACKET card: " + card);
                 System.out.println(card);
-                System.out.println("hello world!");
                 break;
             case CREATE_LOBBY:
                 User actionUser = handler.getEntityFromLoggedIn(incoming);

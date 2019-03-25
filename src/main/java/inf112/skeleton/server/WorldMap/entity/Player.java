@@ -1,5 +1,6 @@
 package inf112.skeleton.server.WorldMap.entity;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.packet.data.CardHandPacket;
@@ -110,7 +111,7 @@ public class Player {
         CardPacket data = new CardPacket(deck.dealCard());
         Packet packet = new Packet(packetId, data);
 
-        System.out.println("sending packet " + packet.toString());
+        System.out.println("[Player serverside - sendCard] Sending packet " + packet.toString());
         owner.sendPacket(packet);
 
     }
@@ -124,6 +125,7 @@ public class Player {
         CardHandPacket data = new CardHandPacket(sendDeck);
         Packet packet = new Packet(packetId, data);
 
+        System.out.println("[Player serverside - sendCardHand] Sending packet " + packet.toString());
         owner.sendPacket(packet);
     }
 

@@ -48,13 +48,13 @@ public class RoboRally extends ApplicationAdapter {
                 TimeUnit.MILLISECONDS.sleep(100);
                 if (++i == j) {
                     j <<= 1;
-                    System.out.println("RoboRally <create>: Channel not yet set... (waited " + (i / 10.0f) + " seconds)");
+                    Gdx.app.log("RoboRally clientside - create", "Channel not yet set. (waited " + (i / 10.0f) + " seconds)");
                 }
             } catch (InterruptedException e) {
             }
         }
         if (i > 0)
-            System.out.println("RoboRally <create>: Channel finally set :D Initializing main menu...");
+            Gdx.app.log("RoboRally clientside - create", "Channel set. Initializing main menu...");
 
         gsm.push(new State_Login(gsm, channel));
         gameBoard = new TiledMapLoader();
@@ -73,8 +73,8 @@ public class RoboRally extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //Tmp, for testing
-        if(Gdx.input.isKeyJustPressed(Input.Keys.O)) {
-            System.out.println("sending next card");
+        if(Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
+            Gdx.app.log("RoboRally clientside - render", "Sending next card");
             System.out.println(RoboRally.gameBoard.myPlayer.sendNextSelectedCard());
         }
 
