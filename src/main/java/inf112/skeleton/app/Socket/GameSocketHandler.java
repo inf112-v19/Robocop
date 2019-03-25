@@ -36,6 +36,9 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                             LoginResponsePacket.parseJSON(jsonObject).getStatusCode()];
                 }
                 break;
+            case INIT_CLIENT:
+                RoboRally.gameBoard.setupPlayer(PlayerInitPacket.parseJSON(jsonObject));
+                break;
 
             case INIT_PLAYER:
                 RoboRally.gameBoard.addPlayer(PlayerInitPacket.parseJSON(jsonObject));

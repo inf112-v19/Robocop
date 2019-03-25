@@ -227,6 +227,10 @@ public abstract class GameBoard {
         this.players.put(pkt.getName(), new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing()));
     }
 
+    public void setupPlayer(PlayerInitPacket pkt) {
+        this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing());
+    }
+
     public void removePlayer(PlayerRemovePacket pkt) {
         Player leavingPlayer = this.getPlayer(pkt.getName());
         this.entities.remove(leavingPlayer.getRobot());

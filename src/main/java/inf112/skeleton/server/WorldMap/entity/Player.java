@@ -172,7 +172,7 @@ public class Player {
 
 
     public void sendInit() {
-        FromServer initPlayer = FromServer.INIT_PLAYER;
+        FromServer initPlayer = FromServer.INIT_CLIENT;
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(name, currentPos, currentHP, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
