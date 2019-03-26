@@ -9,7 +9,6 @@ import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
-import inf112.skeleton.server.GameWorldInstance;
 import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.Server;
 import inf112.skeleton.server.login.UserLogging;
@@ -87,11 +86,10 @@ public class IncomingPacketHandler {
                 CardPacket cardPacket = Tools.GSON.fromJson(jsonObject.get("data"), CardPacket.class);
                 User user = handler.getEntityFromLoggedIn(incoming);
                 Card card = Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority());
-                user.player.addCardToSelectedArray(card);
-                Gdx.app.log("IncomingPacketHandler serverside - handleIncomingPacket", "Added card to player selectedCards[]");
-                Gdx.app.log("IncomingPacketHandler serverside - handleIncomingPacket", "Removed card " + user.player.getCardFromSelectedArray() + " from player selectedCards[]");
-
-
+                //user.player.addCardToSelectedArray(card);
+                Server.game.addUserAndCard(user, card);
+                Gdx.app.log("IncomingPacketHandler serverside - handleIncomingPacket", "Added user and card to hashmap.");
+                /*
                 if(card.getType() == CardType.ROTATELEFT) {
                     Server.game.setTimer(10);
                     user.player.rotateLeft();
@@ -104,9 +102,8 @@ public class IncomingPacketHandler {
                 } else {
                     Server.game.setTimer(10 * Math.abs(translateMoveAmount(card)));
                     user.player.startMovement(user.player.getDirection(), translateMoveAmount(card));
-                }
+                }*/
                 Gdx.app.log("IncomingPacketHandler serverside - handleIncomingPacket", "CARD_PACKET card: " + card);
-                System.out.println(card);
                 break;
             case CREATE_LOBBY:
                 User actionUser = handler.getEntityFromLoggedIn(incoming);
