@@ -17,16 +17,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
 import inf112.skeleton.common.packet.data.LobbyJoinResponsePacket;
 import io.netty.channel.Channel;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 enum MenuStates {
     Welcome,
@@ -53,7 +53,7 @@ public class State_MainMenu extends GameState {
 
     public InputMultiplexer im;
 
-    public ArrayList<LobbyJoinResponsePacket> queuedPackets = new ArrayList<>();
+    public Queue<LobbyJoinResponsePacket> queuedPackets = new ConcurrentLinkedQueue<>();
 
 
     private final int   pad_leftRight       = 7,
@@ -233,9 +233,20 @@ public class State_MainMenu extends GameState {
             }else {
                 packet.setHandled(true);
 
-
-
-                System.out.println("Found packet");
+                addTab(packet.getLobbyName(),
+                        new Tab_Lobby(gsm, channel, new MapInfo(
+                            packet.getLobbyName(),
+                            packet.getMapFile().name,
+                            packet.getHost(),
+                            "Temporary description",
+                            packet.getUsers().length,
+                            8,
+                            2,
+                            8,
+                            MapDifficulty.Hard,
+                            new TextureRegionDrawable(new TextureRegion(
+                                    new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Map_Preview.png"))))
+                ), RoboRally.roboRally.gameBoard.myPlayer.name.equals(packet.getHost())), true);
             }
         }
     }

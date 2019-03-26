@@ -31,11 +31,7 @@ public class Lobby {
                         usernames[i] = users[i].getName();
                     }
                 }
-                boolean isHost = false;
-                if (user == host) {
-                    isHost = true;
-                }
-                LobbyJoinResponsePacket lobbyResposePacket = new LobbyJoinResponsePacket(name, usernames, isHost, map);
+                LobbyJoinResponsePacket lobbyResposePacket = new LobbyJoinResponsePacket(name, usernames, host.getName(), map);
                 Packet pkt = new Packet(FromServer.JOIN_LOBBY_RESPONSE, lobbyResposePacket);
                 user.sendPacket(pkt);
                 return;
