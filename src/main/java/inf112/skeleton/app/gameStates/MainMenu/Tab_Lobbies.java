@@ -133,60 +133,9 @@ public class Tab_Lobbies extends MenuTab {
 
 
 
-
-
-
-        // tmp
-
-        addLobby(new MapInfo(
-                "Steffens lobby",
-                "Map_Default",
-                "Steffen",
-                "Hello my fellow friends.\nThis map is not something for the faint hearted.\n" +
-                        "You will face fears you could never imagine.\n\nAre you ready for it?",
-                3,
-                8,
-                4,
-                8,
-                MapDifficulty.Expert,
-                new TextureRegionDrawable(new TextureRegion(
-                        new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Map_Preview.png"))))
-
-        ));
-
-        addLobby(new MapInfo(
-                "Some other dewds lobby",
-                "Map_2",
-                "Henning",
-                "yeah boii, here we go!",
-                3,
-                8,
-                4,
-                8,
-                MapDifficulty.Expert,
-                new TextureRegionDrawable(new TextureRegion(
-                        new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Map_Preview.png"))))
-
-        ));
-
-        addLobby(new MapInfo(
-                "lobby3",
-                "Horrorhouse",
-                "Anna Kvam",
-                "Some description here...\n\nTODO: Make it better",
-                1,
-                8,
-                4,
-                8,
-                MapDifficulty.Intermediate,
-                new TextureRegionDrawable(new TextureRegion(
-                        new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Map_Preview.png"))))
-
-        ));
-
+        // Request a list of all lobbies
         Packet packet = new Packet(ToServer.REQUEST_DATA, new DataRequestPacket(DataRequest.LOBBY_LIST));
         ch.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
-
     }
 
     public void addLobby(final MapInfo mapInfo) {
