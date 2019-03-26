@@ -129,6 +129,27 @@ public class Player {
         owner.sendPacket(packet);
     }
 
+    public boolean addCardToSelectedArray(Card card) {
+        for(int i = 0; i < selectedCards.length; i++) {
+            if(selectedCards[i] == null) {
+                selectedCards[i] = card;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Card getCardFromSelectedArray() {
+        for(int i = 0; i < selectedCards.length; i++) {
+            if(selectedCards[i] != null) {
+                Card foo = selectedCards[i];
+                selectedCards[i] = null;
+                return foo;
+            }
+        }
+        return null;
+    }
+
 
     public void moveX(float amount) {
         if (!canMove(amount, 0)) {

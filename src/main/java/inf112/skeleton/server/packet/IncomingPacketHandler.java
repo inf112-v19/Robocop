@@ -9,7 +9,9 @@ import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
+import inf112.skeleton.server.GameWorldInstance;
 import inf112.skeleton.server.RoboCopServerHandler;
+import inf112.skeleton.server.Server;
 import inf112.skeleton.server.login.UserLogging;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
@@ -85,14 +87,22 @@ public class IncomingPacketHandler {
                 CardPacket cardPacket = Tools.GSON.fromJson(jsonObject.get("data"), CardPacket.class);
                 User user = handler.getEntityFromLoggedIn(incoming);
                 Card card = Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority());
+                user.player.addCardToSelectedArray(card);
+                Gdx.app.log("IncomingPacketHandler serverside - handleIncomingPacket", "Added card to player selectedCards[]");
+                Gdx.app.log("IncomingPacketHandler serverside - handleIncomingPacket", "Removed card " + user.player.getCardFromSelectedArray() + " from player selectedCards[]");
+
 
                 if(card.getType() == CardType.ROTATELEFT) {
+                    Server.game.setTimer(10);
                     user.player.rotateLeft();
                 } else if (card.getType() == CardType.ROTATERIGHT) {
+                    Server.game.setTimer(10);
                     user.player.rotateRight();
                 } else if (card.getType() == CardType.ROTATE180) {
+                    Server.game.setTimer(10);
                     user.player.rotate180();
                 } else {
+                    Server.game.setTimer(10 * Math.abs(translateMoveAmount(card)));
                     user.player.startMovement(user.player.getDirection(), translateMoveAmount(card));
                 }
                 Gdx.app.log("IncomingPacketHandler serverside - handleIncomingPacket", "CARD_PACKET card: " + card);

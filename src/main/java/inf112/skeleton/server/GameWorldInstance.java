@@ -18,6 +18,7 @@ public class GameWorldInstance implements ApplicationListener {
 
     private int frame = 0;
     private final int TPS = 16;
+    private int countdownTimer = 0;
     private boolean inLobby = true;
     private boolean dealingCards = false;
     private boolean waitingForSelectedCards = false;
@@ -59,10 +60,21 @@ public class GameWorldInstance implements ApplicationListener {
     }
 
     public void tick() {
+        if (deck.size() <= 11 /*🦀🦀🦀*/) {
+            deck = new CardDeck();
+        }
+        if(countdownTimer > 0) {
+            countdownTimer--;
+            System.out.println("[GameWorldInstance serverside - tick] Timer currently: " + countdownTimer);
+        }
         for (User user : RoboCopServerHandler.loggedInPlayers) {
             user.player.update(gameBoard);
         }
 
+    }
+
+    public void setTimer(int ticks) {
+        this.countdownTimer = ticks;
     }
 
     @Override

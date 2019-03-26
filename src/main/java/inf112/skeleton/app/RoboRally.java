@@ -75,7 +75,7 @@ public class RoboRally extends ApplicationAdapter {
         //Tmp, for testing
         if(Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
             Gdx.app.log("RoboRally clientside - render", "Sending next card");
-            System.out.println(RoboRally.gameBoard.myPlayer.sendNextSelectedCard());
+            RoboRally.gameBoard.myPlayer.sendNextSelectedCard();
         }
 
         gsm.update(0);
