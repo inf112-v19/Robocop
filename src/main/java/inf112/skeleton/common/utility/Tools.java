@@ -13,7 +13,7 @@ public class Tools {
      * CardReconstructor can only be used to reconstruct cards actually used in RoboRally.
      */
     public static class CardReconstructor {
-        public CardReconstructor() {        }
+        private CardReconstructor() {        }
 
         public Card reconstructCard(int priority) {
             if(priority >= 10 && priority <= 60) {

@@ -1,5 +1,6 @@
 package inf112.skeleton.app.board.entity;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.*;
@@ -10,6 +11,7 @@ import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
+import inf112.skeleton.server.card.CardDeck;
 
 import java.util.ArrayList;
 
@@ -35,10 +37,6 @@ public class Player {
         this.initialPos = pos;
         this.initalDirection = directions;
         this.selectedCards = new ArrayList<>(5);
-        //Tmp
-        for(int i = 0; i < 5; i++) {
-            selectedCards.add(new Card(999, CardType.FORWARD3));
-        }
     }
 
     /**
@@ -95,12 +93,16 @@ public class Player {
      * @return True if packet could be constructed and has been sent, false otherwise.
      */
     public boolean sendNextSelectedCard() {
-        if(selectedCards.size() == 0) {
+        if(selectedCards.isEmpty()) {
+            Gdx.app.log("Player clientside - sendNextSelectedCard", "Returning false");
             return false;
         }
         CardPacket data = new CardPacket(selectedCards.remove(0));
+        Gdx.app.log("Player clientside - sendNextSelectedCard", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
         Packet packet = new Packet(ToServer.CARD_PACKET.ordinal(), data);
-        RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+        Gdx.app.log("Player clientside - sendNextSelectedCard", "Constructed packet: " + Tools.GSON.toJson(packet));
+        RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r \n");
+        Gdx.app.log("Player clientside - sendNextSelectedCard", "Returning true");
         return true;
     }
 

@@ -68,14 +68,16 @@ public class PlayerDeck {
             }
         });
 
+        // Create button that lets the player lock in their selected cards.
         btn_done = bg.generate("Done");
         btn_done.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 swapStages();
-                RoboRally.gameBoard.myPlayer.getRobot().cardsChosen = new ArrayList<>();
-                for (ImageButton cardButton : chooseToButtons)
-                    RoboRally.gameBoard.myPlayer.getRobot().cardsChosen.add(pCards.get(cardButton));
+                // Iterate through clicked cards and add them to the players selected cards list.
+                for (ImageButton cardButton : chooseToButtons) {
+                    RoboRally.gameBoard.myPlayer.selectedCards.add(pCards.get(cardButton));
+                }
             }
         });
 

@@ -42,8 +42,8 @@ public class IncomingPacketHandler {
                         Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
                         incoming.writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
                         loggingIn.setLoggedIn(true);
-
-                        loggingIn.player.sendInit();
+                        loggingIn.initClient();
+//                        loggingIn.player.sendInit();
 
                         for (User user : handler.loggedInPlayers) {
                             if (user.getChannel() == incoming)

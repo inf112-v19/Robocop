@@ -2,7 +2,10 @@ package inf112.skeleton.server.Instance;
 
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
-import inf112.skeleton.common.packet.data.*;
+import inf112.skeleton.common.packet.data.ErrorLobbyResponsePacket;
+import inf112.skeleton.common.packet.data.LobbyJoinResponsePacket;
+import inf112.skeleton.common.packet.data.LobbyUpdatePacket;
+import inf112.skeleton.common.packet.data.StateChangePacket;
 import inf112.skeleton.common.specs.LobbyError;
 import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.specs.StateChange;
@@ -23,6 +26,25 @@ public class Lobby {
         this.host = host;
         this.gwi = gwi;
         addUser(host);
+        startGame();
+    }
+
+    public void initGameWorld() {
+        game = new Game(this, map);
+
+//        broadcastPacket();
+    }
+
+    public void startGame() {
+
+    }
+
+    public void broadcastPacket(Packet pkt) {
+        for (int i = 0; i < users.length; i++) {
+            if(users[i] != null){
+                users[i].sendPacket(pkt);
+            }
+        }
     }
 
     public void addUser(User user) {
@@ -136,6 +158,12 @@ public class Lobby {
     public void sendMessage(Packet responsePacket) {
         for (int i = 0; i < users.length; i++) {
             users[i].sendPacket(responsePacket);
+        }
+    }
+
+    public void update() {
+        if (game != null) {
+            game.update();
         }
     }
 }
