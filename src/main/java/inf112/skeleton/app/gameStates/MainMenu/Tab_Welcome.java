@@ -30,8 +30,8 @@ public class Tab_Welcome extends MenuTab{
                         fl_tabHeight    = 45,
                         fl_headerHeight = 50;
 
-    public Tab_Welcome(GameStateManager gsm, Channel channel) {
-        super(gsm, channel);
+    public Tab_Welcome(GameStateManager gameStateManager, Channel ch) {
+        super(gameStateManager, ch);
 
         // Add Text Space (left half of the screen)
         Drawable textSpace = new TextureRegionDrawable(new TextureRegion(

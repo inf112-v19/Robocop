@@ -11,7 +11,8 @@ enum MapDifficulty {
 }
 
 public class MapInfo {
-    String  mapName,
+    String  lobbyName,
+            mapName,
             hostName,
             description;
     int     numPlayers,
@@ -22,6 +23,7 @@ public class MapInfo {
     MapDifficulty difficulty;
 
     public MapInfo(
+            String lobbyName,
             String mapName,
             String hostName,
             String description,
@@ -32,6 +34,7 @@ public class MapInfo {
             MapDifficulty difficulty,
             Drawable minimap_preview
     ){
+        this.lobbyName              = lobbyName;
         this.mapName                = mapName;
         this.hostName               = hostName;
         this.description            = description;
