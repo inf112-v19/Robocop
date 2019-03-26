@@ -20,8 +20,10 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
+import inf112.skeleton.common.packet.data.LobbyJoinResponsePacket;
 import io.netty.channel.Channel;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -50,6 +52,9 @@ public class State_MainMenu extends GameState {
     Channel channel;
 
     public InputMultiplexer im;
+
+    public ArrayList<LobbyJoinResponsePacket> queuedPackets = new ArrayList<>();
+
 
     private final int   pad_leftRight       = 7,
                         h1_height           = 60,
@@ -222,7 +227,17 @@ public class State_MainMenu extends GameState {
 
     @Override
     public void update(float dt) {
+        for (LobbyJoinResponsePacket packet : queuedPackets) {
+            if (packet.isHandled()) {
+                queuedPackets.remove(packet);
+            }else {
+                packet.setHandled(true);
 
+
+
+                System.out.println("Found packet");
+            }
+        }
     }
 
     @Override

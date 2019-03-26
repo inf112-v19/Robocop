@@ -9,12 +9,21 @@ public class LobbyJoinResponsePacket implements PacketData {
     String[] users;
     MapFile mapFile;
     boolean isHost;
+    boolean handled = false;
 
     public LobbyJoinResponsePacket(String lobbyName, String[] users, boolean isHost, MapFile mapFile) {
         this.lobbyName = lobbyName;
         this.users = users;
         this.isHost = isHost;
         this.mapFile = mapFile;
+    }
+
+    public boolean isHandled() {
+        return handled;
+    }
+
+    public void setHandled(boolean handled) {
+        this.handled = handled;
     }
 
     public String getLobbyName() {

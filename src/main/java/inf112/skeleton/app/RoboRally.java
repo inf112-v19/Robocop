@@ -29,6 +29,7 @@ public class RoboRally extends ApplicationAdapter {
     public Class currentState;
     private GameSocketHandler socketHandler = null;
     public static GameBoard gameBoard;
+    public static RoboRally roboRally;
     public static String username = "";
 
 
@@ -40,6 +41,7 @@ public class RoboRally extends ApplicationAdapter {
     public void create() {
         batch = new SpriteBatch();
         gsm = new GameStateManager();
+        roboRally = this;
         Sprites.setup();
 
         long i = 0, j = 1;

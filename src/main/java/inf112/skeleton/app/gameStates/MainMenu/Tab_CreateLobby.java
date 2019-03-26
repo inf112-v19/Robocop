@@ -71,19 +71,6 @@ public class Tab_CreateLobby extends MenuTab {
                          State_MainMenu menu = ((State_MainMenu)gsm.peek());
                          menu.setFreeze(false);
                          menu.removeCurrentTab();
-                         menu.addTab(selected, new Tab_Lobby(gsm, channel, new MapInfo(
-                             lobbyName.getText(),
-                             selected,
-                             RoboRally.username,
-                             "Insert some sort of meaningful description here",
-                             1,
-                             8,
-                             2,
-                             8,
-                             MapDifficulty.Hard,
-                             new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Map_Preview.png"))))
-                         ), false), true);
-                         menu.setFreeze(true);
 
                          return;
                      }
