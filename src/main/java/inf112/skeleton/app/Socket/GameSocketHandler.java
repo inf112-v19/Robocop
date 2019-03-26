@@ -1,6 +1,7 @@
 package inf112.skeleton.app.Socket;
 
 
+import com.badlogic.gdx.Gdx;
 import com.google.gson.JsonObject;
 import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.RoboRally;
@@ -25,7 +26,7 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
 
 
     public void handleIncomingPacket(JsonObject jsonObject) {
-        System.out.println("Handling incoming packet...");
+        Gdx.app.log("GameSocketHandler clientside -  handleIncomingPacket", "Handling incoming packet...");
         FromServer packetId = FromServer.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
             case LOGINRESPONSE:

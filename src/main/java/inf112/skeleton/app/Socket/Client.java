@@ -23,7 +23,7 @@ public class Client {
             Bootstrap bootstrap = new Bootstrap()
                     .group(group)
                     .channel(NioSocketChannel.class) //use new io sockets
-                    .handler(new GameSocketInitializer(game)); //handle all IncomingPacket messages
+                    .handler(new GameSocketInitializer(game)); //handle all ToServer messages
 
             ChannelFuture f = bootstrap.connect("localhost", 58008).sync();
             game.channel = f.channel(); // creating a connection with the server
@@ -48,7 +48,6 @@ public class Client {
 
                             Lwjgl3ApplicationConfiguration application = new Lwjgl3ApplicationConfiguration();
                             application.setWindowedMode(RoboRally.width, RoboRally.height);
-                            application.setWindowSizeLimits(1024, 576, 7680, 4320);
                             application.setTitle(RoboRally.TITLE);
                             game.nioWorkerGroup = group;
 
@@ -69,7 +68,7 @@ public class Client {
                 Bootstrap bootstrap = new Bootstrap()
                         .group(group)
                         .channel(NioSocketChannel.class) //use new io sockets
-                        .handler(new GameSocketInitializer(game)); //handle all IncomingPacket messages
+                        .handler(new GameSocketInitializer(game)); //handle all ToServer messages
 
                 ChannelFuture f = bootstrap.connect("localhost", 58008).sync();
                 game.channel = f.channel(); // creating a connection with the server

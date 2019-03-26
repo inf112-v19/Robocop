@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
+import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.Directions;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class Robot extends Entity {
         this.position[0] = (int) x * 64;
         this.position[1] = (int) y * 64;
         this.health = 5;
-        this.facing = NORTH;
+        this.facing = player.initalDirection;
         stateTime = 0f;
         this.player = player;
     }

@@ -1,5 +1,6 @@
 package inf112.skeleton.server.WorldMap.entity;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.packet.data.CardHandPacket;
@@ -50,6 +51,29 @@ public class Player {
         this.timeInit = System.currentTimeMillis();
     }
 
+    public Directions getDirection() {
+        return this.direction;
+    }
+
+    public void rotateLeft() {
+        direction = values()[(direction.ordinal() + values().length - 1) % values().length];
+        sendUpdate();
+    }
+
+    public void rotateRight() {
+        direction = values()[(direction.ordinal() + values().length + 1) % values().length];
+        sendUpdate();
+    }
+
+    public void rotate180() {
+        direction = values()[(direction.ordinal() + 2) % values().length];
+        sendUpdate();
+    }
+
+    public int getCurrentHP() {
+        return this.currentHP;
+    }
+
 
     public boolean processMovement(long t) {
         if (this.currentPos.x == this.movingTo.x && this.currentPos.y == this.movingTo.y) {
@@ -88,7 +112,7 @@ public class Player {
         CardPacket data = new CardPacket(deck.dealCard());
         Packet packet = new Packet(packetId, data);
 
-        System.out.println("sending packet " + packet.toString());
+        System.out.println("[Player serverside - sendCard] Sending packet " + packet.toString());
         owner.sendPacket(packet);
 
     }
@@ -102,7 +126,29 @@ public class Player {
         CardHandPacket data = new CardHandPacket(sendDeck);
         Packet packet = new Packet(packetId, data);
 
+        System.out.println("[Player serverside - sendCardHand] Sending packet " + packet.toString());
         owner.sendPacket(packet);
+    }
+
+    public boolean addCardToSelectedArray(Card card) {
+        for(int i = 0; i < selectedCards.length; i++) {
+            if(selectedCards[i] == null) {
+                selectedCards[i] = card;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Card getCardFromSelectedArray() {
+        for(int i = 0; i < selectedCards.length; i++) {
+            if(selectedCards[i] != null) {
+                Card foo = selectedCards[i];
+                selectedCards[i] = null;
+                return foo;
+            }
+        }
+        return null;
     }
 
 
@@ -170,6 +216,10 @@ public class Player {
 
     public void sendUpdate() {
         //TODO: send updated values to all connections
+        FromServer pktId = FromServer.PLAYER_UPDATE;
+        UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(name, direction, movingTiles, currentPos, movingTo);
+        Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
+        RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);
     }
 
     public void sendToNewClient(Channel newUserChannel) {
