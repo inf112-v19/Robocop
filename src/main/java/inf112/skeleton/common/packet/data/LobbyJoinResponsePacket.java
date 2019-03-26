@@ -1,6 +1,8 @@
 package inf112.skeleton.common.packet.data;
 
+import com.google.gson.JsonObject;
 import inf112.skeleton.common.specs.MapFile;
+import inf112.skeleton.common.utility.Tools;
 
 public class LobbyJoinResponsePacket implements PacketData {
     String lobbyName;
@@ -21,6 +23,10 @@ public class LobbyJoinResponsePacket implements PacketData {
 
     public String[] getUsers() {
         return users;
+    }
+
+    public static LobbyJoinResponsePacket parseJSON(JsonObject jsonObject) {
+        return Tools.GSON.fromJson(jsonObject.get("data"), LobbyJoinResponsePacket.class);
     }
 
 }
