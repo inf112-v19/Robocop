@@ -44,7 +44,6 @@ public class GameWorldInstance implements ApplicationListener {
 
     @Override
     public void create() {
-        gameBoard = new TiledMapLoader();
         User dummyUser = new User("username", "pass", null);
         Lobby testLobby = new Lobby("ds", MapFile.CROSS, dummyUser, this);
         addLobby(testLobby);
@@ -69,8 +68,13 @@ public class GameWorldInstance implements ApplicationListener {
     }
 
     public void tick() {
-        for (User user : RoboCopServerHandler.loggedInPlayers) {
-            user.player.update(gameBoard);
+//        for (User user : RoboCopServerHandler.loggedInPlayers) {
+//            user.player.update(gameBoard);
+//        }
+
+        for (Lobby lobby :
+                lobbies.values()) {
+            lobby.update();
         }
 
     }
