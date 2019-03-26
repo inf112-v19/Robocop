@@ -264,6 +264,7 @@ public class State_MainMenu extends GameState {
                     }
                 }
                 addTab(packet.getLobbyName(), tab, true);
+                setFreeze(true);
             }
         }
 
