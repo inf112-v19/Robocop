@@ -7,6 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.specs.TileDefinition;
 
 public class TiledMapLoader extends GameBoard {
@@ -14,11 +15,10 @@ public class TiledMapLoader extends GameBoard {
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
 
-    public TiledMapLoader() {
+    public TiledMapLoader(MapFile mapFile) {
         super();
-        tiledMap = new TmxMapLoader().load("board/Cross.tmx");
+        tiledMap = new TmxMapLoader().load(mapFile.filename);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-
     }
 
     @Override

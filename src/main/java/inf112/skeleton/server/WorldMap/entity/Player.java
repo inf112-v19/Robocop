@@ -194,7 +194,9 @@ public class Player {
 
 
     public void sendInit() {
-        FromServer initPlayer = FromServer.INIT_CLIENT;
+        System.out.println("called sendInit");
+
+        FromServer initPlayer = FromServer.INIT_LOCALPLAYER;
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(name, currentPos, currentHP, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);

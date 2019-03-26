@@ -14,6 +14,8 @@ import inf112.skeleton.app.board.entity.Sprites;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
 import inf112.skeleton.common.packet.data.ClientInitPacket;
+import inf112.skeleton.common.packet.data.InitMapPacket;
+import inf112.skeleton.common.specs.MapFile;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 
@@ -30,12 +32,17 @@ public class RoboRally extends ApplicationAdapter {
     public Class currentState;
     private GameSocketHandler socketHandler = null;
     public static GameBoard gameBoard;
+    private MapFile board;
     public static RoboRally roboRally;
     public static String username = "";
     public static String clientInfo = "";
 
     public static void setClientInfo(ClientInitPacket pkt) {
         clientInfo = pkt.getName();
+    }
+
+    public void setBoard(InitMapPacket mapPacket) {
+        this.board = mapPacket.getMap();
     }
 
 
@@ -78,6 +85,11 @@ public class RoboRally extends ApplicationAdapter {
 
     @Override
     public void render() {
+        if(gameBoard == null){
+            if(this.board!=null){
+                gameBoard = new TiledMapLoader(board);
+            }
+        }
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //Tmp, for testing

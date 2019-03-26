@@ -23,11 +23,23 @@ public class Game {
 
         for (User user :
                 lobby.users) {
-            this.players.add(new Player(user.getName(),new Vector2(10,10), 10, Directions.SOUTH, user));
+//            this.players.add(new Player(user.getName(),new Vector2(10,10), 10, Directions.SOUTH, user));
         }
     }
 
 
     public void update() {
+    }
+
+    public void initPlayers() {
+        System.out.println("called initPlayers in game");
+
+        for (int i = 0; i < lobby.users.length; i++) {
+            if(lobby.users[i] != null){
+                Player player = new Player(lobby.users[i].getName(), new Vector2(10, 10), 10, Directions.SOUTH, lobby.users[i]);
+                this.players.add(player);
+                player.sendInit();
+            }
+        }
     }
 }

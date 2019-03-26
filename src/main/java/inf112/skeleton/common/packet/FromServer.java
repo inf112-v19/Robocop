@@ -17,4 +17,6 @@ public enum FromServer {
     LIST_LOBBIES,
     STATE_CHANGED,
     LOBBY_UPDATE,
+    INIT_MAP,
+    INIT_LOCALPLAYER, // TODO: DO IT NOW!
 }

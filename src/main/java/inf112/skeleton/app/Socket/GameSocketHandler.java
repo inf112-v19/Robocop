@@ -41,11 +41,16 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
 //                RoboRally.gameBoard.setupPlayer(PlayerInitPacket.parseJSON(jsonObject));
                 RoboRally.setClientInfo(ClientInitPacket.parseJSON(jsonObject));
                 break;
+            case INIT_MAP:
+                RoboRally.roboRally.setBoard(InitMapPacket.parseJSON(jsonObject));
 
             case INIT_PLAYER:
                 RoboRally.gameBoard.addPlayer(PlayerInitPacket.parseJSON(jsonObject));
                 break;
-
+            case INIT_LOCALPLAYER:
+                RoboRally.gameBoard.setupPlayer(PlayerInitPacket.parseJSON(jsonObject));
+//                RoboRally.setClientInfo(ClientInitPacket.parseJSON(jsonObject));
+                break;
             case CHATMESSAGE:
                 if (ScrollableTextbox.textbox != null) {
                     ChatMessagePacket chatMessagePacket = ChatMessagePacket.parseJSON(jsonObject);

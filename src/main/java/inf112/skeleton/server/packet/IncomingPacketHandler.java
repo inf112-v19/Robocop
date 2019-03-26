@@ -45,11 +45,6 @@ public class IncomingPacketHandler {
                         loggingIn.initClient();
 //                        loggingIn.player.sendInit();
 
-                        for (User user : handler.loggedInPlayers) {
-                            if (user.getChannel() == incoming)
-                                continue;
-                            user.player.sendToNewClient(incoming);
-                        }
                         handler.connections.remove(loggingIn);
                     } else {
                         AlreadyLoggedIn(incoming, handler, loggingIn.name);
@@ -75,7 +70,7 @@ public class IncomingPacketHandler {
                     Packet responsePacket = new Packet(chatMessage.ordinal(), chatMessagePacket);
 
                     if (messagingUser.isInLobby()) {
-                        messagingUser.getLobby().sendMessage(responsePacket);
+                        messagingUser.getLobby().broadcastPacket(responsePacket);
                     }
                 }
                 break;
@@ -136,6 +131,15 @@ public class IncomingPacketHandler {
                 }
                 sendMessage("Error in command, proper usage: '!move north 3'.", messagingUser, handler);
 
+                break;
+            case "one":
+                messagingUser.getLobby().initGameWorld();
+                break;
+            case "two":
+                messagingUser.getLobby().initPlayers();
+                break;
+            case "three":
+                messagingUser.getLobby().startGame();
                 break;
             default:
                 sendMessage("Command not found \"" + command[0] + "\".", messagingUser, handler);
