@@ -1,6 +1,7 @@
 package inf112.skeleton.app.gameStates.MainMenu;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -20,7 +22,9 @@ import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
 import io.netty.channel.Channel;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 enum MenuStates {
     Welcome,
@@ -37,14 +41,15 @@ public class State_MainMenu extends GameState {
     private MenuStates menuState = MenuStates.Welcome;
 
     private Table h1, h2, main;
-    ImageTextButton.ImageTextButtonStyle h2_btn_style_focused, h2_btn_style_unfocused;
+    ImageTextButton.ImageTextButtonStyle h2_btn_style_focused, h2_btn_style_unfocused, h2_btn_style_frozen;
 
-    HashMap<String, MenuTab> tabs;
-    HashMap<String, ImageTextButton> tabButtons;
+    LinkedHashMap<String, MenuTab> tabs;
+    LinkedHashMap<String, ImageTextButton> tabButtons;
 
     ImageTextButton currentTab;
     Channel channel;
 
+    public InputMultiplexer im;
 
     private final int   pad_leftRight       = 7,
                         h1_height           = 60,
@@ -53,29 +58,37 @@ public class State_MainMenu extends GameState {
                         h2_pad_topBottom    = 2,
                         main_height         = 615,
                         main_padding        = 13;
+    private boolean     isFrozen;
 
     public State_MainMenu(GameStateManager gameStateManager, Channel ch) {
         super(gameStateManager, ch);
         channel = ch;
+        im = new InputMultiplexer();
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
         shape = new ShapeRenderer();
+
+        isFrozen = false;
 
         layout = new Table();
         layout.setSize(stage.getWidth(), stage.getHeight());
 
-        tabs = new HashMap<>();
-        tabButtons = new HashMap<>();
+        tabs = new LinkedHashMap<>();
+        tabButtons = new LinkedHashMap<>();
 
         // Add button styles
         Drawable    d_btn_f = new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/btn_rounded_focused.png")))),
-                d_btn = new TextureRegionDrawable(new TextureRegion(
-                        new Texture(Gdx.files.internal("graphics/ui/MainMenu/btn_rounded_nonfocused.png"))));
+                        new Texture(Gdx.files.internal("graphics/ui/MainMenu/btn_rounded_focused.png")))),
+                    d_btn = new TextureRegionDrawable(new TextureRegion(
+                        new Texture(Gdx.files.internal("graphics/ui/MainMenu/btn_rounded_nonfocused.png")))),
+                    d_btn_frozen = new TextureRegionDrawable(new TextureRegion(
+                            new Texture(Gdx.files.internal("graphics/ui/MainMenu/btn_rounded_frozen.png"))));
 
         h2_btn_style_focused = new ImageTextButton.ImageTextButtonStyle(d_btn_f, d_btn_f, d_btn_f, new BitmapFont());
         h2_btn_style_focused.fontColor = Color.BLACK;
         h2_btn_style_unfocused = new ImageTextButton.ImageTextButtonStyle(d_btn, d_btn, d_btn, new BitmapFont());
         h2_btn_style_unfocused.fontColor = Color.BLACK;
+        h2_btn_style_frozen = new ImageTextButton.ImageTextButtonStyle(d_btn_frozen, d_btn_frozen, d_btn_frozen, new BitmapFont());
+        h2_btn_style_frozen.fontColor = Color.BLACK;
 
         // Add header 1 (Text: "RoboCop"):
         h1 = new Table();
@@ -117,23 +130,11 @@ public class State_MainMenu extends GameState {
         layout.add(main).expand().row();
 
         // Add tabs
-        addTab("Welcome", new Tab_Welcome(gsm, channel));
-        addTab("Welcome2", new Tab_Welcome(gsm, channel));
-        addTab("Lobbies", new Tab_Lobbies(gsm, channel));
+        addTab("Lobbies", new Tab_Lobbies(gsm, channel), false);
 
         stage.addActor(layout);
-
-
-        // tmp
-        Gdx.input.setInputProcessor(stage);
-
-        Tab_Welcome tab = (Tab_Welcome) tabs.get("Welcome");
-
-        tab.addFriend("SteffenMistro", true);
-        tab.addFriend("SteffenMistroAngelus", true);
-        tab.addFriend("SteffenMistroFatherOfKings", true);
-
-        tab.setFriendStatus("SteffenMistroAngelus", false);
+        Gdx.input.setInputProcessor(im);
+        im.addProcessor(stage);
     }
 
     public void tabButtonAction (ImageTextButton textButton) {
@@ -155,7 +156,7 @@ public class State_MainMenu extends GameState {
     }
 
 
-    public void addTab(String tabname, MenuTab tab) {
+    public void addTab(String tabname, MenuTab tab, boolean goTo) {
         ImageTextButton newTabButton = new ImageTextButton(tabname, h2_btn_style_unfocused);
         h2.add(newTabButton).height(h2_height-2).pad(1).width(100).padLeft(10);
 
@@ -169,9 +170,50 @@ public class State_MainMenu extends GameState {
             }
         });
 
-        if (currentTab == null)
+        if (currentTab == null || goTo)
             tabButtonAction(newTabButton);
     }
+
+    public void removeCurrentTab() {
+        String removeName = currentTab.getText().toString();
+        tabButtons.remove(removeName);
+        tabs.remove(removeName);
+
+        h2.clearChildren();
+
+        ImageTextButton lastButton = null;
+
+        for (ImageTextButton btn : tabButtons.values()) {
+            h2.add(btn).height(h2_height-2).pad(1).width(100).padLeft(10);
+            lastButton = btn;
+        }
+        tabButtonAction(lastButton);
+    }
+
+    public void setFreeze(boolean frozen) {
+        if (frozen == isFrozen)
+            return;
+        isFrozen = frozen;
+
+        if (frozen) {
+            for (ImageTextButton btn : tabButtons.values()) {
+                if (btn.getStyle() == h2_btn_style_unfocused) {
+                    btn.setStyle(h2_btn_style_frozen);
+                    btn.setDisabled(true);
+                }
+            }
+            return;
+        }
+        else {
+            for (ImageTextButton btn : tabButtons.values()) {
+                if (btn.getStyle() == h2_btn_style_frozen) {
+                    btn.setStyle(h2_btn_style_unfocused);
+                    btn.setDisabled(false);
+                }
+            }
+        }
+    }
+
 
     @Override
     protected void handleInput() {
@@ -186,6 +228,7 @@ public class State_MainMenu extends GameState {
     @Override
     public void render(SpriteBatch sb) {
         Gdx.gl.glClearColor(color_primary.r,color_primary.g, color_primary.b, color_primary.a);
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
 

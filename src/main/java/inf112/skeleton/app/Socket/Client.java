@@ -71,7 +71,7 @@ public class Client {
                         .channel(NioSocketChannel.class) //use new io sockets
                         .handler(new GameSocketInitializer(game)); //handle all IncomingPacket messages
 
-                ChannelFuture f = bootstrap.connect("10.113.4.237", 58008).sync();
+                ChannelFuture f = bootstrap.connect("localhost", 58008).sync();
                 game.channel = f.channel(); // creating a connection with the server
             } finally {
             }

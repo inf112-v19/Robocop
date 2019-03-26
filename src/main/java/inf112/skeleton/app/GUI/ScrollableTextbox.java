@@ -28,7 +28,7 @@ import io.netty.channel.Channel;
 /*
  * Circular message-box.
  */
-public class ScrollableTextbox {
+public class ScrollableTextbox extends Actor{
     InputMultiplexer inputMultiplexer;
     TextField[] lines;
     int lineAmount = 0,
@@ -37,7 +37,7 @@ public class ScrollableTextbox {
             numFields = 5;
 
     Stage stage;
-    Table display;
+    public Table display;
 
     ImageButton button_up;
     ImageButton button_down;
@@ -47,12 +47,12 @@ public class ScrollableTextbox {
     Actor emptyField;
     Channel channel;
 
-    int tableWidth = 600,
+    public int tableWidth = 600,
             tableHeight = 140;
     public static ScrollableTextbox textbox = null;
 
 
-    public ScrollableTextbox(int limit, InputMultiplexer inputMultiplexer, Channel channel) {
+    public ScrollableTextbox(int limit, InputMultiplexer inputMultiplexer, Channel channel){
         this.channel = channel;
         this.textbox = this;
         lineLimit = limit;
