@@ -1,6 +1,7 @@
 package inf112.skeleton.server;
 
 import com.badlogic.gdx.ApplicationListener;
+import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.server.Instance.Lobby;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.TiledMapLoader;
@@ -32,10 +33,24 @@ public class GameWorldInstance implements ApplicationListener {
         lobbies.put(lobby.getName(), lobby);
     }
 
+    public ConcurrentHashMap<String, Lobby> getLobbies() {
+        return lobbies;
+    }
+
+    public void removeLobby(String name) {
+        lobbies.remove(name);
+    }
+
+
     @Override
     public void create() {
         gameBoard = new TiledMapLoader();
+        User dummyUser = new User("username", "pass", null);
+        Lobby testLobby = new Lobby("ds", MapFile.CROSS, dummyUser, this);
+        addLobby(testLobby);
     }
+
+
 
     @Override
     public void resize(int i, int i1) {
@@ -74,4 +89,5 @@ public class GameWorldInstance implements ApplicationListener {
     public void dispose() {
 
     }
+
 }

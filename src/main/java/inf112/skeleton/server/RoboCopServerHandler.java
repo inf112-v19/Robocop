@@ -58,6 +58,8 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
         Packet pkt = new Packet(pktId, data);
 
         String message = "[SERVER] - " + Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()) + " has left the channel!";
+        getEntityFromLoggedIn(incoming).leaveLobby();
+
         UserLogging.logoff(getEntityFromLoggedIn(incoming)); //Save the user in a json file
         for (User entity : loggedInPlayers) { //looping through all the other users and telling them that this user has left. Also removing the user from the list.
             if (entity.getChannel() == incoming)
@@ -114,7 +116,9 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
             if (!everyone)
                 if (entity.getChannel() == channel)
                     continue;
-            entity.getChannel().writeAndFlush(message + "\r\n");
+            if (entity.getChannel() != null) {
+                entity.getChannel().writeAndFlush(message + "\r\n");
+            }
         }
     }
 

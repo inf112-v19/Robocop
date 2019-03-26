@@ -16,6 +16,11 @@ import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.ToServer;
+import inf112.skeleton.common.packet.data.DataRequestPacket;
+import inf112.skeleton.common.packet.data.JoinLobbyPacket;
+import inf112.skeleton.common.packet.data.PacketData;
+import inf112.skeleton.common.specs.DataRequest;
+import inf112.skeleton.common.specs.MapDifficulty;
 import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
@@ -34,6 +39,8 @@ public class Tab_Lobbies extends MenuTab {
 
     ImageTextButton.ImageTextButtonStyle lobbyButtonStyleFocused, lobbyButtonStyleUnfocused;
     ImageTextButton currentLobby;
+
+    public Table lobbiesHeader;
 
 
     BitmapFont font;
@@ -58,7 +65,6 @@ public class Tab_Lobbies extends MenuTab {
 
         lobbyButtons = new LinkedHashMap<>();
         lobbyViews = new LinkedHashMap<>();
-
 
         // Set style of lobby buttons
         lobbyView_bg = new TextureRegionDrawable(new TextureRegion(
@@ -85,11 +91,23 @@ public class Tab_Lobbies extends MenuTab {
         lobbies.top();
 
         // Lobbies header (Textbox: "Lobbies"):
-        Table lobbiesHeader = new Table();
+        lobbiesHeader = new Table();
         lobbiesHeader.setBackground(new TextureRegionDrawable(new TextureRegion(
                 new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Lobbies_header.png")))));
         lobbiesHeader.setSize(lb_width, lb_headerHeight);
         lobbiesHeader.right();
+
+        ImageButton lobbyUpdate = new ImageButton(new TextureRegionDrawable(new TextureRegion(
+                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/updateButtonFocused.png")))));
+
+        lobbyUpdate.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Packet packet = new Packet(ToServer.REQUEST_DATA, new DataRequestPacket(DataRequest.LOBBY_LIST));
+                channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+            }
+        });
+
         ImageButton lobbyCreate = new ImageButton(new TextureRegionDrawable(new TextureRegion(
                 new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/plusButtonFocused.png")))));
 
@@ -102,7 +120,7 @@ public class Tab_Lobbies extends MenuTab {
             }
         });
 
-
+        lobbiesHeader.add(lobbyUpdate).size(40,40).right().padRight(10);
         lobbiesHeader.add(lobbyCreate).size(40,40).right().padRight(10);
         lobbies.add(lobbiesHeader);
         lobbies.row();
@@ -165,6 +183,10 @@ public class Tab_Lobbies extends MenuTab {
                         new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Map_Preview.png"))))
 
         ));
+
+        Packet packet = new Packet(ToServer.REQUEST_DATA, new DataRequestPacket(DataRequest.LOBBY_LIST));
+        ch.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+
     }
 
     public void addLobby(final MapInfo mapInfo) {
@@ -236,9 +258,9 @@ public class Tab_Lobbies extends MenuTab {
         btn_join.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                State_MainMenu menu = (State_MainMenu) gsm.peek();
-                menu.addTab(mapInfo.lobbyName, new Tab_Lobby(gsm, channel, mapInfo,false), true);
-                menu.setFreeze(true);
+                JoinLobbyPacket jp = new JoinLobbyPacket(mapInfo.lobbyName);
+                Packet packet = new Packet(ToServer.JOIN_LOBBY, jp);
+                channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
             }
         });
         map.add(btn_join).center().colspan(2).row();

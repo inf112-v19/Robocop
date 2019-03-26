@@ -5,7 +5,11 @@ import inf112.skeleton.common.packet.data.ChatMessagePacket;
 import inf112.skeleton.common.packet.data.CreateLobbyPacket;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
+import inf112.skeleton.common.packet.data.ErrorLobbyResponsePacket;
+import inf112.skeleton.common.packet.data.LobbiesListPacket;
 import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.LobbyError;
+import inf112.skeleton.common.specs.LobbyInfo;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.GameWorldInstance;
 import inf112.skeleton.server.Instance.Lobby;
@@ -13,6 +17,7 @@ import inf112.skeleton.server.WorldMap.entity.Player;
 import io.netty.channel.Channel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class User {
     public String name;
@@ -22,6 +27,7 @@ public class User {
     public UserPrivilege userRights;
     public Player player;
     public ArrayList<String> friendsList;
+    private Lobby lobby;
 
 
     public User(Channel channel) {
@@ -53,16 +59,50 @@ public class User {
     public void createLobby(GameWorldInstance game, CreateLobbyPacket lobbyPacket) {
         if(!game.doesLobbyExist(lobbyPacket.getLobbyName())){
             //Good lobby does not exist, lets create it!
-            Lobby newLobby = new Lobby(lobbyPacket.getLobbyName(), lobbyPacket.getMapFile(), this);
+            Lobby newLobby = new Lobby(lobbyPacket.getLobbyName(), lobbyPacket.getMapFile(), this, game);
             game.addLobby(newLobby);
 
             //TODO: Send lobby init packet to client
-
+            return;
         }
 
+        FromServer errorResponse = FromServer.ERROR_LOBBY_RESPONSE;
+        LobbyError lobbyError = LobbyError.LOBBY_EXISTS;
+        ErrorLobbyResponsePacket errorPacket = new ErrorLobbyResponsePacket(lobbyError);
+
+        sendPacket(new Packet(errorResponse, errorPacket));
 
     }
 
+    public boolean isInLobby() {
+        return lobby != null;
+    }
+
+    public Lobby getLobby() {
+        return lobby;
+    }
+
+    public void leaveLobby() {
+        lobby.removeUser(this);
+    }
+
+    public void getLobbyList(GameWorldInstance game) {
+        Collection<Lobby> lobbies = game.getLobbies().values();
+        ArrayList<LobbyInfo> lobbyInfos = new ArrayList<>();
+
+        for (Lobby lobby : lobbies) {
+            LobbyInfo info = new LobbyInfo(
+                    lobby.getName(),
+                    lobby.getHost().getName(),
+                    lobby.userCount(),
+                    lobby.getMap()
+            );
+
+            lobbyInfos.add(info);
+        }
+        System.out.println("Sending list...");
+        sendPacket(new Packet(FromServer.LIST_LOBBIES, new LobbiesListPacket(lobbyInfos)));
+    }
 
     public boolean isLoggedIn() {
         return isLoggedIn;
@@ -93,7 +133,9 @@ public class User {
     }
 
     public void sendString(String string) {
-        getChannel().writeAndFlush(string + "\r\n");
+        if (getChannel() != null) {
+            getChannel().writeAndFlush(string + "\r\n");
+        }
     }
 
     public void sendPacket(Packet data) {
@@ -121,5 +163,9 @@ public class User {
 
     public ArrayList<String> getFriendsList() {
         return friendsList;
+    }
+
+    public void setLobby(Lobby lobby) {
+        this.lobby = lobby;
     }
 }

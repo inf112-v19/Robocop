@@ -73,8 +73,37 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 LobbyJoinResponsePacket lobbyJoinResponsePacket = LobbyJoinResponsePacket.parseJSON(jsonObject);
 
                 if (RoboRally.roboRally.gsm.peek() instanceof State_MainMenu) {
-                    ((State_MainMenu)RoboRally.roboRally.gsm.peek()).queuedPackets.add(lobbyJoinResponsePacket);
+                    ((State_MainMenu)RoboRally.roboRally.gsm.peek()).packets_LobbyJoin.add(lobbyJoinResponsePacket);
                 }
+                break;
+            case LIST_LOBBIES:
+                LobbiesListPacket lobbiesListPacket = LobbiesListPacket.parseJSON(jsonObject);
+
+                if (RoboRally.roboRally.gsm.peek() instanceof State_MainMenu) {
+                    ((State_MainMenu)RoboRally.roboRally.gsm.peek()).packets_LobbyList.add(lobbiesListPacket);
+                }
+                break;
+            case STATE_CHANGED:
+                StateChangePacket stateChangePacket = StateChangePacket.parseJSON(jsonObject);
+
+                switch(stateChangePacket.getState()) {
+                    case PLAYER_KICKED:
+                        if (RoboRally.roboRally.gsm.peek() instanceof State_MainMenu) {
+                            ((State_MainMenu)RoboRally.roboRally.gsm.peek()).leaveLobby();
+                            ((State_MainMenu)RoboRally.roboRally.gsm.peek()).setFreeze(false);
+                        }
+                        break;
+
+                }
+
+                break;
+            case LOBBY_UPDATE:
+                LobbyUpdatePacket lobbyUpdatePacket = LobbyUpdatePacket.parseJSON(jsonObject);
+
+                if (RoboRally.roboRally.gsm.peek() instanceof State_MainMenu) {
+                    ((State_MainMenu)RoboRally.roboRally.gsm.peek()).packets_LobbyUpdates.add(lobbyUpdatePacket);
+                }
+
                 break;
             default:
                 System.err.println("Unhandled packet: " + packetId.name());

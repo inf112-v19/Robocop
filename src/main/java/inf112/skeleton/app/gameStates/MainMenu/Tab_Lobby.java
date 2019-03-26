@@ -19,13 +19,21 @@ import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.Playing.State_Playing;
+import inf112.skeleton.common.packet.Packet;
+import inf112.skeleton.common.packet.ToServer;
+import inf112.skeleton.common.packet.data.DataRequestPacket;
+import inf112.skeleton.common.packet.data.LobbyUpdatePacket;
+import inf112.skeleton.common.specs.DataRequest;
+import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Tab_Lobby extends MenuTab{
-    LinkedHashMap<String, ImageTextButton> players;
+    String[] playerNames;
+    ImageTextButton[] playerButtons;
+
     Table players_display;
     protected boolean isHost;
     public MapInfo mapInfo;
@@ -49,7 +57,8 @@ public class Tab_Lobby extends MenuTab{
         this.isHost = isHost;
         this.mapInfo = mapinfo;
 
-        players = new LinkedHashMap<>();
+        playerNames = new String[8];
+        playerButtons = new ImageTextButton[8];
 
         players_display = new Table();
         players_display.setSize(pl_width, pl_tabHeight * 8);
@@ -77,10 +86,6 @@ public class Tab_Lobby extends MenuTab{
         fl_StyleOpen.font = new BitmapFont();
         fl_StyleOpen.fontColor = Color.BLACK;
         fl_StyleOpen.font.getData().setScale(1.6f);
-
-        addPlayer(RoboRally.username, true);
-
-
 
         chat = new ScrollableTextbox(5,((State_MainMenu)gsm.peek()).im, channel);
         chat.tableWidth = pl_width;
@@ -137,8 +142,10 @@ public class Tab_Lobby extends MenuTab{
         btn_leave.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                ((State_MainMenu)gsm.peek()).removeCurrentTab();
-                ((State_MainMenu)gsm.peek()).setFreeze(false);
+                ToServer dataRequest = ToServer.REQUEST_DATA;
+                DataRequestPacket dataRequestPacket = new DataRequestPacket(DataRequest.LOBBY_LEAVE);
+                Packet packet = new Packet(dataRequest, dataRequestPacket);
+                channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
             }
         });
 
@@ -149,18 +156,34 @@ public class Tab_Lobby extends MenuTab{
         display.add(rightHalf_display).width(mp_width);
     }
 
-    public void addPlayer(String name, boolean isOnline) {
-        players.put(name, new ImageTextButton(name, isOnline ? fl_StyleOnline : fl_StyleOffline));
+    public void addPlayer(int index, String name) {
+        playerButtons[index] = new ImageTextButton(name, fl_StyleOnline);
+        playerNames[index] = name;
+
+
         players_display.clearChildren();
 
-        for (ImageTextButton btn : players.values())
-            players_display.add(btn).size(pl_width, pl_tabHeight).row();
-
-        for (int i = players.size() ; i < 8 ; i++)
-            players_display.add(new ImageTextButton("Open", fl_StyleOpen)).size(pl_width, pl_tabHeight).row();
+        for (int i = 0; i < playerNames.length; i++) {
+            if (playerNames[i] == null) {
+                players_display.add(new ImageTextButton("Open", fl_StyleOpen)).size(pl_width, pl_tabHeight).row();
+            } else {
+                players_display.add(playerButtons[i]).size(pl_width, pl_tabHeight).row();
+            }
+        }
     }
 
-    public void updatePlayer(String name, boolean isOnline) {
+    public void update(LobbyUpdatePacket packet) {
+        playerNames = new String[8];
+        playerButtons = new ImageTextButton[8];
+
+        for (int i = 0; i < packet.getUsers().length; i++) {
+            if (packet.getUsers()[i] != null) {
+                this.addPlayer(i, packet.getUsers()[i]);
+            }
+        }
+    }
+
+    /*public void updatePlayer(String name, boolean isOnline) {
         players.get(name).setStyle(isOnline ? fl_StyleOnline : fl_StyleOffline);
     }
 
@@ -170,5 +193,5 @@ public class Tab_Lobby extends MenuTab{
         for (ImageTextButton btn : players.values()) {
             players_display.add(btn).size(pl_width, pl_tabHeight).row();
         }
-    }
+    }*/
 }

@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -21,11 +20,13 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
+import inf112.skeleton.common.packet.data.LobbiesListPacket;
 import inf112.skeleton.common.packet.data.LobbyJoinResponsePacket;
+import inf112.skeleton.common.packet.data.LobbyUpdatePacket;
+import inf112.skeleton.common.specs.LobbyInfo;
 import io.netty.channel.Channel;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 enum MenuStates {
@@ -53,7 +54,9 @@ public class State_MainMenu extends GameState {
 
     public InputMultiplexer im;
 
-    public Queue<LobbyJoinResponsePacket> queuedPackets = new ConcurrentLinkedQueue<>();
+    public Queue<LobbyJoinResponsePacket> packets_LobbyJoin = new ConcurrentLinkedQueue<>();
+    public Queue<LobbiesListPacket> packets_LobbyList = new ConcurrentLinkedQueue<>();
+    public Queue<LobbyUpdatePacket> packets_LobbyUpdates = new ConcurrentLinkedQueue<>();
 
 
     private final int   pad_leftRight       = 7,
@@ -195,6 +198,12 @@ public class State_MainMenu extends GameState {
         tabButtonAction(lastButton);
     }
 
+    public void leaveLobby() {
+        if (tabButtons.size() > 1) {
+            removeCurrentTab();
+        }
+    }
+
     public void setFreeze(boolean frozen) {
         if (frozen == isFrozen)
             return;
@@ -227,28 +236,80 @@ public class State_MainMenu extends GameState {
 
     @Override
     public void update(float dt) {
-        for (LobbyJoinResponsePacket packet : queuedPackets) {
+        // Handle join request response
+        for (LobbyJoinResponsePacket packet : packets_LobbyJoin) {
             if (packet.isHandled()) {
-                queuedPackets.remove(packet);
-            }else {
+                packets_LobbyJoin.remove(packet);
+            } else {
                 packet.setHandled(true);
 
-                addTab(packet.getLobbyName(),
-                        new Tab_Lobby(gsm, channel, new MapInfo(
-                            packet.getLobbyName(),
-                            packet.getMapFile().name,
-                            packet.getHost(),
-                            "Temporary description",
-                            packet.getUsers().length,
+                Tab_Lobby tab = new Tab_Lobby(gsm, channel, new MapInfo(
+                        packet.getLobbyName(),
+                        packet.getMapFile().name,
+                        packet.getHost(),
+                        packet.getMapFile().description,
+                        packet.getUsers().length,
+                        8,
+                        2,
+                        8,
+                        packet.getMapFile().mapDifficulty,
+                        new TextureRegionDrawable(new TextureRegion(
+                                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Map_Preview.png"))))
+                ), packet.getHost().equals(RoboRally.gameBoard.myPlayer.name));
+
+
+                for (int i = 0; i < packet.getUsers().length; i++) {
+                    if (packet.getUsers()[i] != null) {
+                        tab.addPlayer(i, packet.getUsers()[i]);
+                    }
+                }
+                addTab(packet.getLobbyName(), tab, true);
+            }
+        }
+
+        // Handle lobbies list packet
+        for (LobbiesListPacket packet : packets_LobbyList) {
+            if (packet.isHandled()) {
+                packets_LobbyList.remove(packet);
+            } else {
+                packet.setHandled(true);
+
+                Tab_Lobbies lobbies = ((Tab_Lobbies)tabs.get("Lobbies"));
+
+                lobbies.lobbyButtons.clear();
+                lobbies.lobbyViews.clear();
+                lobbies.lobbies.clearChildren();
+                lobbies.lobbies.add(lobbies.lobbiesHeader).row();
+
+
+                for (LobbyInfo lobbyInfo : packet.getLobbies()) {
+                    lobbies.addLobby(new MapInfo(
+                            lobbyInfo.getLobbyName(),
+                            lobbyInfo.getMapFile().name,
+                            lobbyInfo.getHostName(),
+                            lobbyInfo.getMapFile().description,
+                            lobbyInfo.getNumPlayers(),
                             8,
                             2,
                             8,
-                            MapDifficulty.Hard,
+                            lobbyInfo.getMapFile().mapDifficulty,
                             new TextureRegionDrawable(new TextureRegion(
                                     new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Map_Preview.png"))))
-                ), RoboRally.roboRally.gameBoard.myPlayer.name.equals(packet.getHost())), true);
+                    ));
+                }
             }
         }
+
+        // Handle updates
+        for (LobbyUpdatePacket packet : packets_LobbyUpdates) {
+            if (packet.isHandled()) {
+                packets_LobbyUpdates.remove(packet);
+            } else {
+                packet.setHandled(true);
+                ((Tab_Lobby)tabs.get(packet.getLobbyName())).update(packet);
+            }
+        }
+
     }
 
     @Override

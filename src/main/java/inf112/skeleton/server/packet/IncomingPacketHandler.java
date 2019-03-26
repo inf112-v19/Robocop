@@ -2,10 +2,8 @@ package inf112.skeleton.server.packet;
 
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
-import inf112.skeleton.common.packet.data.ChatMessagePacket;
-import inf112.skeleton.common.packet.data.CreateLobbyPacket;
-import inf112.skeleton.common.packet.data.LoginPacket;
-import inf112.skeleton.common.packet.data.LoginResponsePacket;
+import inf112.skeleton.common.packet.data.*;
+import inf112.skeleton.common.specs.DataRequest;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
@@ -76,8 +74,8 @@ public class IncomingPacketHandler {
                     ChatMessagePacket chatMessagePacket = new ChatMessagePacket(messagingUser.getName() + ": " + msgPacket.getMessage());
                     Packet responsePacket = new Packet(chatMessage.ordinal(), chatMessagePacket);
 
-                    for (User entity : handler.loggedInPlayers) {
-                        entity.getChannel().writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
+                    if (messagingUser.isInLobby()) {
+                        messagingUser.getLobby().sendMessage(responsePacket);
                     }
                 }
                 break;
@@ -88,6 +86,24 @@ public class IncomingPacketHandler {
                 User actionUser = handler.getEntityFromLoggedIn(incoming);
                 CreateLobbyPacket lobbyPacket = CreateLobbyPacket.parseJSON(jsonObject);
                 actionUser.createLobby(handler.game, lobbyPacket);
+                break;
+            case JOIN_LOBBY:
+                User joiningUser = handler.getEntityFromLoggedIn(incoming);
+                JoinLobbyPacket joinLobbyPacket = JoinLobbyPacket.parseJSON(jsonObject);
+                joiningUser.joinLobby(handler.game, joinLobbyPacket.getLobbyName());
+                break;
+            case REQUEST_DATA:
+                DataRequestPacket request = DataRequestPacket.parseJSON(jsonObject);
+                User requestUser = handler.getEntityFromLoggedIn(incoming);
+
+                switch(request.getRequest()) {
+                    case LOBBY_LIST:
+                        requestUser.getLobbyList(handler.game);
+                        break;
+                    case LOBBY_LEAVE:
+                        requestUser.leaveLobby();
+                        break;
+                }
                 break;
             default:
                 System.err.println("Unhandled packet: " + packetId.name());

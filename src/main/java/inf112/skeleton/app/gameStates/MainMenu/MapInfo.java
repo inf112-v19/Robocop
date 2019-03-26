@@ -2,13 +2,7 @@ package inf112.skeleton.app.gameStates.MainMenu;
 
 
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-
-enum MapDifficulty {
-    Easy,
-    Intermediate,
-    Hard,
-    Expert,
-}
+import inf112.skeleton.common.specs.MapDifficulty;
 
 public class MapInfo {
     String  lobbyName,

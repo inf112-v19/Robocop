@@ -6,5 +6,6 @@ public enum ToServer {
     JOIN_LOBBY,
     MOVEMENT_ACTION, //TODO: IMplement
     CHAT_MESSAGE,
-    CARD_PACKET
+    CARD_PACKET,
+    REQUEST_DATA,
 }
