@@ -157,6 +157,11 @@ public class Lobby {
         return host;
     }
 
+    //Temp
+    public Game getGame() {
+        return game;
+    }
+
 
 
     public void update() {
