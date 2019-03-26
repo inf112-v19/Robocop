@@ -255,7 +255,7 @@ public class State_MainMenu extends GameState {
                         packet.getMapFile().mapDifficulty,
                         new TextureRegionDrawable(new TextureRegion(
                                 new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Map_Preview.png"))))
-                ), packet.getHost().equals(RoboRally.gameBoard.myPlayer.name));
+                ), packet.getHost().equals(RoboRally.clientInfo));
 
 
                 for (int i = 0; i < packet.getUsers().length; i++) {

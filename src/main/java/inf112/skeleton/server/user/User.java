@@ -1,19 +1,18 @@
 package inf112.skeleton.server.user;
 
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.common.packet.data.ChatMessagePacket;
-import inf112.skeleton.common.packet.data.CreateLobbyPacket;
+import inf112.skeleton.common.packet.data.*;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
-import inf112.skeleton.common.packet.data.ErrorLobbyResponsePacket;
-import inf112.skeleton.common.packet.data.LobbiesListPacket;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.LobbyError;
 import inf112.skeleton.common.specs.LobbyInfo;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.GameWorldInstance;
 import inf112.skeleton.server.Instance.Lobby;
+import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.WorldMap.entity.Player;
+import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
 
 import java.util.ArrayList;
@@ -46,13 +45,10 @@ public class User {
             Lobby toJoin = game.getLobby(lobbyname);
             if(toJoin.hasSlot()){
                 toJoin.addUser(this);
-                //TODO: Send success to player;
                 return;
             }
-            //TODO: Lobby is full
             return;
         }
-        //TODO: Lobby does not exist
         this.sendString("Lobby Does not exist");
     }
 
@@ -62,7 +58,6 @@ public class User {
             Lobby newLobby = new Lobby(lobbyPacket.getLobbyName(), lobbyPacket.getMapFile(), this, game);
             game.addLobby(newLobby);
 
-            //TODO: Send lobby init packet to client
             return;
         }
 
@@ -100,7 +95,6 @@ public class User {
 
             lobbyInfos.add(info);
         }
-        System.out.println("Sending list...");
         sendPacket(new Packet(FromServer.LIST_LOBBIES, new LobbiesListPacket(lobbyInfos)));
     }
 
@@ -167,5 +161,17 @@ public class User {
 
     public void setLobby(Lobby lobby) {
         this.lobby = lobby;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public void initClient() {
+        FromServer initPlayer = FromServer.INIT_CLIENT;
+        ClientInitPacket initPacket = new ClientInitPacket(this.getName());
+        Packet pkt = new Packet(initPlayer, initPacket);
+        sendPacket(pkt);
+
     }
 }

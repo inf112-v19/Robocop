@@ -29,8 +29,22 @@ public class Lobby {
         startGame();
     }
 
-    public void startGame() {
+    public void initGameWorld() {
         game = new Game(this, map);
+
+//        broadcastPacket();
+    }
+
+    public void startGame() {
+
+    }
+
+    public void broadcastPacket(Packet pkt) {
+        for (int i = 0; i < users.length; i++) {
+            if(users[i] != null){
+                users[i].sendPacket(pkt);
+            }
+        }
     }
 
     public void addUser(User user) {
@@ -148,7 +162,7 @@ public class Lobby {
     }
 
     public void update() {
-        if(game != null){
+        if (game != null) {
             game.update();
         }
     }

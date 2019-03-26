@@ -13,6 +13,7 @@ import inf112.skeleton.app.board.TiledMapLoader;
 import inf112.skeleton.app.board.entity.Sprites;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
+import inf112.skeleton.common.packet.data.ClientInitPacket;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 
@@ -31,6 +32,11 @@ public class RoboRally extends ApplicationAdapter {
     public static GameBoard gameBoard;
     public static RoboRally roboRally;
     public static String username = "";
+    public static String clientInfo = "";
+
+    public static void setClientInfo(ClientInitPacket pkt) {
+        clientInfo = pkt.getName();
+    }
 
 
     public void setSocketHandler(GameSocketHandler socketHandler) {
@@ -59,7 +65,7 @@ public class RoboRally extends ApplicationAdapter {
             System.out.println("RoboRally <create>: Channel finally set :D Initializing main menu...");
 
         gsm.push(new State_Login(gsm, channel));
-        gameBoard = new TiledMapLoader();
+//        gameBoard = new TiledMapLoader();
 
         Gdx.gl.glClearColor(1, 1, 1, 1);
     }

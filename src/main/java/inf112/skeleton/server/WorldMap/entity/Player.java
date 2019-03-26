@@ -45,6 +45,7 @@ public class Player {
         this.movingTo = new Vector2(currentPos.x, currentPos.y);
         this.direction = directions;
         this.owner = owner;
+        owner.setPlayer(this);
         this.selectedCards = new Card[5];
         this.timeInit = System.currentTimeMillis();
     }
