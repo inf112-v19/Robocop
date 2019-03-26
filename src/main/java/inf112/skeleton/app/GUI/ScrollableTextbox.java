@@ -19,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.RoboRally;
-import inf112.skeleton.common.packet.ChatMessagePacket;
+import inf112.skeleton.common.packet.data.ChatMessagePacket;
 import inf112.skeleton.common.packet.ToServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.utility.Tools;

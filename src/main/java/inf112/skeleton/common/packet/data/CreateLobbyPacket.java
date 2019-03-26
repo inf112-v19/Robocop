@@ -1,8 +1,10 @@
-package inf112.skeleton.common.packet;
+package inf112.skeleton.common.packet.data;
 
+import com.google.gson.JsonObject;
 import inf112.skeleton.common.specs.MapFile;
+import inf112.skeleton.common.utility.Tools;
 
-public class CreateLobbyPacket implements PacketData{
+public class CreateLobbyPacket implements PacketData {
     String lobbyName;
     MapFile mapFile;
 
@@ -25,5 +27,9 @@ public class CreateLobbyPacket implements PacketData{
 
     public void setMapFile(MapFile mapFile) {
         this.mapFile = mapFile;
+    }
+
+    public static CreateLobbyPacket parseJSON(JsonObject jsonObject) {
+        return Tools.GSON.fromJson(jsonObject.get("data"), CreateLobbyPacket.class);
     }
 }

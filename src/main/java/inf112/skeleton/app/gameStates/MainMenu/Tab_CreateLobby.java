@@ -75,7 +75,7 @@ public class Tab_CreateLobby extends MenuTab {
                              lobbyName.getText(),
                              selected,
                              RoboRally.username,
-                             "fk this",
+                             "Insert some sort of meaningful description here",
                              1,
                              8,
                              2,

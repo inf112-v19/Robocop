@@ -2,11 +2,14 @@ package inf112.skeleton.server.WorldMap.entity;
 
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.*;
+import inf112.skeleton.common.packet.data.CardHandPacket;
+import inf112.skeleton.common.packet.data.CardPacket;
+import inf112.skeleton.common.packet.data.PlayerInitPacket;
+import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.WorldMap.GameBoard;
-import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
@@ -144,7 +147,7 @@ public class Player {
 
 
     public void sendInit() {
-        FromServer initPlayer = FromServer.INIT_PLAYER;
+        FromServer initPlayer = FromServer.INIT_CLIENT;
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(name, currentPos, currentHP, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);

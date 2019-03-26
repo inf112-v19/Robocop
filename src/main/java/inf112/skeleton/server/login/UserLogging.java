@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import inf112.skeleton.common.packet.LoginPacket;
+import inf112.skeleton.common.packet.data.LoginPacket;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.user.UserPrivilege;
@@ -13,7 +13,6 @@ import io.netty.channel.Channel;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class UserLogging {

@@ -6,6 +6,7 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Entity;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.board.entity.Robot;
+import inf112.skeleton.common.packet.data.*;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.app.gameStates.Playing.HUD;
 import inf112.skeleton.common.packet.*;
@@ -215,6 +216,10 @@ public abstract class GameBoard {
             return;
         }
         this.players.put(pkt.getName(), new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing()));
+    }
+
+    public void setupPlayer(PlayerInitPacket pkt) {
+        this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing());
     }
 
     public void removePlayer(PlayerRemovePacket pkt) {

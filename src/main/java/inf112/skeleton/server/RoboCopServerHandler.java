@@ -3,7 +3,7 @@ package inf112.skeleton.server;
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
-import inf112.skeleton.common.packet.PlayerRemovePacket;
+import inf112.skeleton.common.packet.data.PlayerRemovePacket;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.login.UserLogging;
 import inf112.skeleton.server.packet.IncomingPacketHandler;
@@ -23,7 +23,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
 
 
     private IncomingPacketHandler incomingPacketHandler = new IncomingPacketHandler();
-    GameWorldInstance game;
+    public GameWorldInstance game;
 
     public RoboCopServerHandler() {
         this.game = Server.game;

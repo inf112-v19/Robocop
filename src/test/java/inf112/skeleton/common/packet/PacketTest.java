@@ -1,13 +1,13 @@
 package inf112.skeleton.common.packet;
 
-import com.google.gson.JsonObject;
+import inf112.skeleton.common.packet.data.CardPacket;
+import inf112.skeleton.common.packet.data.ChatMessagePacket;
 import inf112.skeleton.common.specs.Card;
-import static inf112.skeleton.common.specs.CardType.values;
 
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.card.CardDeck;
 import org.junit.*;
-import static org.hamcrest.CoreMatchers.*;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Random;

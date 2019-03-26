@@ -16,7 +16,7 @@ import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.GUI.ButtonGenerator;
 import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
-import inf112.skeleton.common.packet.ChatMessagePacket;
+import inf112.skeleton.common.packet.data.ChatMessagePacket;
 import io.netty.channel.Channel;
 
 public class HUD {
