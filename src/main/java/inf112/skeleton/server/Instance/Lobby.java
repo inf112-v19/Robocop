@@ -1,5 +1,8 @@
 package inf112.skeleton.server.Instance;
 
+import inf112.skeleton.common.packet.FromServer;
+import inf112.skeleton.common.packet.Packet;
+import inf112.skeleton.common.packet.data.LobbyJoinResponsePacket;
 import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.server.user.User;
 
@@ -22,9 +25,23 @@ public class Lobby {
         for (int i = 0; i < users.length; i++) {
             if (users[i] == null) {
                 users[i] = user;
+                String[] usernames = new String[8];
+                for (int j = 0; j < users.length; j++) {
+                    if (users[j] != null) {
+                        usernames[i] = users[i].getName();
+                    }
+                }
+                boolean isHost = false;
+                if (user == host) {
+                    isHost = true;
+                }
+                LobbyJoinResponsePacket lobbyResposePacket = new LobbyJoinResponsePacket(name, usernames, isHost, map);
+                Packet pkt = new Packet(FromServer.JOIN_LOBBY_RESPONSE, lobbyResposePacket);
+                user.sendPacket(pkt);
                 return;
             }
         }
+
     }
 
     public boolean hasSlot() {

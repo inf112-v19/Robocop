@@ -12,4 +12,5 @@ public enum FromServer {
     PLAYER_UPDATE,
     CARD_PACKET,
     CARD_HAND_PACKET,
+    JOIN_LOBBY_RESPONSE,
 }

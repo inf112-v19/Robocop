@@ -55,8 +55,11 @@ public class User {
             //Good lobby does not exist, lets create it!
             Lobby newLobby = new Lobby(lobbyPacket.getLobbyName(), lobbyPacket.getMapFile(), this);
             game.addLobby(newLobby);
+
             //TODO: Send lobby init packet to client
+
         }
+
 
     }
 
