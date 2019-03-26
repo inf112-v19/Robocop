@@ -40,7 +40,8 @@ public class Tab_Lobby extends MenuTab{
 
     ScrollableTextbox chat;
 
-    ImageTextButton.ImageTextButtonStyle fl_StyleOnline, fl_StyleOffline, fl_StyleOpen, btn_StyleNormal, btn_StyleFrozen;
+    ImageTextButton.ImageTextButtonStyle fl_StyleOpen, btn_StyleNormal, btn_StyleFrozen;
+    ImageTextButton.ImageTextButtonStyle fl_Styles[];
     ImageTextButton btn_start, btn_leave;
 
     // ts = Text space, pl = Players in lobby
@@ -66,21 +67,18 @@ public class Tab_Lobby extends MenuTab{
                 new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobby/player_bg.png")))));
         players_display.top();
 
+        fl_Styles = new ImageTextButton.ImageTextButtonStyle[8];
         Drawable tmp;
-
-        // Add style for buttons representing online players
-        tmp = new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobby/player_Online.png"))));
-        fl_StyleOnline = new ImageTextButton.ImageTextButtonStyle(tmp, tmp, tmp, new BitmapFont());
-        fl_StyleOnline.fontColor = Color.BLACK;
-        fl_StyleOnline.font.getData().setScale(1.6f);
-
-        // Add style for buttons representing offline players
-        tmp = new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobby/player_Offline.png"))));
-        fl_StyleOffline = new ImageTextButton.ImageTextButtonStyle(tmp, tmp, tmp, new BitmapFont());
-        fl_StyleOffline.fontColor = Color.BLACK;
-        fl_StyleOffline.font.getData().setScale(1.6f);
+        String[] clrs = {"Blue", "DarkGreen", "Green", "Orange", "Pink", "Red", "Grey", "DarkYellow"};
+        BitmapFont font = new BitmapFont();
+        for (int i = 0; i < clrs.length; i++) {
+            // Add style for buttons representing players in lobby
+            tmp = new TextureRegionDrawable(new TextureRegion(
+                    new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobby/player_" + clrs[i] + ".png"))));
+            fl_Styles[i] = new ImageTextButton.ImageTextButtonStyle(tmp, tmp, tmp, font);
+            fl_Styles[i].fontColor = Color.BLACK;
+            fl_Styles[i].font.getData().setScale(1.6f);
+        }
 
         fl_StyleOpen = new ImageTextButton.ImageTextButtonStyle();
         fl_StyleOpen.font = new BitmapFont();
@@ -157,9 +155,8 @@ public class Tab_Lobby extends MenuTab{
     }
 
     public void addPlayer(int index, String name) {
-        playerButtons[index] = new ImageTextButton(name, fl_StyleOnline);
+        playerButtons[index] = new ImageTextButton(name, fl_Styles[index]);
         playerNames[index] = name;
-
 
         players_display.clearChildren();
 
