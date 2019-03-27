@@ -41,9 +41,9 @@ public class User {
     }
 
     public void joinLobby(GameWorldInstance game, String lobbyname) {
-        if(game.doesLobbyExist(lobbyname)){
+        if (game.doesLobbyExist(lobbyname)) {
             Lobby toJoin = game.getLobby(lobbyname);
-            if(toJoin.hasSlot()){
+            if (toJoin.hasSlot()) {
                 toJoin.addUser(this);
                 return;
             }
@@ -53,7 +53,7 @@ public class User {
     }
 
     public void createLobby(GameWorldInstance game, CreateLobbyPacket lobbyPacket) {
-        if(!game.doesLobbyExist(lobbyPacket.getLobbyName())){
+        if (!game.doesLobbyExist(lobbyPacket.getLobbyName())) {
             //Good lobby does not exist, lets create it!
             Lobby newLobby = new Lobby(lobbyPacket.getLobbyName(), lobbyPacket.getMapFile(), this, game);
             game.addLobby(newLobby);
@@ -86,14 +86,17 @@ public class User {
         ArrayList<LobbyInfo> lobbyInfos = new ArrayList<>();
 
         for (Lobby lobby : lobbies) {
-            LobbyInfo info = new LobbyInfo(
-                    lobby.getName(),
-                    lobby.getHost().getName(),
-                    lobby.userCount(),
-                    lobby.getMap()
-            );
+            if (!lobby.gameStarted) {
+                LobbyInfo info = new LobbyInfo(
+                        lobby.getName(),
+                        lobby.getHost().getName(),
+                        lobby.userCount(),
+                        lobby.getMap()
+                );
 
-            lobbyInfos.add(info);
+                lobbyInfos.add(info);
+
+            }
         }
         sendPacket(new Packet(FromServer.LIST_LOBBIES, new LobbiesListPacket(lobbyInfos)));
     }
