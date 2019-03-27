@@ -121,7 +121,7 @@ public class Player {
         Packet packet = new Packet(packetId, data);
 
         System.out.println("[Player serverside - sendCardHand] Sending packet " + packet.toString());
-        owner.sendPacket(packet);
+        //owner.sendPacket(packet);
     }
 
     public boolean addCardToSelectedArray(Card card) {

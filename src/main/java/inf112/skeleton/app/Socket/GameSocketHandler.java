@@ -43,7 +43,7 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 break;
             case INIT_MAP:
                 RoboRally.roboRally.setBoard(InitMapPacket.parseJSON(jsonObject));
-
+                break;
             case INIT_PLAYER:
                 RoboRally.gameBoard.addPlayer(PlayerInitPacket.parseJSON(jsonObject));
                 break;

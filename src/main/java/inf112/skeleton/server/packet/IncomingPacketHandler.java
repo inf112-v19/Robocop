@@ -3,7 +3,6 @@ package inf112.skeleton.server.packet;
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.packet.data.*;
-import inf112.skeleton.common.specs.DataRequest;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
@@ -102,6 +101,9 @@ public class IncomingPacketHandler {
                     case LOBBY_LEAVE:
                         requestUser.leaveLobby();
                         break;
+                    case LOBBY_START:
+                        requestUser.getLobby().startGameCountdown(requestUser);
+                        break;
                 }
                 break;
             default:
@@ -136,15 +138,7 @@ public class IncomingPacketHandler {
                 sendMessage("Error in command, proper usage: '!move north 3'.", messagingUser, handler);
 
                 break;
-            case "one":
-                messagingUser.getLobby().initGameWorld();
-                break;
-            case "two":
-                messagingUser.getLobby().initPlayers();
-                break;
-            case "three":
-                messagingUser.getLobby().startGame();
-                break;
+
             default:
                 sendMessage("Command not found \"" + command[0] + "\".", messagingUser, handler);
                 break;
