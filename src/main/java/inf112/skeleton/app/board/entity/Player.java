@@ -78,7 +78,7 @@ public class Player {
     public void receiveCardHandPacket(CardHandPacket packet) {
         int[] foo = packet.getHand();
         if(cards == null) {
-            cards = new Card[9];
+            cards = new Card[initalHp];
         }
         if (foo.length != cards.length) {
             return;

@@ -47,7 +47,6 @@ public class Lobby {
             startedTimer = true;
             finished = false;
             gameStarted = true;
-            game.initializeGame();
             this.timeStarted = System.currentTimeMillis();
         }
     }
@@ -60,6 +59,7 @@ public class Lobby {
         StateChangePacket stateChangePacket = new StateChangePacket(StateChange.GAME_START);
         Packet pkt = new Packet(id, stateChangePacket);
         broadcastPacket(pkt);
+        game.dealFirstHand();
     }
 
     public void startingGame() {
