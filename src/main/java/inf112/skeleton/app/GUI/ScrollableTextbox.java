@@ -11,16 +11,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.RoboRally;
-import inf112.skeleton.common.packet.ChatMessagePacket;
-import inf112.skeleton.common.packet.IncomingPacket;
+import inf112.skeleton.common.packet.data.ChatMessagePacket;
+import inf112.skeleton.common.packet.ToServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
@@ -28,31 +25,32 @@ import io.netty.channel.Channel;
 /*
  * Circular message-box.
  */
-public class ScrollableTextbox {
+public class ScrollableTextbox extends Actor{
     InputMultiplexer inputMultiplexer;
-    TextField[] lines;
-    int lineAmount = 0,
+    Label[] lines;
+    int     lineAmount = 0,
             lineLimit,
             displayFrom = 0,
             numFields = 5;
 
     Stage stage;
-    Table display;
+    public Table display;
 
     ImageButton button_up;
     ImageButton button_down;
 
-    TextField.TextFieldStyle txtStyle;
+    Label.LabelStyle txtStyle;
     TextField inputField;
     Actor emptyField;
     Channel channel;
 
-    int tableWidth = 600,
-            tableHeight = 140;
+    public int  tableWidth = 600,
+                tableHeight = 140;
     public static ScrollableTextbox textbox = null;
 
 
-    public ScrollableTextbox(int limit, InputMultiplexer inputMultiplexer, Channel channel) {
+    public ScrollableTextbox(int limit, InputMultiplexer inputMultiplexer, Channel channel){
+        super();
         this.channel = channel;
         this.textbox = this;
         lineLimit = limit;
@@ -65,15 +63,15 @@ public class ScrollableTextbox {
         init_scrollButtons();
         emptyField = new Actor();
 
-
-        txtStyle = new TextField.TextFieldStyle();
+        // Set default style of label and enable multicolor text.
+        txtStyle = new Label.LabelStyle();
         txtStyle.font = new BitmapFont();
+        txtStyle.font.getData().markupEnabled = true;
         txtStyle.fontColor = Color.YELLOW;
 
-        lines = new TextField[limit];
+        lines = new Label[limit];
         for (int i = 0; i < limit; i++) {
-            lines[i] = new TextField("", txtStyle);
-            lines[i].setDisabled(true);
+            lines[i] = new Label("", txtStyle);
         }
 
         display = new Table();
@@ -95,7 +93,7 @@ public class ScrollableTextbox {
                     String inputText = inputField.getText();
                     if (!inputText.equals("")) {
 //                        push(inputText);
-                        Packet packet = new Packet(IncomingPacket.CHAT_MESSAGE.ordinal(), new ChatMessagePacket(inputText));
+                        Packet packet = new Packet(ToServer.CHAT_MESSAGE.ordinal(), new ChatMessagePacket(inputText));
                         channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
 
                     }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Entity;
+import inf112.skeleton.server.WorldMap.entity.TileObject;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -12,9 +13,12 @@ import java.util.NoSuchElementException;
 public abstract class GameBoard {
 
     protected ArrayList<Entity> entities;
+    public ArrayList<TileObject> mapObjects;
 
     public GameBoard() {
         entities = new ArrayList<>();
+        mapObjects = new ArrayList<>();
+
     }
 
     public void addEntity(Entity e) {
@@ -30,14 +34,18 @@ public abstract class GameBoard {
 
     public void update() {
         for (Entity entity : entities) {
-            entity.update();
+            entity.update(this);
 
+        }
+
+        for (TileObject obj : mapObjects) {
+            obj.update();
         }
     }
 
     public void moveEntity(Entity e, Directions dir) throws NoSuchElementException {
-        if(entities.contains(e)) {
-            switch(dir) {
+        if (entities.contains(e)) {
+            switch (dir) {
                 case NORTH:
                     e.moveY(1);
                     break;

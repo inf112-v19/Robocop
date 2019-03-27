@@ -1,5 +1,6 @@
 package inf112.skeleton.app.GUI;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -14,6 +15,8 @@ import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import io.netty.channel.Channel;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
@@ -27,15 +30,17 @@ public class PlayerDeck {
     private Stage stage, altStage;
     private Table chooseFrom, chooseTo;
     private LinkedList<ImageButton> chooseFromButtons, chooseToButtons, greyButtons;
+    private HashMap<ImageButton, Card> pCards;
     private Drawable greyCardDrawable = new Card(0,GREY).getDrawable();
     private TextButton btn_chooseCards, btn_done;
 
     private int numberOfChosenButtons;
 
-    private final int   numCardsFrom = 9,
-                numCardsTo = 5,
-                cardWidth = 110,
-                cardHeight = (int)(cardWidth * 1.386);
+    private final int
+                NUM_CARDS_FROM = 9,
+                NUM_CARDS_TO = 5,
+                CARD_WIDTH = 110,
+                CARD_HEIGHT = (int)(CARD_WIDTH * 1.386);
 
     public PlayerDeck(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, final Channel channel) {
         this.gsm = gameStateManager;
@@ -49,6 +54,7 @@ public class PlayerDeck {
         chooseFromButtons = new LinkedList<>();
         chooseToButtons = new LinkedList<>();
         greyButtons = new LinkedList<>();
+        pCards = new HashMap<>();
 
         // Create buttons to let the user collapse the player-deck
         ButtonGenerator bg = new ButtonGenerator();
@@ -62,11 +68,16 @@ public class PlayerDeck {
             }
         });
 
+        // Create button that lets the player lock in their selected cards.
         btn_done = bg.generate("Done");
         btn_done.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 swapStages();
+                // Iterate through clicked cards and add them to the players selected cards list.
+                for (ImageButton cardButton : chooseToButtons) {
+                    RoboRally.gameBoard.myPlayer.selectedCards.add(pCards.get(cardButton));
+                }
             }
         });
 
@@ -104,7 +115,7 @@ public class PlayerDeck {
                             chooseToButtons.add(numberOfChosenButtons, btn);
                             numberOfChosenButtons++;
                         }
-                    }else{
+                    } else {
                         chooseToButtons.remove(btn);
                         chooseFromButtons.add(btn);
                         chooseToButtons.add(greyButtons.pop());
@@ -114,19 +125,20 @@ public class PlayerDeck {
                 }
             });
             chooseFromButtons.add(tmpButton);
+            pCards.put(tmpButton, card);
         }
 
         // Initialize the deck of cards which is already chosen.
-        for (int i = 0 ; i < numCardsTo ; i++)
+        for (int i = 0; i < NUM_CARDS_TO; i++)
             chooseToButtons.add(new ImageButton(greyCardDrawable));
 
         // Set up the tables for the displayable cards.
-        chooseFrom = new Table();
-        chooseFrom.setSize(numCardsFrom*cardWidth, cardHeight + btn_done.getHeight());
+        chooseFrom = new Table();   //Card pool.
+        chooseFrom.setSize(NUM_CARDS_FROM * CARD_WIDTH, CARD_HEIGHT + btn_done.getHeight());
         chooseFrom.setPosition(stage.getViewport().getScreenWidth() / 2 - chooseFrom.getWidth() / 2, 140);
 
-        chooseTo = new Table();
-        chooseTo.setSize(numCardsTo*(cardWidth - 8 * 2), cardHeight - 8 * 2);
+        chooseTo = new Table();     //Selected cards.
+        chooseTo.setSize(NUM_CARDS_TO *(CARD_WIDTH - 8 * 2), CARD_HEIGHT - 8 * 2);
         chooseTo.setPosition(stage.getViewport().getScreenWidth()-chooseTo.getWidth()-7, 2);
 
         stage.addActor(chooseFrom);
@@ -136,6 +148,7 @@ public class PlayerDeck {
         inputMultiplexer.addProcessor(stage);
 
         updateDisplays();
+        swapStages();
     }
 
     private void swapStages() {
@@ -154,9 +167,9 @@ public class PlayerDeck {
         chooseFrom.add(btn_done).width(btn_done.getWidth()).height(btn_done.getHeight()).colspan(chooseFromButtons.size()).center();
         chooseFrom.row();
         for (ImageButton btn : chooseFromButtons)
-            chooseFrom.add(btn).size(cardWidth, cardHeight);
+            chooseFrom.add(btn).size(CARD_WIDTH, CARD_HEIGHT);
         for (ImageButton btn : chooseToButtons)
-            chooseTo.add(btn).size(cardWidth, cardHeight).pad(-8);
+            chooseTo.add(btn).size(CARD_WIDTH, CARD_HEIGHT).pad(-8);
 
         chooseFrom.row();
         chooseTo.row();

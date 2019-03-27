@@ -2,6 +2,7 @@ package inf112.skeleton.server.packet;
 
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
+import inf112.skeleton.common.packet.data.*;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
@@ -20,10 +21,10 @@ public class IncomingPacketHandler {
      * @param handler
      */
     public void handleIncomingPacket(Channel incoming, JsonObject jsonObject, RoboCopServerHandler handler) {
-        IncomingPacket packetId = IncomingPacket.values()[jsonObject.get("id").getAsInt()];
+        ToServer packetId = ToServer.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
             case LOGIN:
-                LoginPacket loginpkt = Tools.GSON.fromJson(jsonObject.get("data"), LoginPacket.class);
+                LoginPacket loginpkt = LoginPacket.parseJSON(jsonObject);
                 User loggingIn = UserLogging.login(loginpkt, incoming);
                 if (loggingIn != null) {
                     if (!handler.loggedInPlayers.contains(loggingIn)) {
@@ -33,46 +34,76 @@ public class IncomingPacketHandler {
                         }
 
                         handler.loggedInPlayers.add(loggingIn);
-                        OutgoingPacket response = OutgoingPacket.LOGINRESPONSE;
+                        FromServer response = FromServer.LOGINRESPONSE;
                         LoginResponseStatus status = LoginResponseStatus.LOGIN_SUCCESS;
                         LoginResponsePacket loginResponsePacket =
                                 new LoginResponsePacket(status.ordinal(), loggingIn.name, "Success");
                         Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
                         incoming.writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
                         loggingIn.setLoggedIn(true);
+                        loggingIn.initClient();
+//                        loggingIn.player.sendInit();
 
-                        loggingIn.player.sendInit();
-
-                        for (User user : handler.loggedInPlayers) {
-                            if (user.getChannel() == incoming)
-                                continue;
-                            user.player.sendToNewClient(incoming);
-                        }
                         handler.connections.remove(loggingIn);
                     } else {
                         AlreadyLoggedIn(incoming, handler, loggingIn.name);
                     }
+                } else {
+                    FromServer response = FromServer.LOGINRESPONSE;
+                    LoginResponseStatus status = LoginResponseStatus.WRONG_LOGINDETAILS;
+                    LoginResponsePacket loginResponsePacket =
+                            new LoginResponsePacket(status.ordinal(), "", "Failure");
+                    Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
+                    incoming.writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
                 }
                 break;
             case CHAT_MESSAGE:
-
-                ChatMessagePacket msgPacket = Tools.GSON.fromJson(jsonObject.get("data"), ChatMessagePacket.class);
+                ChatMessagePacket msgPacket = ChatMessagePacket.parseJSON(jsonObject);
                 User messagingUser = handler.getEntityFromLoggedIn(incoming);
                 if (msgPacket.getMessage().startsWith("!")) {
                     String[] command = msgPacket.getMessage().substring(1).split(" ");
                     handleCommand(messagingUser, command, handler);
                 } else {
-                    OutgoingPacket chatMessage = OutgoingPacket.CHATMESSAGE;
+                    FromServer chatMessage = FromServer.CHATMESSAGE;
                     ChatMessagePacket chatMessagePacket = new ChatMessagePacket(messagingUser.getName() + ": " + msgPacket.getMessage());
                     Packet responsePacket = new Packet(chatMessage.ordinal(), chatMessagePacket);
 
-                    for (User entity : handler.loggedInPlayers) {
-                        entity.getChannel().writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
+                    if (messagingUser.isInLobby()) {
+                        messagingUser.getLobby().broadcastPacket(responsePacket);
                     }
                 }
                 break;
-            case MOVEMENT_ACTION:
+            case CARD_PACKET:
+                CardPacket cardPacket = CardPacket.parseJSON(jsonObject);
+                User messageingUser = handler.getEntityFromLoggedIn(incoming);
+                messageingUser.getLobby().getGame().addUserAndCard(messageingUser, Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority()));
+                System.out.println("[IncomingPacketHandler - handleIncomingPacket] - Case CARD_PACKET");
+                break;
+            case CREATE_LOBBY:
+                User actionUser = handler.getEntityFromLoggedIn(incoming);
+                CreateLobbyPacket lobbyPacket = CreateLobbyPacket.parseJSON(jsonObject);
+                actionUser.createLobby(handler.game, lobbyPacket);
+                break;
+            case JOIN_LOBBY:
+                User joiningUser = handler.getEntityFromLoggedIn(incoming);
+                JoinLobbyPacket joinLobbyPacket = JoinLobbyPacket.parseJSON(jsonObject);
+                joiningUser.joinLobby(handler.game, joinLobbyPacket.getLobbyName());
+                break;
+            case REQUEST_DATA:
+                DataRequestPacket request = DataRequestPacket.parseJSON(jsonObject);
+                User requestUser = handler.getEntityFromLoggedIn(incoming);
 
+                switch(request.getRequest()) {
+                    case LOBBY_LIST:
+                        requestUser.getLobbyList(handler.game);
+                        break;
+                    case LOBBY_LEAVE:
+                        requestUser.leaveLobby();
+                        break;
+                    case LOBBY_START:
+                        requestUser.getLobby().startGameCountdown(requestUser);
+                        break;
+                }
                 break;
             default:
                 System.err.println("Unhandled packet: " + packetId.name());
@@ -106,6 +137,7 @@ public class IncomingPacketHandler {
                 sendMessage("Error in command, proper usage: '!move north 3'.", messagingUser, handler);
 
                 break;
+
             default:
                 sendMessage("Command not found \"" + command[0] + "\".", messagingUser, handler);
                 break;
@@ -120,7 +152,7 @@ public class IncomingPacketHandler {
      */
     private void sendMessage(String message, User user, RoboCopServerHandler handler){
         Packet responsePacket = new Packet(
-                OutgoingPacket.CHATMESSAGE.ordinal(),
+                FromServer.CHATMESSAGE.ordinal(),
                 new ChatMessagePacket("[SERVER]: " +message));
         user.getChannel().writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
     }
@@ -133,7 +165,7 @@ public class IncomingPacketHandler {
      * @param name
      */
     private void AlreadyLoggedIn(Channel incoming, RoboCopServerHandler handler, String name) {
-        OutgoingPacket response = OutgoingPacket.LOGINRESPONSE;
+        FromServer response = FromServer.LOGINRESPONSE;
         LoginResponseStatus status = LoginResponseStatus.ALREADY_LOGGEDIN;
         LoginResponsePacket loginResponsePacket =
                 new LoginResponsePacket(status.ordinal(), name, "User already logged in");

@@ -1,11 +1,13 @@
 package inf112.skeleton.app.board;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Entity;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.board.entity.Robot;
+import inf112.skeleton.common.packet.data.*;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.app.gameStates.Playing.HUD;
 import inf112.skeleton.common.packet.*;
@@ -24,6 +26,7 @@ public abstract class GameBoard {
     protected ArrayList<Entity> entities;
      protected Map<String, Player> players;
      public Player myPlayer = null;
+     private CardHandPacket foo = null;
 
 
     public GameBoard() {
@@ -56,6 +59,10 @@ public abstract class GameBoard {
 
         }
         if(myPlayer != null) {
+            if(myPlayer.cards == null && foo != null) {
+                Gdx.app.log("Gameboard clientside - update", "Trying to receive lost cardHandPacket");
+                myPlayer.receiveCardHandPacket(foo);
+            }
             myPlayer.update();
         }
     }
@@ -67,10 +74,13 @@ public abstract class GameBoard {
     }
 
     public void receiveCardHand(CardHandPacket packet) {
-        System.out.println("receiving card hand");
+        Gdx.app.log("Gameboard clientside - receiveCardHand", "Receiving card hand.");
         if(myPlayer != null) {
-            System.out.println("myplayer exists!");
+            Gdx.app.log("Gameboard clientside - receiveCardHand", "MyPlayer exists!");
             myPlayer.receiveCardHandPacket(packet);
+        } else {
+            foo = packet;
+            Gdx.app.log("Gameboard clientside - receiveCardHand", "MyPlayer does not exist - saving packet for later");
         }
     }
 
@@ -83,7 +93,7 @@ public abstract class GameBoard {
 
     public void moveEntity(Directions dir) throws NoSuchElementException {
 
-        Packet packet = new Packet(IncomingPacket.MOVEMENT_ACTION.ordinal(), new MovementPacket(dir, 1));
+        Packet packet = new Packet(ToServer.MOVEMENT_ACTION.ordinal(), new MovementPacket(dir, 1));
         RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
 //        if (entities.contains(e)) {
 //            switch (dir) {
@@ -207,14 +217,18 @@ public abstract class GameBoard {
 
 
     public void addPlayer(PlayerInitPacket pkt) {
-        System.out.println(RoboRally.username);
-        System.out.println(pkt.getName());
-        System.out.println(pkt.getName().equalsIgnoreCase(RoboRally.username));
+        Gdx.app.log("Gameboard clientside - addPlayer", "RoboRally.username: " + RoboRally.username);
+        Gdx.app.log("Gameboard clientside - addPlayer", "pkt.getName: " + pkt.getName());
+        Gdx.app.log("Gameboard clientside - addPlayer", "RoboRally.username equals pkt.getName: " + pkt.getName().equalsIgnoreCase(RoboRally.username));
         if(pkt.getName().equalsIgnoreCase(RoboRally.username)) {
-            this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), Directions.SOUTH);
+            this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing());
             return;
         }
-        this.players.put(pkt.getName(), new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), Directions.SOUTH));
+        this.players.put(pkt.getName(), new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing()));
+    }
+
+    public void setupPlayer(PlayerInitPacket pkt) {
+        this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing());
     }
 
     public void removePlayer(PlayerRemovePacket pkt) {

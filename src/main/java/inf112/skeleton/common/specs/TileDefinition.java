@@ -9,7 +9,13 @@ public enum TileDefinition {
     HORISONTAL(4, true, "Horisontal"),
     VERTICAL(5, true, "Vertical"),
     TBRACKET(6, true, "T-Bracket"),
-    LBRACKET(7, true, "L-Bracket");
+    LBRACKET(7, true, "L-Bracket"),
+    LASERSOURCE(11, true, "Laser-Source"),
+    LASER(12, true, "Laser"),
+    LASERCROSS(13, true, "LaserCross"),
+    BLACK_HOLE(14, true, "BlackHole");
+
+
 
 
     public static final int TILE_SIZE = 64;

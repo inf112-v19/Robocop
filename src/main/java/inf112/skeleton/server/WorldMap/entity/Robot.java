@@ -6,6 +6,7 @@ import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.server.Server;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.common.specs.Card;
+import inf112.skeleton.server.WorldMap.GameBoard;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -213,7 +214,7 @@ public class Robot extends Entity {
     }
 
     @Override
-    public void update() {
+    public void update(GameBoard board) {
 
     }
 

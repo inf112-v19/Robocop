@@ -7,25 +7,37 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.specs.TileDefinition;
+import inf112.skeleton.server.WorldMap.entity.TileObject;
+
+import java.util.ArrayList;
 
 public class TiledMapLoader extends GameBoard {
 
     private TiledMap tiledMap;
-    private OrthogonalTiledMapRenderer tiledMapRenderer;
 
-    public TiledMapLoader() {
+    public TiledMapLoader(MapFile file) {
         super();
-        tiledMap = new TmxMapLoader().load("board/Cross.tmx");
+        tiledMap = new TmxMapLoader().load(file.filename);
 //        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-
+        TiledMapTileLayer enitylayer = ((TiledMapTileLayer) tiledMap.getLayers().get("Entities"));
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                TiledMapTileLayer.Cell cell = enitylayer.getCell(x, y);
+                if (cell != null) {
+                    TiledMapTile tile = cell.getTile();
+                    if (tile != null) {
+                        mapObjects.add(new TileObject(tile, x, y));
+                        System.out.println("Found object: "+ TileDefinition.getTileById(tile.getId()).getName());
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void render(OrthographicCamera camera, SpriteBatch batch) {
-        tiledMapRenderer.setView(camera);
-        tiledMapRenderer.render();
-
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         super.render(camera, batch);
