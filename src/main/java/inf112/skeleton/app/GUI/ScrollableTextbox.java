@@ -11,10 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -30,8 +27,8 @@ import io.netty.channel.Channel;
  */
 public class ScrollableTextbox extends Actor{
     InputMultiplexer inputMultiplexer;
-    TextField[] lines;
-    int lineAmount = 0,
+    Label[] lines;
+    int     lineAmount = 0,
             lineLimit,
             displayFrom = 0,
             numFields = 5;
@@ -42,17 +39,18 @@ public class ScrollableTextbox extends Actor{
     ImageButton button_up;
     ImageButton button_down;
 
-    TextField.TextFieldStyle txtStyle;
+    Label.LabelStyle txtStyle;
     TextField inputField;
     Actor emptyField;
     Channel channel;
 
-    public int tableWidth = 600,
-            tableHeight = 140;
+    public int  tableWidth = 600,
+                tableHeight = 140;
     public static ScrollableTextbox textbox = null;
 
 
     public ScrollableTextbox(int limit, InputMultiplexer inputMultiplexer, Channel channel){
+        super();
         this.channel = channel;
         this.textbox = this;
         lineLimit = limit;
@@ -65,15 +63,15 @@ public class ScrollableTextbox extends Actor{
         init_scrollButtons();
         emptyField = new Actor();
 
-
-        txtStyle = new TextField.TextFieldStyle();
+        // Set default style of label and enable multicolor text.
+        txtStyle = new Label.LabelStyle();
         txtStyle.font = new BitmapFont();
+        txtStyle.font.getData().markupEnabled = true;
         txtStyle.fontColor = Color.YELLOW;
 
-        lines = new TextField[limit];
+        lines = new Label[limit];
         for (int i = 0; i < limit; i++) {
-            lines[i] = new TextField("", txtStyle);
-            lines[i].setDisabled(true);
+            lines[i] = new Label("", txtStyle);
         }
 
         display = new Table();
