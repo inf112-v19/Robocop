@@ -4,9 +4,9 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Player;
-import inf112.skeleton.server.WorldMap.entity.TileObject;
+import inf112.skeleton.server.WorldMap.entity.TileEntity;
 
-public class Laser implements TileObject {
+public class Laser implements TileEntity {
     TiledMapTile tile;
     TileDefinition tileType;
     Vector2 pos;
@@ -17,15 +17,14 @@ public class Laser implements TileObject {
         this.pos = new Vector2(x, y);
     }
 
-
     @Override
     public boolean detectCollision(Vector2 coords) {
-        return false;
+        return coords.epsilonEquals(pos);
     }
 
     @Override
     public TileDefinition getTileType() {
-        return null;
+        return tileType;
     }
 
     @Override

@@ -3,10 +3,11 @@ package inf112.skeleton.server.WorldMap;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Entity;
-import inf112.skeleton.server.WorldMap.entity.TileObject;
+import inf112.skeleton.server.WorldMap.entity.TileEntity;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.BlackHole;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.Laser;
 
@@ -16,11 +17,11 @@ import java.util.NoSuchElementException;
 public abstract class GameBoard {
 
     protected ArrayList<Entity> entities;
-    public ArrayList<TileObject> mapObjects;
+    public ArrayList<TileEntity> tileEntities;
 
     public GameBoard() {
         entities = new ArrayList<>();
-        mapObjects = new ArrayList<>();
+        tileEntities = new ArrayList<>();
 
     }
 
@@ -36,7 +37,7 @@ public abstract class GameBoard {
     }
 
     public void addTileEntity(TiledMapTile tile, int x, int y) {
-        TileObject newTile;
+        TileEntity newTile;
         switch (TileDefinition.getTileById(tile.getId())) {
             case LASER:
             case LASERSOURCE:
@@ -50,7 +51,7 @@ public abstract class GameBoard {
                 System.err.println("fatal error adding tile: " + TileDefinition.getTileById(tile.getId()).getName());
                 return;
         }
-        mapObjects.add(newTile);
+        tileEntities.add(newTile);
         System.out.println("Found object: " + TileDefinition.getTileById(tile.getId()).getName());
     }
 
@@ -60,8 +61,16 @@ public abstract class GameBoard {
 
         }
 
-        for (TileObject obj : mapObjects) {
+        for (TileEntity obj : tileEntities) {
             obj.update();
+        }
+    }
+
+    public TileEntity getTileEntityAtPosition(Vector2 pos){
+        for (TileEntity tileEntity : tileEntities) {
+            if(tileEntity.detectCollision(pos)){
+                return tileEntity;
+            }
         }
     }
 

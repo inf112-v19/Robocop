@@ -6,12 +6,8 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.specs.TileDefinition;
-import inf112.skeleton.server.WorldMap.entity.TileObject;
-
-import java.util.ArrayList;
 
 public class TiledMapLoader extends GameBoard {
 
