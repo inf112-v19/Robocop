@@ -76,7 +76,6 @@ public class IncomingPacketHandler {
             case CARD_PACKET:
                 CardPacket cardPacket = CardPacket.parseJSON(jsonObject);
                 User messageingUser = handler.getEntityFromLoggedIn(incoming);
-                //TODO Legg til kortpakken i user\lobby\game\hashmap.
                 messageingUser.getLobby().getGame().addUserAndCard(messageingUser, Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority()));
                 System.out.println("[IncomingPacketHandler - handleIncomingPacket] - Case CARD_PACKET");
                 break;

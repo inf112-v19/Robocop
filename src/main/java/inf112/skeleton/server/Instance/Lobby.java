@@ -47,6 +47,7 @@ public class Lobby {
             startedTimer = true;
             finished = false;
             gameStarted = true;
+            game.initializeGame();
             this.timeStarted = System.currentTimeMillis();
         }
     }
