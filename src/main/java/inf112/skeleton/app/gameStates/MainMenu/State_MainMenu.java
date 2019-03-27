@@ -36,13 +36,9 @@ enum MenuStates {
 }
 
 public class State_MainMenu extends GameState {
-    private final Color color_primary   = new Color(0.6f,0.4f,0.2f,1),
-                        color_secondary = new Color(0.773f, 0.612f, 0.424f, 1);
-    private Stage stage;
-    protected Stage mainStage;
-    private ShapeRenderer shape;
+    private final Color color_primary   = new Color(0.6f,0.4f,0.2f,1);
+    public Stage stage;
     private Table layout;
-    private MenuStates menuState = MenuStates.Welcome;
 
     private Table h1, h2, main;
     ImageTextButton.ImageTextButtonStyle h2_btn_style_focused, h2_btn_style_unfocused, h2_btn_style_frozen;
@@ -61,11 +57,8 @@ public class State_MainMenu extends GameState {
     public Queue<Boolean> packets_GameStart = new ConcurrentLinkedQueue<>();
 
 
-    private final int   pad_leftRight       = 7,
-                        h1_height           = 60,
-                        h1_pad_topBottom    = 8,
+    private final int   h1_height           = 60,
                         h2_height           = 45,
-                        h2_pad_topBottom    = 2,
                         main_height         = 615,
                         main_padding        = 13;
     private boolean     isFrozen;
@@ -75,7 +68,6 @@ public class State_MainMenu extends GameState {
         channel = ch;
         im = new InputMultiplexer();
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
-        shape = new ShapeRenderer();
 
         isFrozen = false;
 
