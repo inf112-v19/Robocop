@@ -20,6 +20,7 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
+import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.common.packet.data.LobbiesListPacket;
 import inf112.skeleton.common.packet.data.LobbyJoinResponsePacket;
 import inf112.skeleton.common.packet.data.LobbyUpdatePacket;
@@ -57,6 +58,7 @@ public class State_MainMenu extends GameState {
     public Queue<LobbyJoinResponsePacket> packets_LobbyJoin = new ConcurrentLinkedQueue<>();
     public Queue<LobbiesListPacket> packets_LobbyList = new ConcurrentLinkedQueue<>();
     public Queue<LobbyUpdatePacket> packets_LobbyUpdates = new ConcurrentLinkedQueue<>();
+    public Queue<Boolean> packets_GameStart = new ConcurrentLinkedQueue<>();
 
 
     private final int   pad_leftRight       = 7,
@@ -310,7 +312,10 @@ public class State_MainMenu extends GameState {
                 ((Tab_Lobby)tabs.get(packet.getLobbyName())).update(packet);
             }
         }
-
+        if (packets_GameStart.size() > 0) {
+            packets_GameStart = new ConcurrentLinkedQueue<>();
+            gsm.set(new State_Playing(gsm, channel));
+        }
     }
 
     @Override
