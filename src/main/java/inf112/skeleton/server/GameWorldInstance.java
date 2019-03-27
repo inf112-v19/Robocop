@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GameWorldInstance implements ApplicationListener {
 
     public GameBoard gameBoard;
-    public static CardDeck deck = new CardDeck();
     ConcurrentHashMap<String, Lobby> lobbies = new ConcurrentHashMap<>();
 
     private int frame = 0;

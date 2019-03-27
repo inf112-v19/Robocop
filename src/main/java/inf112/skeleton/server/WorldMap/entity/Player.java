@@ -17,7 +17,6 @@ import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
 
 import static inf112.skeleton.common.specs.Directions.*;
-import static inf112.skeleton.server.GameWorldInstance.deck;
 
 
 public class Player {
@@ -101,15 +100,14 @@ public class Player {
         }
         if ((System.currentTimeMillis() - this.timeInit) >= this.delayMessage && shouldSendCards) {
             this.timeInit = System.currentTimeMillis();
-            sendCardHand();
             shouldSendCards = false;
         }
 
     }
 
-    public void sendCard() {
+    public void sendCard(Card card) {
         FromServer packetId = FromServer.CARD_PACKET;
-        CardPacket data = new CardPacket(deck.dealCard());
+        CardPacket data = new CardPacket(card);
         Packet packet = new Packet(packetId, data);
 
         System.out.println("[Player serverside - sendCard] Sending packet " + packet.toString());
@@ -117,13 +115,9 @@ public class Player {
 
     }
 
-    public void sendCardHand() {
+    public void sendCardHand(Card[] hand) {
         FromServer packetId = FromServer.CARD_HAND_PACKET;
-        Card[] sendDeck = new Card[9];
-        for(int i = 0; i < sendDeck.length; i++) {
-            sendDeck[i] = deck.dealCard();
-        }
-        CardHandPacket data = new CardHandPacket(sendDeck);
+        CardHandPacket data = new CardHandPacket(hand);
         Packet packet = new Packet(packetId, data);
 
         System.out.println("[Player serverside - sendCardHand] Sending packet " + packet.toString());

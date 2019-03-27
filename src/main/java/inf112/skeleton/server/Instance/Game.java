@@ -26,6 +26,12 @@ public class Game {
     boolean active = false;
     int tickCountdown = 0;
 
+    boolean dealingCards = false;
+    boolean waitingCards = false;
+    boolean movingRobots = false;
+    int roundsPlayed = 0;
+
+
     public Game(Lobby lobby, MapFile mapFile) {
         this.lobby = lobby;
         gameBoard = new TiledMapLoader(mapFile);
@@ -38,22 +44,44 @@ public class Game {
 
 
     public void update() {
-        //Ensure the card deck always has available cards to deal.
-        if (deck.size() <= 11 /*🦀🦀🦀*/) {
-            deck = new CardDeck(); //Again, as noted in one of the tests, this is just faster than collecting and adding back all the cards that have been dealt.
-        }
         //Count down the timer. The server will not handle any other events if this is not 0.
-        if(tickCountdown > 0) {
+        //TODO Use player.processMovement instead.
+        if (tickCountdown > 0) {
             tickCountdown--;
-            System.out.println("[GameWorldInstance serverside - tick] Timer currently: " + tickCountdown);
+            //System.out.println("[Game serverside - update] Timer currently: " + tickCountdown);
         }
+
         //Logic handling the rounds.
-        if(tickCountdown == 0) {
-            if(!cardsForOneRound.isEmpty()) {
-                User user = findUserWithHighestPriorityCard();
-                Card card = cardsForOneRound.get(user);
-                handleMovement(user, card);
-                cardsForOneRound.remove(user);
+        if (tickCountdown == 0) {
+            if (cardsForOneRound.size() == 0 && players.size() != 0 && !dealingCards && !waitingCards && !movingRobots && roundsPlayed == 5) {
+                System.out.println("[Game serverside - update] Setting dealingCards to true.");
+                dealingCards = true;
+            }
+            if (dealingCards) {
+                System.out.println("[Game serverside - update] Dealing cards to players.");
+                for (Player player : players) {
+                    player.sendCardHand(createCardHand());
+                }
+                deck = new CardDeck();//🦀🦀Let🦀🦀garbage🦀🦀collector🦀🦀collect🦀🦀garbage🦀🦀
+                dealingCards = false;
+                waitingCards = true;
+                System.out.println("[Game serverside - update] Setting dealingCards to false, waitingCards true.");
+
+            }
+            if(waitingCards) {
+                if(cardsForOneRound.size() == players.size() &&!players.isEmpty() && !movingRobots) {
+                    waitingCards = false;
+                    movingRobots = true;
+                    System.out.println("[Game serverside - update] Setting waitingCards false, movingRobots true.");
+                }
+            }
+            if (movingRobots) {
+                if (!cardsForOneRound.isEmpty()) {
+                    playCard();
+                } else {
+                    System.out.println("[Game serverside - update] Setting movingRobots to false.");
+                    movingRobots = false;
+                }
             }
         }
 
@@ -61,10 +89,18 @@ public class Game {
         for (User user : RoboCopServerHandler.loggedInPlayers) {
             user.player.update(gameBoard);
         }
+        roundsPlayed++;
+    }
+
+    private void playCard() {
+        User user = findUserWithHighestPriorityCard();
+        Card card = cardsForOneRound.get(user);
+        handleMovement(user, card);
+        cardsForOneRound.remove(user);
     }
 
     private void handleMovement(User user, Card card) {
-        if(card.getType() == CardType.ROTATELEFT) {
+        if (card.getType() == CardType.ROTATELEFT) {
             setTimer(10);
             user.player.rotateLeft();
         } else if (card.getType() == CardType.ROTATERIGHT) {
@@ -80,10 +116,18 @@ public class Game {
     }
 
     private int translateMoveAmount(Card card) {
-        if(card.getType() == CardType.FORWARD1) { return 1; }
-        if(card.getType() == CardType.FORWARD2) { return 2; }
-        if(card.getType() == CardType.FORWARD3) { return 3; }
-        if(card.getType() == CardType.BACKWARD1) { return -1; }
+        if (card.getType() == CardType.FORWARD1) {
+            return 1;
+        }
+        if (card.getType() == CardType.FORWARD2) {
+            return 2;
+        }
+        if (card.getType() == CardType.FORWARD3) {
+            return 3;
+        }
+        if (card.getType() == CardType.BACKWARD1) {
+            return -1;
+        }
         return 0;
     }
 
@@ -99,8 +143,8 @@ public class Game {
     public User findUserWithHighestPriorityCard() {
         Card max = null;
         User user = null;
-        for(HashMap.Entry<User,Card> entry : cardsForOneRound.entrySet()) {
-            if(max == null || max.getPriority() < entry.getValue().getPriority()) {
+        for (HashMap.Entry<User, Card> entry : cardsForOneRound.entrySet()) {
+            if (max == null || max.getPriority() < entry.getValue().getPriority()) {
                 max = entry.getValue();
                 user = entry.getKey();
             }
@@ -108,11 +152,19 @@ public class Game {
         return user;
     }
 
+    private Card[] createCardHand() {
+        Card[] foo = new Card[9]; //TODO Magic number, fix later.
+        for (int i = 0; i < foo.length; i++) {
+            foo[i] = deck.dealCard();
+        }
+        return foo;
+    }
+
     public void initPlayers() {
         System.out.println("[Game serverside - initPlayers] called initPlayers in game");
 
         for (int i = 0; i < lobby.users.length; i++) {
-            if(lobby.users[i] != null){
+            if (lobby.users[i] != null) {
                 Player player = new Player(lobby.users[i].getName(), new Vector2(10, 10), 10, Directions.SOUTH, lobby.users[i]);
                 this.players.add(player);
                 player.sendInit();
