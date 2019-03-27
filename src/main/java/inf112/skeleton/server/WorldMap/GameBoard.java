@@ -2,10 +2,13 @@ package inf112.skeleton.server.WorldMap;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Entity;
 import inf112.skeleton.server.WorldMap.entity.TileObject;
+import inf112.skeleton.server.WorldMap.entity.mapEntities.BlackHole;
+import inf112.skeleton.server.WorldMap.entity.mapEntities.Laser;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -30,6 +33,25 @@ public abstract class GameBoard {
             entity.render(batch);
 
         }
+    }
+
+    public void addTileEntity(TiledMapTile tile, int x, int y) {
+        TileObject newTile;
+        switch (TileDefinition.getTileById(tile.getId())) {
+            case LASER:
+            case LASERSOURCE:
+            case LASERCROSS:
+                newTile = new Laser(tile, x, y);
+                break;
+            case BLACK_HOLE:
+                newTile = new BlackHole(tile, x, y);
+                break;
+            default:
+                System.err.println("fatal error adding tile: " + TileDefinition.getTileById(tile.getId()).getName());
+                return;
+        }
+        mapObjects.add(newTile);
+        System.out.println("Found object: " + TileDefinition.getTileById(tile.getId()).getName());
     }
 
     public void update() {

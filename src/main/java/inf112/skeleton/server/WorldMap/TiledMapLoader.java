@@ -28,8 +28,7 @@ public class TiledMapLoader extends GameBoard {
                 if (cell != null) {
                     TiledMapTile tile = cell.getTile();
                     if (tile != null) {
-                        mapObjects.add(new TileObject(tile, x, y));
-                        System.out.println("Found object: "+ TileDefinition.getTileById(tile.getId()).getName());
+                        addTileEntity(tile, x, y);
                     }
                 }
             }
