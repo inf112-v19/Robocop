@@ -53,6 +53,10 @@ public class Lobby {
         startedTimer = false;
         finished = false;
         startStage = 0 ;
+        FromServer id = FromServer.STATE_CHANGED;
+        StateChangePacket stateChangePacket = new StateChangePacket(StateChange.GAME_START);
+        Packet pkt = new Packet(id, stateChangePacket);
+        broadcastPacket(pkt);
     }
 
     public void startingGame() {
