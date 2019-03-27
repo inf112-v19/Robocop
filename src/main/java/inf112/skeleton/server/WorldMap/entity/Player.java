@@ -95,7 +95,7 @@ public class Player {
     }
 
 
-    public void update(GameBoard gameBoard) {
+    public void update() {
         if (processMovement(System.currentTimeMillis())) {
         }
         if ((System.currentTimeMillis() - this.timeInit) >= this.delayMessage && shouldSendCards) {
@@ -121,7 +121,7 @@ public class Player {
         Packet packet = new Packet(packetId, data);
 
         System.out.println("[Player serverside - sendCardHand] Sending packet " + packet.toString());
-        //owner.sendPacket(packet);
+        owner.sendPacket(packet);
     }
 
     public boolean addCardToSelectedArray(Card card) {

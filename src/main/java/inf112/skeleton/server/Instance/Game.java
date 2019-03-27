@@ -86,10 +86,14 @@ public class Game {
         }
 
         //Update each player.
-        for (User user : RoboCopServerHandler.loggedInPlayers) {
-            //user.player.update(gameBoard);
+        for (Player player : players) {
+            player.update();
         }
-        roundsPlayed++;
+        if(roundsPlayed < 5) {
+            roundsPlayed++;
+        } else {
+            roundsPlayed = 0;
+        }
     }
 
     private void playCard() {
@@ -140,7 +144,8 @@ public class Game {
     }
 
     //TODO Refactor this
-    public User findUserWithHighestPriorityCard() {
+
+    private User findUserWithHighestPriorityCard() {
         Card max = null;
         User user = null;
         for (HashMap.Entry<User, Card> entry : cardsForOneRound.entrySet()) {
@@ -158,6 +163,14 @@ public class Game {
             foo[i] = deck.dealCard();
         }
         return foo;
+    }
+
+    public void initializeGame() {
+        for(Player player : players) {
+            player.sendCardHand(createCardHand());
+        }
+        deck = new CardDeck();
+
     }
 
     public void initPlayers() {
