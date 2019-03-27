@@ -16,6 +16,11 @@ public class Lobby {
     String name;
     MapFile map;
     User host;
+    boolean finished = false;
+    private long timeStarted;
+    private long timeDelay = 2000;
+    boolean startedTimer = false;
+    int startStage = 0;
 
     public Lobby(String name, MapFile map, User host, GameWorldInstance gwi) {
         this.name = name;
@@ -23,7 +28,6 @@ public class Lobby {
         this.host = host;
         this.gwi = gwi;
         addUser(host);
-        startGame();
     }
 
     public void initGameWorld() {
@@ -37,17 +41,82 @@ public class Lobby {
         game.initPlayers();
     }
 
-    public void startGame() {
+    public void startGameCountdown(User user) {
+        if (user == host) {
+            startedTimer = true;
+            finished = false;
+            this.timeStarted = System.currentTimeMillis();
+        }
+    }
 
+    public void startGame() {
+        startedTimer = false;
+        finished = false;
+        startStage = 0 ;
+        FromServer id = FromServer.STATE_CHANGED;
+        StateChangePacket stateChangePacket = new StateChangePacket(StateChange.GAME_START);
+        Packet pkt = new Packet(id, stateChangePacket);
+        broadcastPacket(pkt);
+    }
+
+    public void startingGame() {
+        startedTimer = true;
+        finished = false;
+        this.timeStarted = System.currentTimeMillis();
+        switch (startStage) {
+            case 0:
+                broadcastChatMessage("[#FFFFFF]Game starting in...");
+                break;
+            case 1:
+                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]5");
+                initGameWorld();
+                break;
+            case 2:
+                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]4");
+                break;
+            case 3:
+                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]3");
+                initPlayers();
+                break;
+            case 4:
+                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]2");
+                break;
+            case 5:
+                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]1");
+                break;
+            case 6:
+                startGame();
+                break;
+        }
+        startStage++;
+    }
+
+    public boolean processMovement(long t) {
+        if (finished) {
+            return false;
+        }
+
+        if ((t - this.timeStarted) >= this.timeDelay) {
+            this.finished = true;
+        }
+        return true;
     }
 
     public void broadcastPacket(Packet pkt) {
         for (int i = 0; i < users.length; i++) {
-            if(users[i] != null){
+            if (users[i] != null) {
                 users[i].sendPacket(pkt);
             }
         }
     }
+
+    public void broadcastChatMessage(String message) {
+        FromServer pktId = FromServer.CHATMESSAGE;
+        ChatMessagePacket data = new ChatMessagePacket(message);
+        Packet pkt = new Packet(pktId, data);
+        broadcastPacket(pkt);
+    }
+
 
     public void addUser(User user) {
         for (int i = 0; i < users.length; i++) {
@@ -163,10 +232,14 @@ public class Lobby {
     }
 
 
-
     public void update() {
         if (game != null) {
             game.update();
+        }
+        if (startedTimer) {
+            if (!processMovement(System.currentTimeMillis())) {
+                startingGame();
+            }
         }
     }
 }

@@ -16,7 +16,6 @@ import java.util.ArrayList;
 public class TiledMapLoader extends GameBoard {
 
     private TiledMap tiledMap;
-    private OrthogonalTiledMapRenderer tiledMapRenderer;
 
     public TiledMapLoader(MapFile file) {
         super();
@@ -39,9 +38,6 @@ public class TiledMapLoader extends GameBoard {
 
     @Override
     public void render(OrthographicCamera camera, SpriteBatch batch) {
-        tiledMapRenderer.setView(camera);
-        tiledMapRenderer.render();
-
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         super.render(camera, batch);

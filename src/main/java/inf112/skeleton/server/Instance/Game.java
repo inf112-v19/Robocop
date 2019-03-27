@@ -59,7 +59,7 @@ public class Game {
 
         //Update each player.
         for (User user : RoboCopServerHandler.loggedInPlayers) {
-            user.player.update(gameBoard);
+            //user.player.update(gameBoard);
         }
     }
 
