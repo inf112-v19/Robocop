@@ -1,17 +1,9 @@
 package inf112.skeleton.app.gameStates.MainMenu;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.ToServer;
@@ -19,8 +11,6 @@ import inf112.skeleton.common.packet.data.CreateLobbyPacket;
 import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
-import org.w3c.dom.Text;
-
 
 public class Tab_CreateLobby extends MenuTab {
     TextField lobbyName;
@@ -42,6 +32,16 @@ public class Tab_CreateLobby extends MenuTab {
         lobbyName = new TextField("", skin);
         display.add(lobbyName).size(500, 40).row();
 
+        lobbyName.setTextFieldListener(new TextField.TextFieldListener() {
+            @Override
+            public void keyTyped(TextField textField, char c) {
+                // 10 = Keys.ENTER (Libgdx uses a different keyboard system)
+                if ((int)c == 10) {
+                    lobby_create();
+                }
+            }
+        });
+
         tmp = new TextField("Choose map: ", skin);
         tmp.setDisabled(true);
         display.add(tmp).size(200, 40);
@@ -62,22 +62,28 @@ public class Tab_CreateLobby extends MenuTab {
         tmp2.addListener(new ChangeListener() {
              @Override
              public void changed(ChangeEvent changeEvent, Actor actor) {
-                 String selected = selectBox.getSelected();
-                 for (MapFile map : maps) {
-                     if (map.name == selected) {
-                         Packet packet = new Packet(ToServer.CREATE_LOBBY.ordinal(), new CreateLobbyPacket(lobbyName.getText(), map));
-                         channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
-
-                         State_MainMenu menu = ((State_MainMenu)gsm.peek());
-                         menu.setFreeze(false);
-                         menu.removeCurrentTab();
-
-                         return;
-                     }
-                 }
+                 lobby_create();
              }
          });
 
         display.add(tmp2).size(400, 50).padTop(5).colspan(2);
+
+        ((State_MainMenu)gsm.peek()).stage.setKeyboardFocus(lobbyName);
+    }
+
+    public void lobby_create() {
+        String selected = selectBox.getSelected();
+        for (MapFile map : maps) {
+            if (map.name == selected) {
+                Packet packet = new Packet(ToServer.CREATE_LOBBY.ordinal(), new CreateLobbyPacket(lobbyName.getText(), map));
+                channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+
+                State_MainMenu menu = ((State_MainMenu)gsm.peek());
+                menu.setFreeze(false);
+                menu.removeCurrentTab();
+
+                return;
+            }
+        }
     }
 }

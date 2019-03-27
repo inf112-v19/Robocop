@@ -129,7 +129,10 @@ public class Tab_Lobby extends MenuTab{
             btn_start.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent changeEvent, Actor actor) {
-                    gsm.set(new State_Playing(gsm, channel));
+                    ToServer dataRequest = ToServer.REQUEST_DATA;
+                    DataRequestPacket dataRequestPacket = new DataRequestPacket(DataRequest.LOBBY_START);
+                    Packet packet = new Packet(dataRequest, dataRequestPacket);
+                    channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
                 }
             });
         else btn_start.setDisabled(true);

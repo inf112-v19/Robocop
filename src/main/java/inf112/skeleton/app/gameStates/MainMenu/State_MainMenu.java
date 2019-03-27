@@ -20,6 +20,7 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
+import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.common.packet.data.LobbiesListPacket;
 import inf112.skeleton.common.packet.data.LobbyJoinResponsePacket;
 import inf112.skeleton.common.packet.data.LobbyUpdatePacket;
@@ -35,13 +36,9 @@ enum MenuStates {
 }
 
 public class State_MainMenu extends GameState {
-    private final Color color_primary   = new Color(0.6f,0.4f,0.2f,1),
-                        color_secondary = new Color(0.773f, 0.612f, 0.424f, 1);
-    private Stage stage;
-    protected Stage mainStage;
-    private ShapeRenderer shape;
+    private final Color color_primary   = new Color(0.6f,0.4f,0.2f,1);
+    public Stage stage;
     private Table layout;
-    private MenuStates menuState = MenuStates.Welcome;
 
     private Table h1, h2, main;
     ImageTextButton.ImageTextButtonStyle h2_btn_style_focused, h2_btn_style_unfocused, h2_btn_style_frozen;
@@ -57,13 +54,11 @@ public class State_MainMenu extends GameState {
     public Queue<LobbyJoinResponsePacket> packets_LobbyJoin = new ConcurrentLinkedQueue<>();
     public Queue<LobbiesListPacket> packets_LobbyList = new ConcurrentLinkedQueue<>();
     public Queue<LobbyUpdatePacket> packets_LobbyUpdates = new ConcurrentLinkedQueue<>();
+    public Queue<Boolean> packets_GameStart = new ConcurrentLinkedQueue<>();
 
 
-    private final int   pad_leftRight       = 7,
-                        h1_height           = 60,
-                        h1_pad_topBottom    = 8,
+    private final int   h1_height           = 60,
                         h2_height           = 45,
-                        h2_pad_topBottom    = 2,
                         main_height         = 615,
                         main_padding        = 13;
     private boolean     isFrozen;
@@ -73,7 +68,6 @@ public class State_MainMenu extends GameState {
         channel = ch;
         im = new InputMultiplexer();
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
-        shape = new ShapeRenderer();
 
         isFrozen = false;
 
@@ -310,7 +304,10 @@ public class State_MainMenu extends GameState {
                 ((Tab_Lobby)tabs.get(packet.getLobbyName())).update(packet);
             }
         }
-
+        if (packets_GameStart.size() > 0) {
+            packets_GameStart = new ConcurrentLinkedQueue<>();
+            gsm.set(new State_Playing(gsm, channel));
+        }
     }
 
     @Override
