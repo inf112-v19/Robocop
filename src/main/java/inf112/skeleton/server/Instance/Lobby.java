@@ -18,7 +18,7 @@ public class Lobby {
     User host;
     boolean finished = false;
     private long timeStarted;
-    private long timeDelay = 2000;
+    private long timeDelay = 1000;
     boolean startedTimer = false;
     int startStage = 0;
     public boolean gameStarted = false;
@@ -68,26 +68,23 @@ public class Lobby {
         this.timeStarted = System.currentTimeMillis();
         switch (startStage) {
             case 0:
-                broadcastChatMessage("[#FFFFFF]Game starting in...");
-                break;
-            case 1:
-                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]5");
+                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]5...");
                 initGameWorld();
                 break;
-            case 2:
-                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]4");
+            case 1:
+                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]4...");
                 break;
-            case 3:
-                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]3");
+            case 2:
+                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]3...");
                 initPlayers();
                 break;
+            case 3:
+                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]2...");
+                break;
             case 4:
-                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]2");
+                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]1...");
                 break;
             case 5:
-                broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]1");
-                break;
-            case 6:
                 startGame();
                 break;
         }
