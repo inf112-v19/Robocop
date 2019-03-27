@@ -15,7 +15,7 @@ public class CameraHandler {
     private int baseCameraMovementSpeed = 10;
     private float   scrollAmount        = 0.25f,
                     zoomAmount          = 0.083f,
-                    zoomMin             = 1.0f,
+                    zoomMin             = 0.5f,
                     zoomMax             = 5.0f;
 
     private static int  K_PLUS          = 70,

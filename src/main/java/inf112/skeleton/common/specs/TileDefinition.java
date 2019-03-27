@@ -12,7 +12,9 @@ public enum TileDefinition {
     LBRACKET(7, true, "L-Bracket"),
     LASERSOURCE(11, true, "Laser-Source"),
     LASER(12, true, "Laser"),
-    LASERCROSS(13, true, "LaserCross");
+    LASERCROSS(13, true, "LaserCross"),
+    BLACK_HOLE(14, true, "BlackHole");
+
 
 
 
