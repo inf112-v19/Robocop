@@ -93,10 +93,10 @@ public class RoboRally extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //Tmp, for testing
-        //if(Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
-        //    Gdx.app.log("RoboRally clientside - render", "Sending next card");
-        //    RoboRally.gameBoard.myPlayer.sendNextSelectedCard();
-        //}
+        if(Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
+            Gdx.app.log("RoboRally clientside - render", "Sending next card");
+            RoboRally.gameBoard.myPlayer.sendNextSelectedCard();
+        }
 
         gsm.update(0);
         gsm.render(batch);
