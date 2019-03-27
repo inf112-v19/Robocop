@@ -21,6 +21,7 @@ public class Lobby {
     private long timeDelay = 2000;
     boolean startedTimer = false;
     int startStage = 0;
+    public boolean gameStarted = false;
 
     public Lobby(String name, MapFile map, User host, GameWorldInstance gwi) {
         this.name = name;
@@ -45,6 +46,7 @@ public class Lobby {
         if (user == host) {
             startedTimer = true;
             finished = false;
+            gameStarted = true;
             this.timeStarted = System.currentTimeMillis();
         }
     }
