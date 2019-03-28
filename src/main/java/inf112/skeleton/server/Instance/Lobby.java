@@ -91,15 +91,11 @@ public class Lobby {
         startStage++;
     }
 
-    public boolean processMovement(long t) {
-        if (finished) {
-            return false;
+    public boolean checkTimePassed(long t) {
+         if ((t - this.timeStarted) >= this.timeDelay) {
+            return true;
         }
-
-        if ((t - this.timeStarted) >= this.timeDelay) {
-            this.finished = true;
-        }
-        return true;
+        return false;
     }
 
     public void broadcastPacket(Packet pkt) {
@@ -237,7 +233,7 @@ public class Lobby {
             game.update();
         }
         if (startedTimer) {
-            if (!processMovement(System.currentTimeMillis())) {
+            if (checkTimePassed(System.currentTimeMillis())) {
                 startingGame();
             }
         }

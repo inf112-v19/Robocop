@@ -43,7 +43,7 @@ public class Game {
 
     public void update() {
         //Count down the timer. The server will not handle any other events if this is not 0.
-        //TODO Use player.processMovement instead.
+        //TODO Use player.checkTimePassed instead.
         if (tickCountdown > 0) {
             tickCountdown--;
             //System.out.println("[Game serverside - update] Timer currently: " + tickCountdown);
@@ -51,7 +51,7 @@ public class Game {
 
         //Logic handling the rounds.
         if (tickCountdown == 0) {
-            if (cardsForOneRound.size() == 0 && players.size() != 0 && !dealingCards && /*!waitingCards &&*/ !movingRobots && cardsPlayedThisRound == 5) {
+            if (cardsForOneRound.size() == 0 && players.size() != 0 && !dealingCards && /*!waitingCards &&*/ !movingRobots && cardsPlayedThisRound == 5*players.size()) {
                 System.out.println("[Game serverside - update] Setting dealingCards to true.");
                 dealingCards = true;
             }
@@ -76,14 +76,15 @@ public class Game {
             if (movingRobots) {
                 if (!cardsForOneRound.isEmpty()) {
                     useCard();
-                    if(cardsPlayedThisRound < 5) {
+
+                    if(cardsPlayedThisRound < 5*players.size()) {
                         cardsPlayedThisRound++;
                         System.out.println("Cards played this round: " + cardsPlayedThisRound);
                     } else {
                         cardsPlayedThisRound = 0;
                         System.out.println("Cards played this round: " + cardsPlayedThisRound);
-
                     }
+
                 } else {
                     System.out.println("[Game serverside - update] Setting movingRobots to false, waiting cards true.");
                     movingRobots = false;
