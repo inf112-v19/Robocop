@@ -43,9 +43,7 @@ public class GameWorldInstance implements ApplicationListener {
 
     @Override
     public void create() {
-        User dummyUser = new User("username", "pass", null);
-        Lobby testLobby = new Lobby("ds", MapFile.CROSS, dummyUser, this);
-        addLobby(testLobby);
+
     }
 
 

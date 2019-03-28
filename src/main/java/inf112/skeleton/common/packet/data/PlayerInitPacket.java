@@ -10,10 +10,11 @@ public class PlayerInitPacket implements PacketData {
     Vector2 pos;
     Vector2 movingTo;
     int health;
+    int slot;
     String name;
     Directions facing;
 
-    public PlayerInitPacket(String name, Vector2 pos, int health, Directions facing) {
+    public PlayerInitPacket(String name, Vector2 pos, int health, int slot, Directions facing) {
         this.name = name;
         this.pos = pos;
         this.movingTo = new Vector2(pos.x, pos.y);
@@ -52,6 +53,10 @@ public class PlayerInitPacket implements PacketData {
 
     public void setHealth(int health) {
         this.health = health;
+    }
+
+    public int getSlot() {
+        return slot;
     }
 
     public Directions getFacing() {

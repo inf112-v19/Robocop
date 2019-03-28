@@ -14,10 +14,11 @@ import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.card.CardDeck;
 import inf112.skeleton.server.user.User;
-import static inf112.skeleton.server.Instance.GameStage.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static inf112.skeleton.server.Instance.GameStage.*;
 
 
 public class Game {
@@ -156,15 +157,16 @@ public class Game {
     }
 
     private boolean checkTimer() {
-        if(timerStarted == 0)
+        if (timerStarted == 0)
             return false;
-        if(System.currentTimeMillis() >= timerStarted + timeDelay)
+        if (System.currentTimeMillis() >= timerStarted + timeDelay)
             return true;
         return false;
     }
 
     /**
      * Add a user and a card to the hashmap.
+     *
      * @param user key
      * @param card value
      */
@@ -174,6 +176,7 @@ public class Game {
 
     /**
      * Gets the user with the highest priority card from the hashmap.
+     *
      * @return User with highest priority.
      */
     private User findUserWithHighestPriorityCard() {
@@ -191,6 +194,7 @@ public class Game {
     /**
      * Create a card-hand that can be sent to the player. If the player looses
      * hitpoints, it will recieve a smaller hand.
+     *
      * @param player
      * @return Array of cards ("hand").
      */
@@ -206,7 +210,7 @@ public class Game {
      * Call this when the game first starts, so that we'll not get stuck outside the loop.
      */
     public void dealFirstHand() {
-        for(Player player : players) {
+        for (Player player : players) {
             player.sendCardHand(createCardHand(player));
         }
         setTimer(10);
@@ -219,7 +223,7 @@ public class Game {
 
         for (int i = 0; i < lobby.users.length; i++) {
             if (lobby.users[i] != null) {
-                Player player = new Player(lobby.users[i].getName(), new Vector2(10, 10), 9, Directions.SOUTH, lobby.users[i]);
+                Player player = new Player(lobby.users[i].getName(), new Vector2(10, 10), 9, i, Directions.SOUTH, lobby.users[i]);
                 this.players.add(player);
                 player.sendInit();
             }

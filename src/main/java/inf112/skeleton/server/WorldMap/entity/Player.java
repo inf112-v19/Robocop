@@ -1,17 +1,16 @@
 package inf112.skeleton.server.WorldMap.entity;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.common.packet.*;
+import inf112.skeleton.common.packet.FromServer;
+import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.CardHandPacket;
 import inf112.skeleton.common.packet.data.CardPacket;
 import inf112.skeleton.common.packet.data.PlayerInitPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
+import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.RoboCopServerHandler;
-import inf112.skeleton.server.WorldMap.GameBoard;
-import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
@@ -25,11 +24,10 @@ public class Player {
     Vector2 movingTo;
     User owner;
     Card[] selectedCards;
-
+    int slot;
     int currentHP;
     Directions direction;
     int movingTiles = 0;
-
 
 
     private int delayMove = 400;
@@ -38,11 +36,12 @@ public class Player {
     private long timeMoved = 0;
     boolean shouldSendCards = true;
 
-    public Player(String name, Vector2 pos, int hp, Directions directions, User owner) {
+    public Player(String name, Vector2 pos, int hp, int slot, Directions directions, User owner) {
         this.name = name;
         this.currentHP = hp;
         this.currentPos = pos;
         this.movingTo = new Vector2(currentPos.x, currentPos.y);
+        this.slot = slot;
         this.direction = directions;
         this.owner = owner;
         owner.setPlayer(this);
@@ -105,6 +104,10 @@ public class Player {
 
     }
 
+    public void setSlot(int slot) {
+        this.slot = slot;
+    }
+
     public void sendCard(Card card) {
         FromServer packetId = FromServer.CARD_PACKET;
         CardPacket data = new CardPacket(card);
@@ -125,8 +128,8 @@ public class Player {
     }
 
     public boolean addCardToSelectedArray(Card card) {
-        for(int i = 0; i < selectedCards.length; i++) {
-            if(selectedCards[i] == null) {
+        for (int i = 0; i < selectedCards.length; i++) {
+            if (selectedCards[i] == null) {
                 selectedCards[i] = card;
                 return true;
             }
@@ -135,8 +138,8 @@ public class Player {
     }
 
     public Card getCardFromSelectedArray() {
-        for(int i = 0; i < selectedCards.length; i++) {
-            if(selectedCards[i] != null) {
+        for (int i = 0; i < selectedCards.length; i++) {
+            if (selectedCards[i] != null) {
                 Card foo = selectedCards[i];
                 selectedCards[i] = null;
                 return foo;
@@ -192,7 +195,7 @@ public class Player {
 
         FromServer initPlayer = FromServer.INIT_LOCALPLAYER;
         PlayerInitPacket playerInitPacket =
-                new PlayerInitPacket(name, currentPos, currentHP, direction);
+                new PlayerInitPacket(name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
         owner.getChannel().writeAndFlush(Tools.GSON.toJson(initPacket) + "\r\n");
         //TODO: send init player to client, then broadcast to all others
@@ -204,7 +207,7 @@ public class Player {
     public void initAll() {
         FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
-                new PlayerInitPacket(name, currentPos, currentHP, direction);
+                new PlayerInitPacket(name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
         RoboCopServerHandler.globalMessage(Tools.GSON.toJson(initPacket), owner.getChannel(), true);
 
@@ -221,7 +224,7 @@ public class Player {
     public void sendToNewClient(Channel newUserChannel) {
         FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
-                new PlayerInitPacket(name, currentPos, currentHP, direction);
+                new PlayerInitPacket(name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
         newUserChannel.writeAndFlush(Tools.GSON.toJson(initPacket) + "\r\n");
 //        newUserChannel.writeAndFlush("list:" + Utility.formatPlayerName(owner.getName().toLowerCase()) + "\r\n");

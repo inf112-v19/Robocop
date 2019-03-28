@@ -37,13 +37,14 @@ public class Robot extends Entity {
 
     public ArrayList<Card> cardsChosen;
 
-    public Robot(float x, float y, Player player) {
+    public Robot(float x, float y,int slot, Player player) {
         super(x, y, EntityType.ROBOT);
         this.tileTo = new Vector2(x, y);
         this.position = new int[2];
         this.position[0] = (int) x * 64;
         this.position[1] = (int) y * 64;
         this.health = 5;
+        this.colour = slot;
         this.facing = player.initalDirection;
         stateTime = 0f;
         this.player = player;
