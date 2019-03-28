@@ -28,7 +28,7 @@ public class Robot extends Entity {
     Animation<TextureRegion> facing_south;
     Animation<TextureRegion> facing_west;
     Animation<TextureRegion> facing_east;
-    int colour=3;
+    int colour;
 
     TextureAtlas textureAtlas;
     float stateTime;
@@ -45,6 +45,7 @@ public class Robot extends Entity {
         this.position[1] = (int) y * 64;
         this.health = 5;
         this.colour = slot;
+        System.out.println("Robot constructor, slot = " + this.colour);
         this.facing = player.initalDirection;
         stateTime = 0f;
         this.player = player;

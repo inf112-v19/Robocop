@@ -19,6 +19,7 @@ public class PlayerInitPacket implements PacketData {
         this.pos = pos;
         this.movingTo = new Vector2(pos.x, pos.y);
         this.health = health;
+        this.slot = slot;
         this.facing = facing;
     }
 

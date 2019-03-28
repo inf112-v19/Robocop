@@ -35,7 +35,6 @@ public class User {
         this.name = username;
         this.password = password;
         this.channel = channel;
-        this.player = new Player(name, new Vector2(10, 10), 10, Directions.SOUTH, this);
     }
 
     public void joinLobby(GameWorldInstance game, String lobbyname) {
