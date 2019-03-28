@@ -13,6 +13,7 @@ public class Lobby {
     Game game;
     GameWorldInstance gwi;
     User[] users = new User[8];
+    String[] usernames = new String[8];
     String name;
     MapFile map;
     User host;
@@ -21,6 +22,7 @@ public class Lobby {
     private long timeDelay = 1000;
     boolean startedTimer = false;
     int startStage = 0;
+    private int userCount = 0;
     public boolean gameStarted = false;
 
     public Lobby(String name, MapFile map, User host, GameWorldInstance gwi) {
@@ -47,7 +49,6 @@ public class Lobby {
             startedTimer = true;
             finished = false;
             gameStarted = true;
-            game.initializeGame();
             this.timeStarted = System.currentTimeMillis();
         }
     }
@@ -60,6 +61,7 @@ public class Lobby {
         StateChangePacket stateChangePacket = new StateChangePacket(StateChange.GAME_START);
         Packet pkt = new Packet(id, stateChangePacket);
         broadcastPacket(pkt);
+        game.dealFirstHand();
     }
 
     public void startingGame() {
@@ -91,15 +93,11 @@ public class Lobby {
         startStage++;
     }
 
-    public boolean processMovement(long t) {
-        if (finished) {
-            return false;
+    public boolean checkTimePassed(long t) {
+         if ((t - this.timeStarted) >= this.timeDelay) {
+            return true;
         }
-
-        if ((t - this.timeStarted) >= this.timeDelay) {
-            this.finished = true;
-        }
-        return true;
+        return false;
     }
 
     public void broadcastPacket(Packet pkt) {
@@ -122,17 +120,12 @@ public class Lobby {
         for (int i = 0; i < users.length; i++) {
             if (users[i] == null) {
                 users[i] = user;
+                userCount++;
+                usernames[i] = user.getName();
                 user.setLobby(this);
-                String[] usernames = new String[8];
-                for (int j = 0; j < users.length; j++) {
-                    if (users[j] != null) {
-                        usernames[j] = users[j].getName();
-                    }
-                }
                 LobbyJoinResponsePacket lobbyResposePacket = new LobbyJoinResponsePacket(name, usernames, host.getName(), map);
                 Packet pkt = new Packet(FromServer.JOIN_LOBBY_RESPONSE, lobbyResposePacket);
                 user.sendPacket(pkt);
-
                 for (int j = 0; j < users.length; j++) {
                     if (users[j] != null && users[j] != user) {
                         sendUpdate(users[j]);
@@ -151,12 +144,7 @@ public class Lobby {
     }
 
     private void sendUpdate(User user) {
-        String[] usernames = new String[8];
-        for (int j = 0; j < users.length; j++) {
-            if (users[j] != null) {
-                usernames[j] = users[j].getName();
-            }
-        }
+
         LobbyUpdatePacket lobbyUpdatePacket = new LobbyUpdatePacket(usernames, getName());
         Packet pkt = new Packet(FromServer.LOBBY_UPDATE, lobbyUpdatePacket);
         user.sendPacket(pkt);
@@ -166,6 +154,8 @@ public class Lobby {
         for (int i = 0; i < users.length; i++) {
             if (user == users[i]) {
                 users[i] = null;
+                userCount--;
+                usernames[i] = null;
                 user.setLobby(null);
                 user.sendPacket(new Packet(FromServer.STATE_CHANGED, new StateChangePacket(StateChange.PLAYER_KICKED)));
 
@@ -204,14 +194,8 @@ public class Lobby {
         return false;
     }
 
-    public int userCount() {
-        int count = 0;
-        for (int i = 0; i < users.length; i++) {
-            if (users[i] != null) {
-                count++;
-            }
-        }
-        return count;
+    public int getUserCount() {
+        return userCount;
     }
 
     public String getName() {
@@ -237,7 +221,7 @@ public class Lobby {
             game.update();
         }
         if (startedTimer) {
-            if (!processMovement(System.currentTimeMillis())) {
+            if (checkTimePassed(System.currentTimeMillis())) {
                 startingGame();
             }
         }

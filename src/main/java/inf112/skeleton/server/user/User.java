@@ -10,9 +10,7 @@ import inf112.skeleton.common.specs.LobbyInfo;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.GameWorldInstance;
 import inf112.skeleton.server.Instance.Lobby;
-import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.WorldMap.entity.Player;
-import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
 
 import java.util.ArrayList;
@@ -90,7 +88,7 @@ public class User {
                 LobbyInfo info = new LobbyInfo(
                         lobby.getName(),
                         lobby.getHost().getName(),
-                        lobby.userCount(),
+                        lobby.getUserCount(),
                         lobby.getMap()
                 );
 

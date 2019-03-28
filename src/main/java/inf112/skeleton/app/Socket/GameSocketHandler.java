@@ -73,6 +73,10 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 CardHandPacket cardHandPacket = CardHandPacket.parseJSON(jsonObject);
                 RoboRally.gameBoard.receiveCardHand(cardHandPacket);
                 break;
+            case CARD_REQUEST_PACKET:
+                Gdx.app.log("GameSocketHandler - handleIncomingPacket", "I just received a CRP :)");
+                RoboRally.gameBoard.myPlayer.sendNextSelectedCard();
+                break;
             case REMOVE_PLAYER:
                 PlayerRemovePacket playerRemovePacket = PlayerRemovePacket.parseJSON(jsonObject);
                 RoboRally.gameBoard.removePlayer(playerRemovePacket);
