@@ -90,6 +90,10 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
         return null;
     }
 
+    public Collection<User> getLoggedInUsers (){
+        return loggedInPlayers;
+    }
+
     /**
      * Gets the user from the list of logged in users
      *

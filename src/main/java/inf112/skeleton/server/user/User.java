@@ -25,7 +25,7 @@ public class User {
     public String password;
     public UserPrivilege userRights;
     public Player player;
-    public ArrayList<String> friendsList;
+    public FriendsList friendsList;
     private Lobby lobby;
     private String uuid;
 
@@ -158,11 +158,8 @@ public class User {
         this.password = password;
     }
 
-    public void createFriendsList() {
-        this.friendsList = new ArrayList<>();
-    }
 
-    public ArrayList<String> getFriendsList() {
+    public FriendsList getFriendsList() {
         return friendsList;
     }
 
@@ -181,8 +178,28 @@ public class User {
         sendPacket(pkt);
 
     }
+    public void sendWhisper(String message, User messagingUser){
+        this.sendChatMessage("[#EEEEEE]From "+messagingUser.getName()+": [#000000]"+message);
+        messagingUser.sendChatMessage("[#EEEEEE]To "+messagingUser.getName()+": [#000000]"+message);
+
+    }
+
+    /**
+     * Send a message to a user, the message will show up in the chatbox with a "[SERVER]: " prefix.
+     * @param message
+     */
+    public void sendServerMessage(String message){
+        Packet responsePacket = new Packet(
+                FromServer.CHATMESSAGE.ordinal(),
+                new ChatMessagePacket("[SERVER]: " +message));
+        sendPacket(responsePacket);
+    }
 
     public String getUUID() {
         return uuid;
+    }
+
+    public void setFriendsList(FriendsList friendsList) {
+        this.friendsList = friendsList;
     }
 }

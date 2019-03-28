@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import inf112.skeleton.common.packet.data.LoginPacket;
 import inf112.skeleton.common.utility.Tools;
+import inf112.skeleton.server.user.FriendsList;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.user.UserPrivilege;
 import io.netty.channel.Channel;
@@ -34,7 +35,7 @@ public class UserLogging {
         if (!file.exists()) {
             User user = new User(uuid, username.toLowerCase(), password, channel);
             user.setRights(UserPrivilege.PLAYER);
-            user.createFriendsList();
+            user.setFriendsList(new FriendsList());
             user.setLoggedIn(true);
             return user;
         }
@@ -65,7 +66,7 @@ public class UserLogging {
             }
             User user = new User(uuid, jsonName, jsonPassword, channel);
             user.setLoggedIn(true);
-            user.friendsList = friendslist;
+            user.setFriendsList(new FriendsList(friendslist));
             user.setRights(jsonRights);
             return user;
         } catch (FileNotFoundException e) {
@@ -101,7 +102,7 @@ public class UserLogging {
             object.addProperty("username", user.getName().toLowerCase());
             object.addProperty("password", user.getPassword());
             object.addProperty("UserPrivilege", user.getRights().getPrefix());
-            object.addProperty("Friendslist", Tools.GSON.toJson(user.getFriendsList()));
+            object.addProperty("Friendslist", Tools.GSON.toJson(user.getFriendsList().getList()));
             writer.write(builder.toJson(object));
         } catch (IOException e) {
             e.printStackTrace();
