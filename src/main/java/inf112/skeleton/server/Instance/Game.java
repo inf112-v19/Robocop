@@ -29,8 +29,8 @@ public class Game {
     boolean active = false;
 
     int tickCountdown = 0;
-    long timeStarted = 0;
-    long timeDelay = 30000;
+    long timerStarted = 0;
+    long timeDelay = 0;
 
     boolean dealingCards = false;
     boolean waitingCards = false;
@@ -59,105 +59,63 @@ public class Game {
         if (tickCountdown > 0) {
             tickCountdown--;
             //System.out.println("[Game serverside - update] Timer currently: " + tickCountdown);
-        }
+        } else {
+            switch (gameStage) {
+                case LOBBY:
+                    break;
 
-        switch (gameStage) {
-            case LOBBY:
-                break;
-            case DEALING:   //Deal cards to players
-                Gdx.app.log("Game - update", "Dealing cards to players.");
-                for (Player player : players) {
-                    player.sendCardHand(createCardHand(player));
-                }
-                deck = new CardDeck();//🦀🦀Let🦀🦀garbage🦀🦀collector🦀🦀collect🦀🦀garbage🦀🦀
-                timeStarted = System.currentTimeMillis();
-                Gdx.app.log("Game - update", "Moving to WAITING-stage.");
-                gameStage = WAITING;
-                break;
+                case DEALING:   //Deal cards to players
+                    Gdx.app.log("Game - update - DEALING", "Dealing cards to players.");
+                    for (Player player : players) {
+                        player.sendCardHand(createCardHand(player));
+                    }
+                    deck = new CardDeck();//🦀🦀Let🦀🦀garbage🦀🦀collector🦀🦀collect🦀🦀garbage🦀🦀
+                    setTimer(10);
+                    Gdx.app.log("Game - update - DEALING", "Moving to WAITING-stage.");
+                    gameStage = WAITING;
+                    break;
 
-            case WAITING:   //Wait for players to choose cards from their hand or send card after request.
-                if(checkTimePassed(System.currentTimeMillis())) {
-                    Gdx.app.log("Game - update", "Moving to REQUEST-stage.");
-                    gameStage = REQUEST;
-                }
-                //Are we ready to go to MOVE-stage?
-                if(cardsForOneRound.size() == players.size() && !players.isEmpty()) {
-                    Gdx.app.log("Game - update", "Moving to MOVING-stage.");
-                    gameStage = MOVING;
-                }
-                break;
-
-            case REQUEST:   //Request the players' selected cards.
-                CardRequestPacket cRPkt = new CardRequestPacket(1);
-                Packet pkt = new Packet(FromServer.CARD_REQUEST_PACKET.ordinal(), cRPkt);
-                lobby.broadcastPacket(pkt);
-                cardRequests++;
-                Gdx.app.log("Game - update", "Moving to WAITING-stage.");
-                gameStage = WAITING;
-                break;
-
-            case MOVING:    //Move the robots in correct order.
-                if (!cardsForOneRound.isEmpty()) {
-                    useCard();
-                } else {
-                    if(cardRequests == 5) {
-                        Gdx.app.log("Game - update", "Moving to DEALING-stage.");
-                        cardRequests = 0;
-                        gameStage = DEALING;
-                    } else {
-                        Gdx.app.log("Game - update", "Moving to REQUEST-stage.");
+                case WAITING:   //Wait for players to choose cards from their hand or send card after request.
+                    if (checkTimer()) {
+                        Gdx.app.log("Game - update - WAITING", "Moving to REQUEST-stage.");
+                        timerStarted = 0;
                         gameStage = REQUEST;
                     }
-                }
-                break;
-
-            case VICTORY:   //Some pleb won the game. HAX! Obviously.
-                lobby.broadcastChatMessage("Winner winner crab people crab people dinner.");
-                break;
-
-        }
-
-        //Logic handling the rounds.
-        if (tickCountdown == 0) {
-            if (cardsForOneRound.size() == 0 && players.size() != 0 && !dealingCards && /*!waitingCards &&*/ !movingRobots && cardsPlayedThisRound == 5*players.size()) {
-                System.out.println("[Game serverside - update] Setting dealingCards to true.");
-                dealingCards = true;
-            }
-            if (dealingCards) {
-                System.out.println("[Game serverside - update] Dealing cards to players.");
-                for (Player player : players) {
-                    player.sendCardHand(createCardHand(player));
-                }
-                deck = new CardDeck();//🦀🦀Let🦀🦀garbage🦀🦀collector🦀🦀collect🦀🦀garbage🦀🦀
-                dealingCards = false;
-                waitingCards = true;
-                System.out.println("[Game serverside - update] Setting dealingCards to false, waitingCards true.");
-
-            }
-            if(waitingCards) {
-                if(cardsForOneRound.size() == players.size() &&!players.isEmpty() && !movingRobots) {
-                    waitingCards = false;
-                    movingRobots = true;
-                    System.out.println("[Game serverside - update] Setting waitingCards false, movingRobots true.");
-                }
-            }
-            if (movingRobots) {
-                if (!cardsForOneRound.isEmpty()) {
-                    useCard();
-
-                    if(cardsPlayedThisRound < 5*players.size()) {
-                        cardsPlayedThisRound++;
-                        System.out.println("Cards played this round: " + cardsPlayedThisRound);
-                    } else {
-                        cardsPlayedThisRound = 0;
-                        System.out.println("Cards played this round: " + cardsPlayedThisRound);
+                    //Are we ready to go to MOVE-stage?
+                    if (cardsForOneRound.size() == players.size() && !players.isEmpty()) {
+                        Gdx.app.log("Game - update - WAITING", "Moving to MOVING-stage.");
+                        gameStage = MOVING;
                     }
+                    break;
 
-                } else {
-                    System.out.println("[Game serverside - update] Setting movingRobots to false, waiting cards true.");
-                    movingRobots = false;
-                    waitingCards = true;
-                }
+                case REQUEST:   //Request the players' selected cards.
+                    CardRequestPacket cRPkt = new CardRequestPacket(1);
+                    Packet pkt = new Packet(FromServer.CARD_REQUEST_PACKET.ordinal(), cRPkt);
+                    lobby.broadcastPacket(pkt);
+                    cardRequests++;
+                    Gdx.app.log("Game - update - REQUEST", "Moving to WAITING-stage.");
+                    gameStage = WAITING;
+                    break;
+
+                case MOVING:    //Move the robots in correct order.
+                    if (!cardsForOneRound.isEmpty()) {
+                        useCard();
+                    } else {
+                        if (cardRequests == 5) {
+                            Gdx.app.log("Game - update - MOVING", "Moving to DEALING-stage.");
+                            cardRequests = 0;
+                            gameStage = DEALING;
+                        } else {
+                            Gdx.app.log("Game - update - MOVING", "Moving to REQUEST-stage.");
+                            gameStage = REQUEST;
+                        }
+                    }
+                    break;
+
+                case VICTORY:   //Some pleb won the game. HAX! Obviously.
+                    lobby.broadcastChatMessage("Winner winner crab people crab people dinner.");
+                    break;
+
             }
         }
 
@@ -177,29 +135,35 @@ public class Game {
 
     private void handleMovement(User user, Card card) {
         if (card.getType() == CardType.ROTATELEFT) {
-            setTimer(10);
+            setTimerTicks(10);
             user.player.rotateLeft();
         } else if (card.getType() == CardType.ROTATERIGHT) {
-            setTimer(10);
+            setTimerTicks(10);
             user.player.rotateRight();
         } else if (card.getType() == CardType.ROTATE180) {
-            setTimer(10);
+            setTimerTicks(10);
             user.player.rotate180();
         } else {
-            setTimer(10 * card.getType().moveAmount);
+            setTimerTicks(10 * card.getType().moveAmount);
             user.player.startMovement(user.player.getDirection(), card.getType().moveAmount);
         }
     }
 
-    public boolean checkTimePassed(long t) {
-        if ((t - this.timeStarted) >= this.timeDelay) {
-            return true;
-        }
-        return false;
+    private void setTimerTicks(int ticks) {
+        this.tickCountdown = ticks;
     }
 
-    private void setTimer(int ticks) {
-        this.tickCountdown = ticks;
+    private void setTimer(int seconds) {
+        this.timerStarted = System.currentTimeMillis();
+        this.timeDelay = seconds * 1000;
+    }
+
+    private boolean checkTimer() {
+        if(timerStarted == 0)
+            return false;
+        if(System.currentTimeMillis() >= timerStarted + timeDelay)
+            return true;
+        return false;
     }
 
     /**
@@ -248,9 +212,12 @@ public class Game {
         for(Player player : players) {
             player.sendCardHand(createCardHand(player));
         }
-        dealingCards = false;
+        /*dealingCards = false;
         waitingCards = true;
-        movingRobots = false;
+        movingRobots = false;*/
+        //timerStarted = System.currentTimeMillis();
+        setTimer(10);
+        gameStage = WAITING;
         deck = new CardDeck();
     }
 
