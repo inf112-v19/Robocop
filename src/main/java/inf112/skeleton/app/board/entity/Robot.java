@@ -36,6 +36,7 @@ public class Robot extends Entity {
     BitmapFont font = new BitmapFont();
 
     public ArrayList<Card> cardsChosen;
+    private int movementDirection = 1;
 
     public Robot(float x, float y,int slot, Player player) {
         super(x, y, EntityType.ROBOT);
@@ -118,7 +119,8 @@ public class Robot extends Entity {
 
         this.tileTo = updatePlayerPacket.getToTile();
         this.facing = updatePlayerPacket.getDirection();
-        this.movementLenght = updatePlayerPacket.getMovingTiles();
+        this.movementDirection = updatePlayerPacket.getMovingTiles();
+        this.movementLenght = Math.abs(updatePlayerPacket.getMovingTiles());
         this.pos = updatePlayerPacket.getFromTile();
         this.timeMoved = System.currentTimeMillis();
         processMovement(System.currentTimeMillis());
@@ -155,6 +157,11 @@ public class Robot extends Entity {
         //Is the robot currently moving
         if (processMovement(System.currentTimeMillis())) {
             //Yes it is moving, render animated frames.
+            if(movementDirection >= 0) {
+                currentAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+            } else {
+                currentAnimation.setPlayMode(Animation.PlayMode.REVERSED);
+            }
             TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
 
             batch.draw(currentFrame, position[0], position[1], getWidth(), getHeight());

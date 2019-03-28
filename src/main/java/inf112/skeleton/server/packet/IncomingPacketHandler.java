@@ -3,6 +3,8 @@ package inf112.skeleton.server.packet;
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.packet.data.*;
+import inf112.skeleton.common.specs.Card;
+import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
@@ -16,6 +18,7 @@ public class IncomingPacketHandler {
 
     /**
      * Parse received packet and decide what to do with it.
+     *
      * @param incoming
      * @param jsonObject
      * @param handler
@@ -93,7 +96,7 @@ public class IncomingPacketHandler {
                 DataRequestPacket request = DataRequestPacket.parseJSON(jsonObject);
                 User requestUser = handler.getEntityFromLoggedIn(incoming);
 
-                switch(request.getRequest()) {
+                switch (request.getRequest()) {
                     case LOBBY_LIST:
                         requestUser.getLobbyList(handler.game);
                         break;
@@ -113,6 +116,7 @@ public class IncomingPacketHandler {
 
     /**
      * Parse command from packet and exectute action.
+     *
      * @param messagingUser
      * @param command
      * @param handler
@@ -125,10 +129,10 @@ public class IncomingPacketHandler {
                 sendMessage("There is currently " + handler.loggedInPlayers.size() + " player(s) online.", messagingUser, handler);
                 break;
             case "move":
-                if(command.length > 2){
-                    if(Directions.fromString(command[1].toUpperCase()) != null){
+                if (command.length > 2) {
+                    if (Directions.fromString(command[1].toUpperCase()) != null) {
                         Directions direction = Directions.valueOf(command[1].toUpperCase());
-                        if(Utility.isStringInt(command[2])){
+                        if (Utility.isStringInt(command[2])) {
                             messagingUser.player.startMovement(direction, Integer.parseInt(command[2]));
                             return;
                         }
@@ -137,7 +141,20 @@ public class IncomingPacketHandler {
                 sendMessage("Error in command, proper usage: '!move north 3'.", messagingUser, handler);
 
                 break;
+            case "card":
+                if (command.length > 1) {
+                    if (CardType.fromString(command[1].toUpperCase()) != null) {
+                        CardType cardType = CardType.valueOf(command[1].toUpperCase());
+                        Card card = new Card(999, cardType);
+                        messagingUser.getLobby().getGame().handleMovement(messagingUser, card);
+                        return;
+                    }
+                }
+                sendMessage("Error in command, proper usage: '!card rotateleft'.", messagingUser, handler);
+                sendMessage("Available cards: rotateleft, rotateright, rotate180", messagingUser, handler);
+                sendMessage("forward1, forward2, forward3, backward1", messagingUser, handler);
 
+                break;
             default:
                 sendMessage("Command not found \"" + command[0] + "\".", messagingUser, handler);
                 break;
@@ -146,20 +163,22 @@ public class IncomingPacketHandler {
 
     /**
      * Send a message to a user, the message will show up in the chatbox with a "[SERVER]: " prefix.
+     *
      * @param message
      * @param user
      * @param handler
      */
-    private void sendMessage(String message, User user, RoboCopServerHandler handler){
+    private void sendMessage(String message, User user, RoboCopServerHandler handler) {
         Packet responsePacket = new Packet(
                 FromServer.CHATMESSAGE.ordinal(),
-                new ChatMessagePacket("[SERVER]: " +message));
+                new ChatMessagePacket("[SERVER]: [#FFFFFF]" + message));
         user.getChannel().writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
     }
 
     /**
      * User failed auth because a user with the same name is already loggid in, send a message to the new connection to
      * inform them.
+     *
      * @param incoming
      * @param handler
      * @param name

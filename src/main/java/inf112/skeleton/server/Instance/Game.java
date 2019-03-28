@@ -65,7 +65,7 @@ public class Game {
                         player.sendCardHand(createCardHand(player));
                     }
                     deck = new CardDeck();//🦀🦀Let🦀🦀garbage🦀🦀collector🦀🦀collect🦀🦀garbage🦀🦀
-                    setTimer(10);
+                    setTimer(20);
                     Gdx.app.log("Game - update - DEALING", "Moving to WAITING-stage.");
                     gameStage = WAITING;
                     break;
@@ -128,23 +128,14 @@ public class Game {
         cardsForOneRound.remove(user);
     }
 
-    private void handleMovement(User user, Card card) {
-        if (card.getType() == CardType.ROTATELEFT) {
+    public void handleMovement(User user, Card card) {
+        if(card.getType().moveAmount <= 0) { // For rotation cards and backward1 (special case)
             setTimerTicks(10);
-            user.player.rotateLeft();
-        } else if (card.getType() == CardType.ROTATERIGHT) {
-            setTimerTicks(10);
-            user.player.rotateRight();
-        } else if (card.getType() == CardType.ROTATE180) {
-            setTimerTicks(10);
-            user.player.rotate180();
-        } else if (card.getType() == CardType.BACKWARD1) {
-            setTimerTicks(10);
-            user.player.startMovement(user.player.getDirection(), card.getType().moveAmount);
         } else {
-            setTimerTicks(10 * card.getType().moveAmount);
-            user.player.startMovement(user.player.getDirection(), card.getType().moveAmount);
+            setTimerTicks(10 * card.getType().moveAmount); // For other cards.
         }
+        user.player.startMovement(user.player.getDirection(), card.getType().moveAmount);
+        user.player.rotate(card.getType());
     }
 
     private void setTimerTicks(int ticks) {
@@ -213,7 +204,7 @@ public class Game {
         for (Player player : players) {
             player.sendCardHand(createCardHand(player));
         }
-        setTimer(10);
+        setTimer(20);
         gameStage = WAITING;
         deck = new CardDeck();
     }

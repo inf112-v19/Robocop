@@ -38,4 +38,12 @@ public enum CardType {
 
         }
     }
+
+    public static CardType fromString(String str) {
+        for (CardType val : CardType.values()) {
+            if (val.name().equalsIgnoreCase(str))
+                return val;
+        }
+        return null;
+    }
 }

@@ -8,6 +8,7 @@ import inf112.skeleton.common.packet.data.CardPacket;
 import inf112.skeleton.common.packet.data.PlayerInitPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
+import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.RoboCopServerHandler;
@@ -51,6 +52,11 @@ public class Player {
 
     public Directions getDirection() {
         return this.direction;
+    }
+
+    public void rotate(CardType cardType) {
+        direction = values()[(direction.ordinal() + values().length + cardType.turnAmount) % values().length];
+        sendUpdate();
     }
 
     public void rotateLeft() {
