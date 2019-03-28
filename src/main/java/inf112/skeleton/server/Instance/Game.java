@@ -143,8 +143,11 @@ public class Game {
         } else if (card.getType() == CardType.ROTATE180) {
             setTimerTicks(10);
             user.player.rotate180();
+        } else if (card.getType() == CardType.BACKWARD1) {
+            setTimerTicks(10);
+            user.player.startMovement(user.player.getDirection(), card.getType().moveAmount);
         } else {
-            setTimerTicks(10 * Math.abs(card.getType().moveAmount));
+            setTimerTicks(10 * card.getType().moveAmount);
             user.player.startMovement(user.player.getDirection(), card.getType().moveAmount);
         }
     }
