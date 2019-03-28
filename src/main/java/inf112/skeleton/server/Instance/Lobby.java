@@ -13,6 +13,7 @@ public class Lobby {
     Game game;
     GameWorldInstance gwi;
     User[] users = new User[8];
+    String[] usernames = new String[8];
     String name;
     MapFile map;
     User host;
@@ -118,13 +119,8 @@ public class Lobby {
         for (int i = 0; i < users.length; i++) {
             if (users[i] == null) {
                 users[i] = user;
+                usernames[i] = user.getName();
                 user.setLobby(this);
-                String[] usernames = new String[8];
-                for (int j = 0; j < users.length; j++) {
-                    if (users[j] != null) {
-                        usernames[j] = users[j].getName();
-                    }
-                }
                 LobbyJoinResponsePacket lobbyResposePacket = new LobbyJoinResponsePacket(name, usernames, host.getName(), map);
                 Packet pkt = new Packet(FromServer.JOIN_LOBBY_RESPONSE, lobbyResposePacket);
                 user.sendPacket(pkt);
@@ -147,12 +143,7 @@ public class Lobby {
     }
 
     private void sendUpdate(User user) {
-        String[] usernames = new String[8];
-        for (int j = 0; j < users.length; j++) {
-            if (users[j] != null) {
-                usernames[j] = users[j].getName();
-            }
-        }
+
         LobbyUpdatePacket lobbyUpdatePacket = new LobbyUpdatePacket(usernames, getName());
         Packet pkt = new Packet(FromServer.LOBBY_UPDATE, lobbyUpdatePacket);
         user.sendPacket(pkt);
@@ -162,6 +153,7 @@ public class Lobby {
         for (int i = 0; i < users.length; i++) {
             if (user == users[i]) {
                 users[i] = null;
+                usernames[i] = null;
                 user.setLobby(null);
                 user.sendPacket(new Packet(FromServer.STATE_CHANGED, new StateChangePacket(StateChange.PLAYER_KICKED)));
 
