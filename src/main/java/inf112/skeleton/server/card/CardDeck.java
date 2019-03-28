@@ -4,6 +4,7 @@ import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class CardDeck {
@@ -21,35 +22,6 @@ public class CardDeck {
                 deck.add(new Card(cardtype.basePriority+i*cardtype.priorityDiff, cardtype));
             }
         }
-
-/*        //RotateRight
-        for(int i = 0; i < 18; i++) {
-            deck.add(new Card(80+i*20, CardType.ROTATERIGHT));
-        }
-        //RotateLeft
-        for(int i = 0; i < 18; i++) {
-            deck.add(new Card(70+i*20, CardType.ROTATELEFT));
-        }
-        //Rotate180
-        for(int i = 0; i < 6; i++) {
-            deck.add(new Card(10+i*10, CardType.ROTATE180));
-        }
-        //Forward1
-        for(int i = 0; i < 18; i++) {
-            deck.add(new Card(490+i*10, CardType.FORWARD1));
-        }
-        //Forward2
-        for(int i = 0; i < 12; i++) {
-            deck.add(new Card(670+i*10, CardType.FORWARD2));
-        }
-        //Forward3
-        for(int i = 0; i < 6; i++) {
-            deck.add(new Card(790+i*10, CardType.FORWARD3));
-        }
-        //Back1
-        for(int i = 0; i < 6; i++) {
-            deck.add(new Card(430+i*10, CardType.BACKWARD1));
-        }*/
         Collections.shuffle(deck);
     }
 
@@ -89,4 +61,5 @@ public class CardDeck {
             System.out.println(card.toString());
         }
     }
+
 }
