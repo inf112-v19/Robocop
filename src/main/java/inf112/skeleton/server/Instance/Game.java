@@ -51,7 +51,7 @@ public class Game {
 
         //Logic handling the rounds.
         if (tickCountdown == 0) {
-            if (cardsForOneRound.size() == 0 && players.size() != 0 && !dealingCards && !waitingCards && !movingRobots && cardsPlayedThisRound == 5) {
+            if (cardsForOneRound.size() == 0 && players.size() != 0 && !dealingCards && /*!waitingCards &&*/ !movingRobots && cardsPlayedThisRound == 5) {
                 System.out.println("[Game serverside - update] Setting dealingCards to true.");
                 dealingCards = true;
             }
@@ -78,12 +78,16 @@ public class Game {
                     useCard();
                     if(cardsPlayedThisRound < 5) {
                         cardsPlayedThisRound++;
+                        System.out.println("Cards played this round: " + cardsPlayedThisRound);
                     } else {
                         cardsPlayedThisRound = 0;
+                        System.out.println("Cards played this round: " + cardsPlayedThisRound);
+
                     }
                 } else {
-                    System.out.println("[Game serverside - update] Setting movingRobots to false.");
+                    System.out.println("[Game serverside - update] Setting movingRobots to false, waiting cards true.");
                     movingRobots = false;
+                    waitingCards = true;
                 }
             }
         }
@@ -184,7 +188,9 @@ public class Game {
         for(Player player : players) {
             player.sendCardHand(createCardHand(player));
         }
+        dealingCards = false;
         waitingCards = true;
+        movingRobots = false;
         deck = new CardDeck();
     }
 
