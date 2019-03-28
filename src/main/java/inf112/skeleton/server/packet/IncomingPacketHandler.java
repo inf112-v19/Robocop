@@ -122,7 +122,7 @@ public class IncomingPacketHandler {
 
         switch (command[0]) {
             case "players":
-                sendMessage("There is currently " + handler.loggedInPlayers.size() + " player(s) online.", messagingUser, handler);
+                messagingUser.sendServerMessage("There is currently " + handler.loggedInPlayers.size() + " player(s) online.");
                 break;
             case "move":
                 if(command.length > 2){
@@ -134,28 +134,31 @@ public class IncomingPacketHandler {
                         }
                     }
                 }
-                sendMessage("Error in command, proper usage: '!move north 3'.", messagingUser, handler);
+                messagingUser.sendServerMessage("Error in command, proper usage: '!move north 3'.");
 
                 break;
+            case "whisper":
+            case "w":
+                if(command.length > 2) {
+                    StringBuilder message = new StringBuilder();
+                    for (int i = 2; i < command.length; i++) {
+                        message.append(command[i]).append(" ");
 
+                    }
+                    messagingUser.getFriendsList().sendWhisper(message.toString(), command[1], messagingUser, handler);
+                }
+                break;
+            case "f":
+            case "friends":
+                messagingUser.getFriendsList().executeCommand(messagingUser, command, handler);
+                break;
             default:
-                sendMessage("Command not found \"" + command[0] + "\".", messagingUser, handler);
+                messagingUser.sendServerMessage("Command not found \"" + command[0] + "\".");
                 break;
         }
     }
 
-    /**
-     * Send a message to a user, the message will show up in the chatbox with a "[SERVER]: " prefix.
-     * @param message
-     * @param user
-     * @param handler
-     */
-    private void sendMessage(String message, User user, RoboCopServerHandler handler){
-        Packet responsePacket = new Packet(
-                FromServer.CHATMESSAGE.ordinal(),
-                new ChatMessagePacket("[SERVER]: " +message));
-        user.getChannel().writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
-    }
+
 
     /**
      * User failed auth because a user with the same name is already loggid in, send a message to the new connection to
