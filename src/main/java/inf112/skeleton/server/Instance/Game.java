@@ -144,7 +144,7 @@ public class Game {
             setTimerTicks(10);
             user.player.rotate180();
         } else {
-            setTimerTicks(10 * card.getType().moveAmount);
+            setTimerTicks(10 * Math.abs(card.getType().moveAmount));
             user.player.startMovement(user.player.getDirection(), card.getType().moveAmount);
         }
     }
@@ -212,10 +212,6 @@ public class Game {
         for(Player player : players) {
             player.sendCardHand(createCardHand(player));
         }
-        /*dealingCards = false;
-        waitingCards = true;
-        movingRobots = false;*/
-        //timerStarted = System.currentTimeMillis();
         setTimer(10);
         gameStage = WAITING;
         deck = new CardDeck();
