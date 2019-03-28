@@ -123,7 +123,7 @@ public class Lobby {
                 userCount++;
                 usernames[i] = user.getName();
                 user.setLobby(this);
-                LobbyJoinResponsePacket lobbyResposePacket = new LobbyJoinResponsePacket(name, usernames, host.getName(), map);
+                LobbyJoinResponsePacket lobbyResposePacket = new LobbyJoinResponsePacket(name, usernames, host.getUUID(), map);
                 Packet pkt = new Packet(FromServer.JOIN_LOBBY_RESPONSE, lobbyResposePacket);
                 user.sendPacket(pkt);
                 for (int j = 0; j < users.length; j++) {
@@ -131,7 +131,6 @@ public class Lobby {
                         sendUpdate(users[j]);
                     }
                 }
-
                 return;
             }
         }

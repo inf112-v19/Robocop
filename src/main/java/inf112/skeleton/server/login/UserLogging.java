@@ -7,12 +7,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import inf112.skeleton.common.packet.data.LoginPacket;
 import inf112.skeleton.common.utility.Tools;
+import inf112.skeleton.server.user.FriendsList;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.user.UserPrivilege;
 import io.netty.channel.Channel;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.UUID;
 
 
 public class UserLogging {
@@ -26,13 +28,14 @@ public class UserLogging {
         String jsonName = "";
         ArrayList<String> friendslist = new ArrayList<>();
         String jsonPassword = "";
+        String uuid = UUID.randomUUID().toString();
         UserPrivilege jsonRights = UserPrivilege.PLAYER;
         System.out.println(file.toString());
         System.out.println(file.getPath());
         if (!file.exists()) {
-            User user = new User(username.toLowerCase(), password, channel);
+            User user = new User(uuid, username.toLowerCase(), password, channel);
             user.setRights(UserPrivilege.PLAYER);
-            user.createFriendsList();
+            user.setFriendsList(new FriendsList());
             user.setLoggedIn(true);
             return user;
         }
@@ -41,6 +44,9 @@ public class UserLogging {
 
         try (FileReader fileReader = new FileReader(file)) {
             JsonObject reader = (JsonObject) fileParser.parse(fileReader);
+            if (reader.has("uuid")) {
+                uuid = reader.get("uuid").getAsString();
+            }
             if (reader.has("username")) {
                 jsonName = reader.get("username").getAsString();
             }
@@ -58,9 +64,9 @@ public class UserLogging {
             if (!password.equalsIgnoreCase(jsonPassword)) {
                 return null;
             }
-            User user = new User(jsonName, jsonPassword, channel);
+            User user = new User(uuid, jsonName, jsonPassword, channel);
             user.setLoggedIn(true);
-            user.friendsList = friendslist;
+            user.setFriendsList(new FriendsList(friendslist));
             user.setRights(jsonRights);
             return user;
         } catch (FileNotFoundException e) {
@@ -92,10 +98,11 @@ public class UserLogging {
         try (FileWriter writer = new FileWriter(file)) {
             JsonObject object = new JsonObject();
             Gson builder = new GsonBuilder().setPrettyPrinting().create();
+            object.addProperty("uuid", user.getUUID());
             object.addProperty("username", user.getName().toLowerCase());
             object.addProperty("password", user.getPassword());
             object.addProperty("UserPrivilege", user.getRights().getPrefix());
-            object.addProperty("Friendslist", Tools.GSON.toJson(user.getFriendsList()));
+            object.addProperty("Friendslist", Tools.GSON.toJson(user.getFriendsList().getList()));
             writer.write(builder.toJson(object));
         } catch (IOException e) {
             e.printStackTrace();

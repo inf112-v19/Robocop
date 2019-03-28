@@ -61,7 +61,7 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
 
             case PLAYER_UPDATE:
                 UpdatePlayerPacket playerUpdate = UpdatePlayerPacket.parseJSON(jsonObject);
-                Player toUpdate = RoboRally.gameBoard.getPlayer(playerUpdate.getName());
+                Player toUpdate = RoboRally.gameBoard.getPlayer(playerUpdate.getUUID());
                 toUpdate.updateRobot(playerUpdate);
                 break;
 

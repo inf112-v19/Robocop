@@ -15,6 +15,7 @@ import inf112.skeleton.common.utility.Tools;
 import java.util.ArrayList;
 
 public class Player {
+    private final String uuid;
     public String name;
     Robot robot = null;
     Vector2 initialPos;
@@ -27,12 +28,15 @@ public class Player {
     /**
      * Player has its own class, which owns a robot, to avoid rendring on socket thread.
      *
+     * @param uuid Unique id of owner
      * @param name
      * @param pos
      * @param hp
+     * @param slot
      * @param directions
      */
-    public Player(String name, Vector2 pos, int hp, int slot, Directions directions) {
+    public Player(String uuid,String name, Vector2 pos, int hp, int slot, Directions directions) {
+        this.uuid = uuid;
         this.name = name;
         this.initalHp = hp;
         this.slot = slot;
@@ -43,7 +47,7 @@ public class Player {
 
     /**
      * If robot is not yet created for player it should create it.
-     * <p>
+     *
      * TODO: move packets related to player actions here.
      */
     public void update() {

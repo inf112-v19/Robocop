@@ -13,8 +13,10 @@ public class PlayerInitPacket implements PacketData {
     int slot;
     String name;
     Directions facing;
+    String uuid;
 
-    public PlayerInitPacket(String name, Vector2 pos, int health, int slot, Directions facing) {
+    public PlayerInitPacket(String uuid, String name, Vector2 pos, int health, int slot, Directions facing) {
+        this.uuid = uuid;
         this.name = name;
         this.pos = pos;
         this.movingTo = new Vector2(pos.x, pos.y);
@@ -26,6 +28,9 @@ public class PlayerInitPacket implements PacketData {
 
     public String getName() {
         return name;
+    }
+    public String getUUID() {
+        return uuid;
     }
 
     public void setName(String name) {

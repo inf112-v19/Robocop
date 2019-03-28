@@ -201,7 +201,7 @@ public class Player {
 
         FromServer initPlayer = FromServer.INIT_LOCALPLAYER;
         PlayerInitPacket playerInitPacket =
-                new PlayerInitPacket(name, currentPos, currentHP, slot, direction);
+                new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
         owner.getChannel().writeAndFlush(Tools.GSON.toJson(initPacket) + "\r\n");
         //TODO: send init player to client, then broadcast to all others
@@ -213,7 +213,7 @@ public class Player {
     public void initAll() {
         FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
-                new PlayerInitPacket(name, currentPos, currentHP, slot, direction);
+                new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
         RoboCopServerHandler.globalMessage(Tools.GSON.toJson(initPacket), owner.getChannel(), true);
 
@@ -222,7 +222,7 @@ public class Player {
     public void sendUpdate() {
         //TODO: send updated values to all connections
         FromServer pktId = FromServer.PLAYER_UPDATE;
-        UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(name, direction, movingTiles, currentPos, movingTo);
+        UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo);
         Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
         RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);
     }
@@ -230,7 +230,7 @@ public class Player {
     public void sendToNewClient(Channel newUserChannel) {
         FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
-                new PlayerInitPacket(name, currentPos, currentHP, slot, direction);
+                new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
         newUserChannel.writeAndFlush(Tools.GSON.toJson(initPacket) + "\r\n");
 //        newUserChannel.writeAndFlush("list:" + Utility.formatPlayerName(owner.getName().toLowerCase()) + "\r\n");
@@ -259,7 +259,7 @@ public class Player {
             }
 
             FromServer pktId = FromServer.PLAYER_UPDATE;
-            UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(name, direction, movingTiles, currentPos, movingTo);
+            UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo);
             Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
             RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);
 

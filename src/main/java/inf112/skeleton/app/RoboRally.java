@@ -38,7 +38,7 @@ public class RoboRally extends ApplicationAdapter {
     public static String clientInfo = "";
 
     public static void setClientInfo(ClientInitPacket pkt) {
-        clientInfo = pkt.getName();
+        clientInfo = pkt.getUUID();
     }
 
     public void setBoard(InitMapPacket mapPacket) {
