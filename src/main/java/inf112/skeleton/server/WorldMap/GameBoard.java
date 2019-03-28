@@ -72,6 +72,7 @@ public abstract class GameBoard {
                 return tileEntity;
             }
         }
+        return null;
     }
 
     public void moveEntity(Entity e, Directions dir) throws NoSuchElementException {

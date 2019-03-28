@@ -16,4 +16,6 @@ public interface TileEntity {
     void walkOn(Player player);
 
     void update();
+
+    boolean canContinueWalking();
 }

@@ -36,4 +36,9 @@ public class Laser implements TileEntity {
     public void update() {
 
     }
+
+    @Override
+    public boolean canContinueWalking() {
+        return true;
+    }
 }

@@ -36,4 +36,9 @@ public class BlackHole implements TileEntity {
     public void update() {
 
     }
+
+    @Override
+    public boolean canContinueWalking() {
+        return false;
+    }
 }

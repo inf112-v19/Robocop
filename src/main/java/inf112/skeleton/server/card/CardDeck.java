@@ -16,7 +16,13 @@ public class CardDeck {
     }
 
     private void InitializeDeck() {
-        //RotateRight
+        for (CardType cardtype: CardType.CardList.values()) {
+            for (int i = 0; i < cardtype.amountOfCards; i++) {
+                deck.add(new Card(cardtype.basePriority+i*cardtype.priorityDiff, cardtype));
+            }
+        }
+
+/*        //RotateRight
         for(int i = 0; i < 18; i++) {
             deck.add(new Card(80+i*20, CardType.ROTATERIGHT));
         }
@@ -43,7 +49,7 @@ public class CardDeck {
         //Back1
         for(int i = 0; i < 6; i++) {
             deck.add(new Card(430+i*10, CardType.BACKWARD1));
-        }
+        }*/
         Collections.shuffle(deck);
     }
 
