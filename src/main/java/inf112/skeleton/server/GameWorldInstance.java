@@ -65,15 +65,10 @@ public class GameWorldInstance implements ApplicationListener {
     }
 
     public void tick() {
-//        for (User user : RoboCopServerHandler.loggedInPlayers) {
-//            user.player.update(gameBoard);
-//        }
-
         for (Lobby lobby :
                 lobbies.values()) {
             lobby.update();
         }
-
     }
 
     @Override

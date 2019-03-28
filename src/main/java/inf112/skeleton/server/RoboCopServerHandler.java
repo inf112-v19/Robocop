@@ -66,7 +66,6 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
                 continue;
             entity.sendPacket(pkt);
             entity.sendChatMessage(message);
-            System.out.println("removing player");
         }
         /**
          * Removing the user from the collections
@@ -142,13 +141,10 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
         Channel incoming = arg0.channel();
         System.out.println(arg1);
         if (arg1.startsWith("{")) {
-//                GsonBuilder gsonBuilder = new GsonBuilder();
-//                gsonBuilder.registerTypeAdapter(PacketReciever.class, new PacketTypeAdapter());
             JsonObject jsonObject = Tools.GSON.fromJson(arg1, JsonObject.class);
             incomingPacketHandler.handleIncomingPacket(incoming, jsonObject, this);
             return;
         }
-
 
         for (User entity : loggedInPlayers) {
             if (entity.getChannel() == incoming) {
