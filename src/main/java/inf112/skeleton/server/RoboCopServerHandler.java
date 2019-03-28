@@ -54,7 +54,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
         FromServer pktId = FromServer.REMOVE_PLAYER;
-        PlayerRemovePacket data = new PlayerRemovePacket(getEntityFromLoggedIn(incoming).getName());
+        PlayerRemovePacket data = new PlayerRemovePacket(getEntityFromLoggedIn(incoming).getUUID());
         Packet pkt = new Packet(pktId, data);
 
         String message = "[SERVER] - " + Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()) + " has left the channel!";

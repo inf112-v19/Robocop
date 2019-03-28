@@ -4,14 +4,14 @@ import com.google.gson.JsonObject;
 import inf112.skeleton.common.utility.Tools;
 
 public class ClientInitPacket implements PacketData {
-    String name;
+    String uuid;
 
-    public ClientInitPacket(String name) {
-        this.name = name;
+    public ClientInitPacket(String uuid) {
+        this.uuid = uuid;
     }
 
-    public String getName() {
-        return name;
+    public String getUUID() {
+        return uuid;
     }
 
     public static ClientInitPacket parseJSON(JsonObject jsonObject) {

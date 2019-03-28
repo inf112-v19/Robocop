@@ -4,21 +4,21 @@ import com.google.gson.JsonObject;
 import inf112.skeleton.common.utility.Tools;
 
 public class PlayerRemovePacket implements PacketData {
-    String name;
+    String uuid;
 
-    public PlayerRemovePacket(String name) {
-        this.name = name;
+    public PlayerRemovePacket(String uuid) {
+        this.uuid = uuid;
     }
 
     public static PlayerRemovePacket parseJSON(JsonObject jsonObject) {
         return Tools.GSON.fromJson(jsonObject.get("data"), PlayerRemovePacket.class);
     }
 
-    public String getName() {
-        return name;
+    public String getUUID() {
+        return uuid;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String uuid) {
+        this.uuid = uuid;
     }
 }

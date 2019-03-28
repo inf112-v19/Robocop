@@ -176,7 +176,7 @@ public class User {
 
     public void initClient() {
         FromServer initPlayer = FromServer.INIT_CLIENT;
-        ClientInitPacket initPacket = new ClientInitPacket(this.getName());
+        ClientInitPacket initPacket = new ClientInitPacket(this.getUUID());
         Packet pkt = new Packet(initPlayer, initPacket);
         sendPacket(pkt);
 

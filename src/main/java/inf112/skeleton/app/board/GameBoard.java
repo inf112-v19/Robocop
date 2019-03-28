@@ -45,7 +45,6 @@ public abstract class GameBoard {
         }
         for (Entity entity : entities) {
             entity.renderName(batch, camera.zoom);
-
         }
     }
 
@@ -221,27 +220,27 @@ public abstract class GameBoard {
         Gdx.app.log("Gameboard clientside - addPlayer", "pkt.getName: " + pkt.getName());
         Gdx.app.log("Gameboard clientside - addPlayer", "RoboRally.username equals pkt.getName: " + pkt.getName().equalsIgnoreCase(RoboRally.username));
         if(pkt.getName().equalsIgnoreCase(RoboRally.username)) {
-            this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing());
+            this.myPlayer = new Player(pkt.getUUID(), pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing());
             return;
         }
-        this.players.put(pkt.getName(), new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing()));
+        this.players.put(pkt.getUUID(), new Player(pkt.getUUID(), pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing()));
     }
 
     public void setupPlayer(PlayerInitPacket pkt) {
-        this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing());
+        this.myPlayer = new Player(pkt.getUUID(), pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing());
     }
 
     public void removePlayer(PlayerRemovePacket pkt) {
-        Player leavingPlayer = this.getPlayer(pkt.getName());
+        Player leavingPlayer = this.getPlayer(pkt.getUUID());
         this.entities.remove(leavingPlayer.getRobot());
-        this.players.remove(leavingPlayer);
+        this.players.remove(pkt.getUUID());
     }
 
-    public Player getPlayer(String name) {
-        if(name.equalsIgnoreCase(RoboRally.username)) {
+    public Player getPlayer(String uuid) {
+        if(uuid.equalsIgnoreCase(RoboRally.clientInfo)) {
             return myPlayer;
         }
-        return this.players.get(name);
+        return this.players.get(uuid);
     }
 
 }

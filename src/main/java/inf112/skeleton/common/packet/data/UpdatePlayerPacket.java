@@ -10,23 +10,20 @@ public class UpdatePlayerPacket implements PacketData {
     int movingTiles;
     Vector2 fromTile;
     Vector2 toTile;
-    String name;
+    String uuid;
 
-    public UpdatePlayerPacket(String name, Directions direction, int movingTiles, Vector2 fromTile, Vector2 toTile) {
-        this.name = name;
+    public UpdatePlayerPacket(String uuid, Directions direction, int movingTiles, Vector2 fromTile, Vector2 toTile) {
+        this.uuid = uuid;
         this.direction = direction;
         this.movingTiles = movingTiles;
         this.fromTile = fromTile;
         this.toTile = toTile;
     }
 
-    public String getName() {
-        return name;
+    public String getUUID() {
+        return uuid;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public Directions getDirection() {
         return direction;
