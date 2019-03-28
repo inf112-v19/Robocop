@@ -32,12 +32,6 @@ public class Game {
     long timerStarted = 0;
     long timeDelay = 0;
 
-    boolean dealingCards = false;
-    boolean waitingCards = false;
-    boolean movingRobots = false;
-    boolean winner = false;
-    int cardsPlayedThisRound = 0;
-
     GameStage gameStage = LOBBY;
     int cardRequests = 0;
 
