@@ -129,7 +129,7 @@ public class Lobby {
                         usernames[j] = users[j].getName();
                     }
                 }
-                LobbyJoinResponsePacket lobbyResposePacket = new LobbyJoinResponsePacket(name, usernames, host.getName(), map);
+                LobbyJoinResponsePacket lobbyResposePacket = new LobbyJoinResponsePacket(name, usernames, host.getUUID(), map);
                 Packet pkt = new Packet(FromServer.JOIN_LOBBY_RESPONSE, lobbyResposePacket);
                 user.sendPacket(pkt);
 
@@ -138,7 +138,6 @@ public class Lobby {
                         sendUpdate(users[j]);
                     }
                 }
-
                 return;
             }
         }

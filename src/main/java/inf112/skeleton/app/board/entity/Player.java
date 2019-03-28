@@ -16,6 +16,7 @@ import inf112.skeleton.server.card.CardDeck;
 import java.util.ArrayList;
 
 public class Player {
+    private final String uuid;
     public String name;
     Robot robot = null;
     Vector2 initialPos;
@@ -26,12 +27,14 @@ public class Player {
 
     /**
      * Player has its own class, which owns a robot, to avoid rendring on socket thread.
+     * @param uuid Unique id of owner
      * @param name
      * @param pos
      * @param hp
      * @param directions
      */
-    public Player(String name, Vector2 pos, int hp, Directions directions) {
+    public Player(String uuid, String name, Vector2 pos, int hp, Directions directions) {
+        this.uuid = uuid;
         this.name = name;
         this.initalHp = hp;
         this.initialPos = pos;
