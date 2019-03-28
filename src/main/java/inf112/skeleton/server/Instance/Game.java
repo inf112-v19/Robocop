@@ -1,6 +1,10 @@
 package inf112.skeleton.server.Instance;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import inf112.skeleton.common.packet.FromServer;
+import inf112.skeleton.common.packet.Packet;
+import inf112.skeleton.common.packet.data.CardRequestPacket;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
@@ -10,9 +14,11 @@ import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.card.CardDeck;
 import inf112.skeleton.server.user.User;
+import static inf112.skeleton.server.Instance.GameStage.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 
 public class Game {
     Lobby lobby;
@@ -21,13 +27,19 @@ public class Game {
     HashMap<User, Card> cardsForOneRound = new HashMap<>();
     GameBoard gameBoard;
     boolean active = false;
+
     int tickCountdown = 0;
+    long timeStarted = 0;
+    long timeDelay = 30000;
 
     boolean dealingCards = false;
     boolean waitingCards = false;
     boolean movingRobots = false;
     boolean winner = false;
     int cardsPlayedThisRound = 0;
+
+    GameStage gameStage = LOBBY;
+    int cardRequests = 0;
 
 
     public Game(Lobby lobby, MapFile mapFile) {
@@ -47,6 +59,62 @@ public class Game {
         if (tickCountdown > 0) {
             tickCountdown--;
             //System.out.println("[Game serverside - update] Timer currently: " + tickCountdown);
+        }
+
+        switch (gameStage) {
+            case LOBBY:
+                break;
+            case DEALING:   //Deal cards to players
+                Gdx.app.log("Game - update", "Dealing cards to players.");
+                for (Player player : players) {
+                    player.sendCardHand(createCardHand(player));
+                }
+                deck = new CardDeck();//🦀🦀Let🦀🦀garbage🦀🦀collector🦀🦀collect🦀🦀garbage🦀🦀
+                timeStarted = System.currentTimeMillis();
+                Gdx.app.log("Game - update", "Moving to WAITING-stage.");
+                gameStage = WAITING;
+                break;
+
+            case WAITING:   //Wait for players to choose cards from their hand or send card after request.
+                if(checkTimePassed(System.currentTimeMillis())) {
+                    Gdx.app.log("Game - update", "Moving to REQUEST-stage.");
+                    gameStage = REQUEST;
+                }
+                //Are we ready to go to MOVE-stage?
+                if(cardsForOneRound.size() == players.size() && !players.isEmpty()) {
+                    Gdx.app.log("Game - update", "Moving to MOVING-stage.");
+                    gameStage = MOVING;
+                }
+                break;
+
+            case REQUEST:   //Request the players' selected cards.
+                CardRequestPacket cRPkt = new CardRequestPacket(1);
+                Packet pkt = new Packet(FromServer.CARD_REQUEST_PACKET.ordinal(), cRPkt);
+                lobby.broadcastPacket(pkt);
+                cardRequests++;
+                Gdx.app.log("Game - update", "Moving to WAITING-stage.");
+                gameStage = WAITING;
+                break;
+
+            case MOVING:    //Move the robots in correct order.
+                if (!cardsForOneRound.isEmpty()) {
+                    useCard();
+                } else {
+                    if(cardRequests == 5) {
+                        Gdx.app.log("Game - update", "Moving to DEALING-stage.");
+                        cardRequests = 0;
+                        gameStage = DEALING;
+                    } else {
+                        Gdx.app.log("Game - update", "Moving to REQUEST-stage.");
+                        gameStage = REQUEST;
+                    }
+                }
+                break;
+
+            case VICTORY:   //Some pleb won the game. HAX! Obviously.
+                lobby.broadcastChatMessage("Winner winner crab people crab people dinner.");
+                break;
+
         }
 
         //Logic handling the rounds.
@@ -118,25 +186,16 @@ public class Game {
             setTimer(10);
             user.player.rotate180();
         } else {
-            setTimer(10 * Math.abs(translateMoveAmount(card)));
-            user.player.startMovement(user.player.getDirection(), translateMoveAmount(card));
+            setTimer(10 * card.getType().moveAmount);
+            user.player.startMovement(user.player.getDirection(), card.getType().moveAmount);
         }
     }
 
-    private int translateMoveAmount(Card card) {
-        if (card.getType() == CardType.FORWARD1) {
-            return 1;
+    public boolean checkTimePassed(long t) {
+        if ((t - this.timeStarted) >= this.timeDelay) {
+            return true;
         }
-        if (card.getType() == CardType.FORWARD2) {
-            return 2;
-        }
-        if (card.getType() == CardType.FORWARD3) {
-            return 3;
-        }
-        if (card.getType() == CardType.BACKWARD1) {
-            return -1;
-        }
-        return 0;
+        return false;
     }
 
     private void setTimer(int ticks) {
