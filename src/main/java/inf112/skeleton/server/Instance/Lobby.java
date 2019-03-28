@@ -22,6 +22,7 @@ public class Lobby {
     private long timeDelay = 1000;
     boolean startedTimer = false;
     int startStage = 0;
+    private int userCount = 0;
     public boolean gameStarted = false;
 
     public Lobby(String name, MapFile map, User host, GameWorldInstance gwi) {
@@ -119,12 +120,12 @@ public class Lobby {
         for (int i = 0; i < users.length; i++) {
             if (users[i] == null) {
                 users[i] = user;
+                userCount++;
                 usernames[i] = user.getName();
                 user.setLobby(this);
                 LobbyJoinResponsePacket lobbyResposePacket = new LobbyJoinResponsePacket(name, usernames, host.getName(), map);
                 Packet pkt = new Packet(FromServer.JOIN_LOBBY_RESPONSE, lobbyResposePacket);
                 user.sendPacket(pkt);
-
                 for (int j = 0; j < users.length; j++) {
                     if (users[j] != null && users[j] != user) {
                         sendUpdate(users[j]);
@@ -153,6 +154,7 @@ public class Lobby {
         for (int i = 0; i < users.length; i++) {
             if (user == users[i]) {
                 users[i] = null;
+                userCount--;
                 usernames[i] = null;
                 user.setLobby(null);
                 user.sendPacket(new Packet(FromServer.STATE_CHANGED, new StateChangePacket(StateChange.PLAYER_KICKED)));
@@ -192,14 +194,8 @@ public class Lobby {
         return false;
     }
 
-    public int userCount() {
-        int count = 0;
-        for (int i = 0; i < users.length; i++) {
-            if (users[i] != null) {
-                count++;
-            }
-        }
-        return count;
+    public int getUserCount() {
+        return userCount;
     }
 
     public String getName() {
