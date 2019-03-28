@@ -7,10 +7,11 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Entity;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.board.entity.Robot;
+import inf112.skeleton.app.gameStates.Playing.HUD;
+import inf112.skeleton.common.packet.Packet;
+import inf112.skeleton.common.packet.ToServer;
 import inf112.skeleton.common.packet.data.*;
 import inf112.skeleton.common.specs.Card;
-import inf112.skeleton.app.gameStates.Playing.HUD;
-import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.common.utility.Tools;
@@ -24,9 +25,9 @@ public abstract class GameBoard {
 
     public HUD hud;
     protected ArrayList<Entity> entities;
-     protected Map<String, Player> players;
-     public Player myPlayer = null;
-     private CardHandPacket foo = null;
+    protected Map<String, Player> players;
+    public Player myPlayer = null;
+    private CardHandPacket foo = null;
 
 
     public GameBoard() {
@@ -58,8 +59,8 @@ public abstract class GameBoard {
             entity.update();
 
         }
-        if(myPlayer != null) {
-            if(myPlayer.cards == null && foo != null) {
+        if (myPlayer != null) {
+            if (myPlayer.cards == null && foo != null) {
                 Gdx.app.log("Gameboard clientside - update", "Trying to receive lost cardHandPacket");
                 myPlayer.receiveCardHandPacket(foo);
             }
@@ -68,14 +69,14 @@ public abstract class GameBoard {
     }
 
     public void receiveCard(CardPacket packet) {
-        if(myPlayer != null) {
+        if (myPlayer != null) {
             myPlayer.receiveCardPacket(packet);
         }
     }
 
     public void receiveCardHand(CardHandPacket packet) {
         Gdx.app.log("Gameboard clientside - receiveCardHand", "Receiving card hand.");
-        if(myPlayer != null) {
+        if (myPlayer != null) {
             Gdx.app.log("Gameboard clientside - receiveCardHand", "MyPlayer exists!");
             myPlayer.receiveCardHandPacket(packet);
         } else {
@@ -220,15 +221,15 @@ public abstract class GameBoard {
         Gdx.app.log("Gameboard clientside - addPlayer", "RoboRally.username: " + RoboRally.username);
         Gdx.app.log("Gameboard clientside - addPlayer", "pkt.getName: " + pkt.getName());
         Gdx.app.log("Gameboard clientside - addPlayer", "RoboRally.username equals pkt.getName: " + pkt.getName().equalsIgnoreCase(RoboRally.username));
-        if(pkt.getName().equalsIgnoreCase(RoboRally.username)) {
-            this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing());
+        if (pkt.getName().equalsIgnoreCase(RoboRally.username)) {
+            this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getSlot(), pkt.getFacing());
             return;
         }
-        this.players.put(pkt.getName(), new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing()));
+        this.players.put(pkt.getName(), new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getSlot(), pkt.getFacing()));
     }
 
     public void setupPlayer(PlayerInitPacket pkt) {
-        this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getFacing());
+        this.myPlayer = new Player(pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getSlot(), pkt.getFacing());
     }
 
     public void removePlayer(PlayerRemovePacket pkt) {
@@ -238,7 +239,7 @@ public abstract class GameBoard {
     }
 
     public Player getPlayer(String name) {
-        if(name.equalsIgnoreCase(RoboRally.username)) {
+        if (name.equalsIgnoreCase(RoboRally.username)) {
             return myPlayer;
         }
         return this.players.get(name);
