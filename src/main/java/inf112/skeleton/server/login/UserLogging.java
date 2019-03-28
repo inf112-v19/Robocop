@@ -13,6 +13,7 @@ import io.netty.channel.Channel;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.UUID;
 
 
 public class UserLogging {
@@ -26,11 +27,12 @@ public class UserLogging {
         String jsonName = "";
         ArrayList<String> friendslist = new ArrayList<>();
         String jsonPassword = "";
+        String uuid = UUID.randomUUID().toString();
         UserPrivilege jsonRights = UserPrivilege.PLAYER;
         System.out.println(file.toString());
         System.out.println(file.getPath());
         if (!file.exists()) {
-            User user = new User(username.toLowerCase(), password, channel);
+            User user = new User(uuid, username.toLowerCase(), password, channel);
             user.setRights(UserPrivilege.PLAYER);
             user.createFriendsList();
             user.setLoggedIn(true);
@@ -41,6 +43,9 @@ public class UserLogging {
 
         try (FileReader fileReader = new FileReader(file)) {
             JsonObject reader = (JsonObject) fileParser.parse(fileReader);
+            if (reader.has("uuid")) {
+                uuid = reader.get("uuid").getAsString();
+            }
             if (reader.has("username")) {
                 jsonName = reader.get("username").getAsString();
             }
@@ -58,7 +63,7 @@ public class UserLogging {
             if (!password.equalsIgnoreCase(jsonPassword)) {
                 return null;
             }
-            User user = new User(jsonName, jsonPassword, channel);
+            User user = new User(uuid, jsonName, jsonPassword, channel);
             user.setLoggedIn(true);
             user.friendsList = friendslist;
             user.setRights(jsonRights);
@@ -92,6 +97,7 @@ public class UserLogging {
         try (FileWriter writer = new FileWriter(file)) {
             JsonObject object = new JsonObject();
             Gson builder = new GsonBuilder().setPrettyPrinting().create();
+            object.addProperty("uuid", user.getUUID());
             object.addProperty("username", user.getName().toLowerCase());
             object.addProperty("password", user.getPassword());
             object.addProperty("UserPrivilege", user.getRights().getPrefix());

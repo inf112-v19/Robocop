@@ -27,13 +27,15 @@ public class User {
     public Player player;
     public ArrayList<String> friendsList;
     private Lobby lobby;
+    private String uuid;
 
 
     public User(Channel channel) {
         this.channel = channel;
     }
 
-    public User(String username, String password, Channel channel) {
+    public User(String uuid, String username, String password, Channel channel) {
+        this.uuid = uuid;
         this.name = username;
         this.password = password;
         this.channel = channel;
@@ -78,7 +80,9 @@ public class User {
     }
 
     public void leaveLobby() {
-        lobby.removeUser(this);
+        if(isInLobby()){
+            lobby.removeUser(this);
+        }
     }
 
     public void getLobbyList(GameWorldInstance game) {
@@ -176,5 +180,9 @@ public class User {
         Packet pkt = new Packet(initPlayer, initPacket);
         sendPacket(pkt);
 
+    }
+
+    public String getUUID() {
+        return uuid;
     }
 }
