@@ -16,6 +16,7 @@ public class TiledMapLoader extends GameBoard {
     public TiledMapLoader(MapFile file) {
         super();
         tiledMap = new TmxMapLoader().load(file.filename);
+
 //        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         TiledMapTileLayer enitylayer = ((TiledMapTileLayer) tiledMap.getLayers().get("Entities"));
         for (int x = 0; x < getWidth(); x++) {
@@ -23,6 +24,13 @@ public class TiledMapLoader extends GameBoard {
                 TiledMapTileLayer.Cell cell = enitylayer.getCell(x, y);
                 if (cell != null) {
                     TiledMapTile tile = cell.getTile();
+                    float rotation = 0;
+                    if (tile.getProperties().get("rotation", Float.class) != null) {
+                        rotation = tile.getProperties().get("rotation", Float.class);
+                    }
+                    System.out.println(rotation);
+
+
                     if (tile != null) {
                         addTileEntity(tile, x, y);
                     }
@@ -62,6 +70,21 @@ public class TiledMapLoader extends GameBoard {
             }
         }
         return null;
+    }
+
+
+    @Override
+    public TiledMapTileLayer.Cell getCellByCoordinate(int layer, int col, int row) {
+        return ((TiledMapTileLayer) tiledMap.getLayers().get(layer)).getCell(col, row);
+    }
+
+    @Override
+    public int getTileRotationByCoordinate(int layer, int col, int row) {
+        TiledMapTileLayer.Cell tmt = getCellByCoordinate(0, col, row);
+        if (tmt != null) {
+            return tmt.getRotation();
+        }
+        return 0;
     }
 
     @Override
