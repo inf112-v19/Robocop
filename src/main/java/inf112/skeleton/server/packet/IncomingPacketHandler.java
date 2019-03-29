@@ -78,9 +78,19 @@ public class IncomingPacketHandler {
                 break;
             case CARD_PACKET:
                 CardPacket cardPacket = CardPacket.parseJSON(jsonObject);
-                User messageingUser = handler.getEntityFromLoggedIn(incoming);
-                messageingUser.getLobby().getGame().addUserAndCard(messageingUser, Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority()));
+                User cardUser = handler.getEntityFromLoggedIn(incoming);
+                cardUser.getLobby().getGame().addUserAndCard(cardUser, Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority()));
                 System.out.println("[IncomingPacketHandler - handleIncomingPacket] - Case CARD_PACKET");
+                break;
+            case CARD_HAND_PACKET:
+                int[] packetData = CardHandPacket.parseJSON(jsonObject).getHand();
+                User cardHandUser = handler.getEntityFromLoggedIn(incoming);
+                Card[] hand = new Card[packetData.length];
+                for (int i = 0; i < hand.length; i++) {
+                    hand[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packetData[i]);
+                    System.out.println("IncomingPacketHandler - handleIncomingPacket - CARD_HAND_PACKET  - Added card " + Tools.CARD_RECONSTRUCTOR.reconstructCard(packetData[i]));
+                }
+                cardHandUser.player.storeSelectedCards(hand);
                 break;
             case CREATE_LOBBY:
                 User actionUser = handler.getEntityFromLoggedIn(incoming);

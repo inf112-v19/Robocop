@@ -16,6 +16,10 @@ import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
 import static inf112.skeleton.common.specs.Directions.*;
 
 
@@ -24,6 +28,8 @@ public class Player {
     Vector2 currentPos;
     Vector2 movingTo;
     User owner;
+    Set<Card> cardsGiven;
+    Set<Card> cardsSelected;
     Card[] selectedCards;
     int slot;
     int currentHP;
@@ -48,6 +54,8 @@ public class Player {
         owner.setPlayer(this);
         this.selectedCards = new Card[5];
         this.timeInit = System.currentTimeMillis();
+        this.cardsGiven = new HashSet<>();
+        this.cardsSelected = new TreeSet<>();
     }
 
     public Directions getDirection() {
@@ -56,21 +64,6 @@ public class Player {
 
     public void rotate(CardType cardType) {
         direction = values()[(direction.ordinal() + values().length + cardType.turnAmount) % values().length];
-        sendUpdate();
-    }
-
-    public void rotateLeft() {
-        direction = values()[(direction.ordinal() + values().length - 1) % values().length];
-        sendUpdate();
-    }
-
-    public void rotateRight() {
-        direction = values()[(direction.ordinal() + values().length + 1) % values().length];
-        sendUpdate();
-    }
-
-    public void rotate180() {
-        direction = values()[(direction.ordinal() + 2) % values().length];
         sendUpdate();
     }
 
@@ -131,29 +124,22 @@ public class Player {
 
         System.out.println("[Player serverside - sendCardHand] Sending packet " + packet.toString());
         owner.sendPacket(packet);
-    }
 
-    public boolean addCardToSelectedArray(Card card) {
-        for (int i = 0; i < selectedCards.length; i++) {
-            if (selectedCards[i] == null) {
-                selectedCards[i] = card;
-                return true;
-            }
+        for (int i = 0; i < hand.length; i++) {
+            cardsGiven.add(hand[i]);
         }
-        return false;
     }
 
-    public Card getCardFromSelectedArray() {
-        for (int i = 0; i < selectedCards.length; i++) {
-            if (selectedCards[i] != null) {
-                Card foo = selectedCards[i];
-                selectedCards[i] = null;
-                return foo;
-            }
+    public void storeSelectedCards(Card[] hand) {
+        for (int i = 0; i < hand.length; i++) {
+            cardsSelected.add(hand[i]);
         }
-        return null;
+        System.out.println("Is selected hand subset of given hand?: " + isSelectedSubsetOfDealt());
     }
 
+    public boolean isSelectedSubsetOfDealt() {
+        return cardsGiven.containsAll(cardsSelected);
+    }
 
     public void moveX(float amount) {
         if (!canMove(amount, 0)) {
@@ -226,6 +212,7 @@ public class Player {
         Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
         RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);
     }
+
 
     public void sendToNewClient(Channel newUserChannel) {
         FromServer initPlayer = FromServer.INIT_PLAYER;

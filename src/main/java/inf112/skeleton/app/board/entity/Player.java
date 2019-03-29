@@ -115,6 +115,30 @@ public class Player {
         return true;
     }
 
+    public void sendSelectedCardsToServer() {
+        if(selectedCards.isEmpty() || selectedCards.size() < 5) {
+            Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards is empty or too small, picking cards automatically.");
+            for (int i = 0; i < cards.length; i++) {
+                if(selectedCards.size() == 5) {
+                    continue;
+                }
+                if(cards[i] != null) {
+                    selectedCards.add(cards[i]);
+                    cards[i] = null;
+                }
+            }
+
+        }
+        Card[] hand = new Card[selectedCards.size()];
+        for (int i = 0; i < selectedCards.size(); i++) {
+            hand[i] = selectedCards.remove(0);
+        }
+        CardHandPacket data = new CardHandPacket(hand);
+        Packet packet = new Packet(ToServer.CARD_HAND_PACKET.ordinal(), data);
+        RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+        Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards sent to server.");
+    }
+
 
     /**
      * Accept packet related to any changes to this player, checks if its needed then applies changes.

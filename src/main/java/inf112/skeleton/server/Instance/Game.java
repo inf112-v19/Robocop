@@ -84,7 +84,7 @@ public class Game {
                     break;
 
                 case REQUEST:   //Request the players' selected cards.
-                    CardRequestPacket cRPkt = new CardRequestPacket(1);
+                    CardRequestPacket cRPkt = new CardRequestPacket(5);
                     Packet pkt = new Packet(FromServer.CARD_REQUEST_PACKET.ordinal(), cRPkt);
                     lobby.broadcastPacket(pkt);
                     cardRequests++;
