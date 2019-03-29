@@ -2,10 +2,14 @@ package inf112.skeleton.server.WorldMap;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Entity;
-import inf112.skeleton.server.WorldMap.entity.TileObject;
+import inf112.skeleton.server.WorldMap.entity.TileEntity;
+import inf112.skeleton.server.WorldMap.entity.mapEntities.BlackHole;
+import inf112.skeleton.server.WorldMap.entity.mapEntities.Laser;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -13,11 +17,11 @@ import java.util.NoSuchElementException;
 public abstract class GameBoard {
 
     protected ArrayList<Entity> entities;
-    public ArrayList<TileObject> mapObjects;
+    public ArrayList<TileEntity> tileEntities;
 
     public GameBoard() {
         entities = new ArrayList<>();
-        mapObjects = new ArrayList<>();
+        tileEntities = new ArrayList<>();
 
     }
 
@@ -32,15 +36,43 @@ public abstract class GameBoard {
         }
     }
 
+    public void addTileEntity(TiledMapTile tile, int x, int y) {
+        TileEntity newTile;
+        switch (TileDefinition.getTileById(tile.getId())) {
+            case LASER:
+            case LASERSOURCE:
+            case LASERCROSS:
+                newTile = new Laser(tile, x, y);
+                break;
+            case BLACK_HOLE:
+                newTile = new BlackHole(tile, x, y);
+                break;
+            default:
+                System.err.println("fatal error adding tile: " + TileDefinition.getTileById(tile.getId()).getName());
+                return;
+        }
+        tileEntities.add(newTile);
+        System.out.println("Found object: " + TileDefinition.getTileById(tile.getId()).getName());
+    }
+
     public void update() {
         for (Entity entity : entities) {
             entity.update(this);
 
         }
 
-        for (TileObject obj : mapObjects) {
+        for (TileEntity obj : tileEntities) {
             obj.update();
         }
+    }
+
+    public TileEntity getTileEntityAtPosition(Vector2 pos){
+        for (TileEntity tileEntity : tileEntities) {
+            if(tileEntity.detectCollision(pos)){
+                return tileEntity;
+            }
+        }
+        return null;
     }
 
     public void moveEntity(Entity e, Directions dir) throws NoSuchElementException {
@@ -80,6 +112,15 @@ public abstract class GameBoard {
                 (int) (x / TileDefinition.TILE_SIZE),
                 (int) (y / TileDefinition.TILE_SIZE)
         );
+    }
+
+    public boolean isTileWalkable (Vector2 coord) {
+        TileDefinition tile = getTileDefinitionByCoordinate(0, (int)coord.x, (int)coord.y);
+        if(tile!=null) {
+            System.out.println(tile.getName() + "("+coord.x+", "+coord.y+")");
+            return tile.isCollidable();
+        }
+        return true;
     }
 
     /**

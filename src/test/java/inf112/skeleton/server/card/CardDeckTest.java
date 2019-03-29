@@ -2,10 +2,12 @@ package inf112.skeleton.server.card;
 
 import inf112.skeleton.common.specs.Card;
 
+import inf112.skeleton.common.specs.CardType;
 import org.junit.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -17,6 +19,45 @@ public class CardDeckTest {
     @Test
     public void newCardDeckShouldContain84Cards() {
         assertThat(deck.size(), is(84));
+    }
+
+    @Test
+    public void newCardDeckShouldContainXofThese() {
+        int rr, rl, r180, fw1, fw2, fw3, bw1;
+        rr = rl = r180 = fw1 = fw2 = fw3 = bw1 = 0;
+        while(!deck.isEmpty()) {
+            Card foo = deck.dealCard();
+            switch (foo.getType()) {
+                case ROTATERIGHT:
+                    rr++;
+                    break;
+                case ROTATELEFT:
+                    rl++;
+                    break;
+                case ROTATE180:
+                    r180++;
+                    break;
+                case FORWARD1:
+                    fw1++;
+                    break;
+                case FORWARD2:
+                    fw2++;
+                    break;
+                case FORWARD3:
+                    fw3++;
+                    break;
+                case BACKWARD1:
+                    bw1++;
+                    break;
+            }
+        }
+        assertThat(rr, is(18));
+        assertThat(rl, is(18));
+        assertThat(fw1, is(18));
+        assertThat(fw2, is(12));
+        assertThat(fw3, is(6));
+        assertThat(bw1, is(6));
+        assertThat(r180, is(6));
     }
 
     @Test

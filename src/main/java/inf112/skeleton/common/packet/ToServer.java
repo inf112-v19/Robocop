@@ -7,5 +7,6 @@ public enum ToServer {
     MOVEMENT_ACTION, //TODO: IMplement
     CHAT_MESSAGE,
     CARD_PACKET,
+    CARD_HAND_PACKET,
     REQUEST_DATA,
 }

@@ -1,20 +1,26 @@
 package inf112.skeleton.server.WorldMap.entity;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.common.packet.*;
+import inf112.skeleton.common.packet.FromServer;
+import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.CardHandPacket;
 import inf112.skeleton.common.packet.data.CardPacket;
 import inf112.skeleton.common.packet.data.PlayerInitPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
+import inf112.skeleton.common.specs.Card;
+import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.WorldMap.GameBoard;
-import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static inf112.skeleton.common.specs.Directions.*;
 
@@ -24,12 +30,13 @@ public class Player {
     Vector2 currentPos;
     Vector2 movingTo;
     User owner;
-    Card[] selectedCards;
+    ArrayList<Card> cardsGiven;
+    ArrayList<Card> cardsSelected;
 
+    int slot;
     int currentHP;
     Directions direction;
     int movingTiles = 0;
-
 
 
     private int delayMove = 400;
@@ -38,34 +45,27 @@ public class Player {
     private long timeMoved = 0;
     boolean shouldSendCards = true;
 
-    public Player(String name, Vector2 pos, int hp, Directions directions, User owner) {
+    public Player(String name, Vector2 pos, int hp, int slot, Directions directions, User owner) {
         this.name = name;
         this.currentHP = hp;
         this.currentPos = pos;
         this.movingTo = new Vector2(currentPos.x, currentPos.y);
+        this.slot = slot;
         this.direction = directions;
         this.owner = owner;
         owner.setPlayer(this);
-        this.selectedCards = new Card[5];
+
         this.timeInit = System.currentTimeMillis();
+        this.cardsGiven = new ArrayList<>();
+        this.cardsSelected = new ArrayList<>();
     }
 
     public Directions getDirection() {
         return this.direction;
     }
 
-    public void rotateLeft() {
-        direction = values()[(direction.ordinal() + values().length - 1) % values().length];
-        sendUpdate();
-    }
-
-    public void rotateRight() {
-        direction = values()[(direction.ordinal() + values().length + 1) % values().length];
-        sendUpdate();
-    }
-
-    public void rotate180() {
-        direction = values()[(direction.ordinal() + 2) % values().length];
+    public void rotate(CardType cardType) {
+        direction = values()[(direction.ordinal() + values().length + cardType.turnAmount) % values().length];
         sendUpdate();
     }
 
@@ -105,6 +105,10 @@ public class Player {
 
     }
 
+    public void setSlot(int slot) {
+        this.slot = slot;
+    }
+
     public void sendCard(Card card) {
         FromServer packetId = FromServer.CARD_PACKET;
         CardPacket data = new CardPacket(card);
@@ -120,31 +124,32 @@ public class Player {
         CardHandPacket data = new CardHandPacket(hand);
         Packet packet = new Packet(packetId, data);
 
+        for (int i = 0; i < hand.length; i++) {
+            cardsGiven.add(hand[i]);
+        }
+
         System.out.println("[Player serverside - sendCardHand] Sending packet " + packet.toString());
         owner.sendPacket(packet);
+
     }
 
-    public boolean addCardToSelectedArray(Card card) {
-        for(int i = 0; i < selectedCards.length; i++) {
-            if(selectedCards[i] == null) {
-                selectedCards[i] = card;
-                return true;
-            }
+    public void storeSelectedCards(Card[] hand) {
+        for (int i = 0; i < hand.length; i++) {
+            cardsSelected.add(hand[i]);
         }
-        return false;
+        System.out.println("[Player serverside - storeSelectedCards] Is selected hand subset of given hand?: " + isSelectedSubsetOfDealt());
     }
 
-    public Card getCardFromSelectedArray() {
-        for(int i = 0; i < selectedCards.length; i++) {
-            if(selectedCards[i] != null) {
-                Card foo = selectedCards[i];
-                selectedCards[i] = null;
-                return foo;
-            }
-        }
-        return null;
+    public Card getNextCardFromSelected() {
+        if (cardsSelected.isEmpty())
+            return null;
+        return cardsSelected.remove(0);
     }
 
+    //TODO Use this to prevent non-dealt cards being played by the client.
+    public boolean isSelectedSubsetOfDealt() {
+        return cardsGiven.containsAll(cardsSelected);
+    }
 
     public void moveX(float amount) {
         if (!canMove(amount, 0)) {
@@ -192,7 +197,7 @@ public class Player {
 
         FromServer initPlayer = FromServer.INIT_LOCALPLAYER;
         PlayerInitPacket playerInitPacket =
-                new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, direction);
+                new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
         owner.getChannel().writeAndFlush(Tools.GSON.toJson(initPacket) + "\r\n");
         //TODO: send init player to client, then broadcast to all others
@@ -204,7 +209,7 @@ public class Player {
     public void initAll() {
         FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
-                new PlayerInitPacket(owner.getUUID(),name, currentPos, currentHP, direction);
+                new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
         RoboCopServerHandler.globalMessage(Tools.GSON.toJson(initPacket), owner.getChannel(), true);
 
@@ -218,10 +223,11 @@ public class Player {
         RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);
     }
 
+
     public void sendToNewClient(Channel newUserChannel) {
         FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
-                new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, direction);
+                new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
         newUserChannel.writeAndFlush(Tools.GSON.toJson(initPacket) + "\r\n");
 //        newUserChannel.writeAndFlush("list:" + Utility.formatPlayerName(owner.getName().toLowerCase()) + "\r\n");
@@ -231,23 +237,52 @@ public class Player {
 
     public void startMovement(Directions direction, int amount) {
         if (!processMovement(System.currentTimeMillis())) {
+            GameBoard gameBoard = owner.getLobby().getGame().getGameBoard();
             this.timeMoved = System.currentTimeMillis();
-            this.movingTiles = amount;
             this.direction = direction;
             switch (direction) {
                 case SOUTH:
+                    for (int i = 1; i <= amount; i++) {
+                        Vector2 toCheck = new Vector2(this.movingTo.x, this.movingTo.y - i);
+                        if (!gameBoard.isTileWalkable(toCheck)) {
+                            amount = i-1;
+                            break;
+                        }
+                    }
                     this.movingTo.add(0, -amount);
                     break;
                 case NORTH:
+                    for (int i = 1; i <= amount; i++) {
+                        Vector2 toCheck = new Vector2(this.movingTo.x, this.movingTo.y + i);
+                        if (!gameBoard.isTileWalkable(toCheck)) {
+                            amount = i-1;
+                            break;
+                        }
+                    }
                     this.movingTo.add(0, amount);
                     break;
                 case EAST:
+                    for (int i = 1; i <= amount; i++) {
+                        Vector2 toCheck = new Vector2(this.movingTo.x+i, this.movingTo.y);
+                        if (!gameBoard.isTileWalkable(toCheck)) {
+                            amount = i-1;
+                            break;
+                        }
+                    }
                     this.movingTo.add(amount, 0);
                     break;
                 case WEST:
+                    for (int i = 1; i <= amount; i++) {
+                        Vector2 toCheck = new Vector2(this.movingTo.x-i, this.movingTo.y);
+                        if (!gameBoard.isTileWalkable(toCheck)) {
+                            amount = i-1;
+                            break;
+                        }
+                    }
                     this.movingTo.add(-amount, 0);
                     break;
             }
+            this.movingTiles = amount;
 
             FromServer pktId = FromServer.PLAYER_UPDATE;
             UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo);

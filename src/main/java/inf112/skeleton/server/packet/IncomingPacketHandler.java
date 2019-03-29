@@ -3,6 +3,8 @@ package inf112.skeleton.server.packet;
 import com.google.gson.JsonObject;
 import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.packet.data.*;
+import inf112.skeleton.common.specs.Card;
+import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
@@ -16,6 +18,7 @@ public class IncomingPacketHandler {
 
     /**
      * Parse received packet and decide what to do with it.
+     *
      * @param incoming
      * @param jsonObject
      * @param handler
@@ -75,9 +78,18 @@ public class IncomingPacketHandler {
                 break;
             case CARD_PACKET:
                 CardPacket cardPacket = CardPacket.parseJSON(jsonObject);
-                User messageingUser = handler.getEntityFromLoggedIn(incoming);
-                messageingUser.getLobby().getGame().addUserAndCard(messageingUser, Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority()));
+                User cardUser = handler.getEntityFromLoggedIn(incoming);
+                cardUser.getLobby().getGame().addUserAndCard(cardUser, Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority()));
                 System.out.println("[IncomingPacketHandler - handleIncomingPacket] - Case CARD_PACKET");
+                break;
+            case CARD_HAND_PACKET:
+                User cardHandUser = handler.getEntityFromLoggedIn(incoming);
+                int[] packetData = CardHandPacket.parseJSON(jsonObject).getHand();
+                Card[] hand = new Card[packetData.length];
+                for (int i = 0; i < hand.length; i++) {
+                    hand[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packetData[i]);
+                }
+                cardHandUser.player.storeSelectedCards(hand);
                 break;
             case CREATE_LOBBY:
                 User actionUser = handler.getEntityFromLoggedIn(incoming);
@@ -93,7 +105,7 @@ public class IncomingPacketHandler {
                 DataRequestPacket request = DataRequestPacket.parseJSON(jsonObject);
                 User requestUser = handler.getEntityFromLoggedIn(incoming);
 
-                switch(request.getRequest()) {
+                switch (request.getRequest()) {
                     case LOBBY_LIST:
                         requestUser.getLobbyList(handler.game);
                         break;
@@ -113,6 +125,7 @@ public class IncomingPacketHandler {
 
     /**
      * Parse command from packet and exectute action.
+     *
      * @param messagingUser
      * @param command
      * @param handler
@@ -125,16 +138,30 @@ public class IncomingPacketHandler {
                 messagingUser.sendServerMessage("There is currently " + handler.loggedInPlayers.size() + " player(s) online.");
                 break;
             case "move":
-                if(command.length > 2){
-                    if(Directions.fromString(command[1].toUpperCase()) != null){
+                if (command.length > 2) {
+                    if (Directions.fromString(command[1].toUpperCase()) != null) {
                         Directions direction = Directions.valueOf(command[1].toUpperCase());
-                        if(Utility.isStringInt(command[2])){
+                        if (Utility.isStringInt(command[2])) {
                             messagingUser.player.startMovement(direction, Integer.parseInt(command[2]));
                             return;
                         }
                     }
                 }
                 messagingUser.sendServerMessage("Error in command, proper usage: '!move north 3'.");
+
+                break;
+            case "card":
+                if (command.length > 1) {
+                    if (CardType.fromString(command[1].toUpperCase()) != null) {
+                        CardType cardType = CardType.valueOf(command[1].toUpperCase());
+                        Card card = new Card(999, cardType);
+                        messagingUser.getLobby().getGame().handleMovement(messagingUser, card);
+                        return;
+                    }
+                }
+                messagingUser.sendServerMessage("Error in command, proper usage: '!card rotateleft'.");
+                messagingUser.sendServerMessage("Available cards: rotateleft, rotateright, rotate180");
+                messagingUser.sendServerMessage("forward1, forward2, forward3, backward1");
 
                 break;
             case "whisper":
@@ -163,6 +190,7 @@ public class IncomingPacketHandler {
     /**
      * User failed auth because a user with the same name is already loggid in, send a message to the new connection to
      * inform them.
+     *
      * @param incoming
      * @param handler
      * @param name
