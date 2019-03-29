@@ -114,6 +114,15 @@ public abstract class GameBoard {
         );
     }
 
+    public boolean isTileWalkable (Vector2 coord) {
+        TileDefinition tile = getTileDefinitionByCoordinate(0, (int)coord.x, (int)coord.y);
+        if(tile!=null) {
+            System.out.println(tile.getName() + "("+coord.x+", "+coord.y+")");
+            return tile.isCollidable();
+        }
+        return true;
+    }
+
     /**
      * Gets a tile at a specified coordinate on the game board.
      *
