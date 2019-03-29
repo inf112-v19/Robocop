@@ -248,6 +248,13 @@ public class Player {
                             amount = i-1;
                             break;
                         }
+                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                amount = i;
+                                break;
+                            }
+                        }
                     }
                     this.movingTo.add(0, -amount);
                     break;
@@ -257,6 +264,13 @@ public class Player {
                         if (!gameBoard.isTileWalkable(toCheck)) {
                             amount = i-1;
                             break;
+                        }
+                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                amount = i;
+                                break;
+                            }
                         }
                     }
                     this.movingTo.add(0, amount);
@@ -268,6 +282,13 @@ public class Player {
                             amount = i-1;
                             break;
                         }
+                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                amount = i;
+                                break;
+                            }
+                        }
                     }
                     this.movingTo.add(amount, 0);
                     break;
@@ -277,6 +298,13 @@ public class Player {
                         if (!gameBoard.isTileWalkable(toCheck)) {
                             amount = i-1;
                             break;
+                        }
+                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                amount = i;
+                                break;
+                            }
                         }
                     }
                     this.movingTo.add(-amount, 0);
