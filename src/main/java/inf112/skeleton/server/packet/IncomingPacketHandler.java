@@ -83,12 +83,11 @@ public class IncomingPacketHandler {
                 System.out.println("[IncomingPacketHandler - handleIncomingPacket] - Case CARD_PACKET");
                 break;
             case CARD_HAND_PACKET:
-                int[] packetData = CardHandPacket.parseJSON(jsonObject).getHand();
                 User cardHandUser = handler.getEntityFromLoggedIn(incoming);
+                int[] packetData = CardHandPacket.parseJSON(jsonObject).getHand();
                 Card[] hand = new Card[packetData.length];
                 for (int i = 0; i < hand.length; i++) {
                     hand[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packetData[i]);
-                    System.out.println("IncomingPacketHandler - handleIncomingPacket - CARD_HAND_PACKET  - Added card " + Tools.CARD_RECONSTRUCTOR.reconstructCard(packetData[i]));
                 }
                 cardHandUser.player.storeSelectedCards(hand);
                 break;

@@ -116,23 +116,17 @@ public class Player {
     }
 
     public void sendSelectedCardsToServer() {
-        if(selectedCards.isEmpty() || selectedCards.size() < 5) {
-            Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards is empty or too small, picking cards automatically.");
-            for (int i = 0; i < cards.length; i++) {
-                if(selectedCards.size() == 5) {
-                    continue;
-                }
-                if(cards[i] != null) {
-                    selectedCards.add(cards[i]);
-                    cards[i] = null;
-                }
-            }
-
+        if(selectedCards.isEmpty() || selectedCards == null) {
+            Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards is empty or null.");
+            return;
         }
+
         Card[] hand = new Card[selectedCards.size()];
-        for (int i = 0; i < selectedCards.size(); i++) {
+        for (int i = 0; i < hand.length; i++) {
             hand[i] = selectedCards.remove(0);
         }
+
+        //TODO Pick cards automatically if the user does not.
         CardHandPacket data = new CardHandPacket(hand);
         Packet packet = new Packet(ToServer.CARD_HAND_PACKET.ordinal(), data);
         RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");

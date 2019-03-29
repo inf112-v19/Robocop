@@ -6,7 +6,6 @@ import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.CardRequestPacket;
 import inf112.skeleton.common.specs.Card;
-import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.server.WorldMap.GameBoard;
@@ -29,13 +28,14 @@ public class Game {
     GameBoard gameBoard;
     boolean active = false;
 
-    int tickCountdown = 0;
+    int roundSelectTime = 10; //The time the player will have to select their cards.
+    int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
     long timerStarted = 0;
-    long timeDelay = 0;
+    long timerCountdownSeconds = 0;
 
     GameStage gameStage = LOBBY;
     int cardRequests = 0;
-
+    //TODO Handle received cards differently, requires changes to cardsForOneRound and cardRequests.
 
     public Game(Lobby lobby, MapFile mapFile) {
         this.lobby = lobby;
@@ -65,7 +65,7 @@ public class Game {
                         player.sendCardHand(createCardHand(player));
                     }
                     deck = new CardDeck();//🦀🦀Let🦀🦀garbage🦀🦀collector🦀🦀collect🦀🦀garbage🦀🦀
-                    setTimer(20);
+                    setTimer(roundSelectTime);
                     Gdx.app.log("Game - update - DEALING", "Moving to WAITING-stage.");
                     gameStage = WAITING;
                     break;
@@ -108,7 +108,7 @@ public class Game {
                     break;
 
                 case VICTORY:   //Some pleb won the game. HAX! Obviously.
-                    lobby.broadcastChatMessage("Winner winner crab people crab people dinner.");
+                    lobby.broadcastChatMessage("Winner winner \uD83E\uDD80 dinner.");
                     break;
 
             }
@@ -144,13 +144,13 @@ public class Game {
 
     private void setTimer(int seconds) {
         this.timerStarted = System.currentTimeMillis();
-        this.timeDelay = seconds * 1000;
+        this.timerCountdownSeconds = seconds * 1000;
     }
 
     private boolean checkTimer() {
         if (timerStarted == 0)
             return false;
-        if (System.currentTimeMillis() >= timerStarted + timeDelay)
+        if (System.currentTimeMillis() >= timerStarted + timerCountdownSeconds)
             return true;
         return false;
     }
@@ -204,7 +204,7 @@ public class Game {
         for (Player player : players) {
             player.sendCardHand(createCardHand(player));
         }
-        setTimer(20);
+        setTimer(roundSelectTime);
         gameStage = WAITING;
         deck = new CardDeck();
     }

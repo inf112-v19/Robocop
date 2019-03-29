@@ -16,6 +16,7 @@ import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -28,9 +29,9 @@ public class Player {
     Vector2 currentPos;
     Vector2 movingTo;
     User owner;
-    Set<Card> cardsGiven;
-    Set<Card> cardsSelected;
-    Card[] selectedCards;
+    ArrayList<Card> cardsGiven;
+    ArrayList<Card> cardsSelected;
+
     int slot;
     int currentHP;
     Directions direction;
@@ -52,10 +53,10 @@ public class Player {
         this.direction = directions;
         this.owner = owner;
         owner.setPlayer(this);
-        this.selectedCards = new Card[5];
+
         this.timeInit = System.currentTimeMillis();
-        this.cardsGiven = new HashSet<>();
-        this.cardsSelected = new TreeSet<>();
+        this.cardsGiven = new ArrayList<>();
+        this.cardsSelected = new ArrayList<>();
     }
 
     public Directions getDirection() {
@@ -122,21 +123,29 @@ public class Player {
         CardHandPacket data = new CardHandPacket(hand);
         Packet packet = new Packet(packetId, data);
 
-        System.out.println("[Player serverside - sendCardHand] Sending packet " + packet.toString());
-        owner.sendPacket(packet);
-
         for (int i = 0; i < hand.length; i++) {
             cardsGiven.add(hand[i]);
         }
+
+        System.out.println("[Player serverside - sendCardHand] Sending packet " + packet.toString());
+        owner.sendPacket(packet);
+
     }
 
     public void storeSelectedCards(Card[] hand) {
         for (int i = 0; i < hand.length; i++) {
             cardsSelected.add(hand[i]);
         }
-        System.out.println("Is selected hand subset of given hand?: " + isSelectedSubsetOfDealt());
+        System.out.println("[Player serverside - storeSelectedCards] Is selected hand subset of given hand?: " + isSelectedSubsetOfDealt());
     }
 
+    public Card getNextCardFromSelected() {
+        if (cardsSelected.isEmpty())
+            return null;
+        return cardsSelected.remove(0);
+    }
+
+    //TODO Use this to prevent non-dealt cards being played by the client.
     public boolean isSelectedSubsetOfDealt() {
         return cardsGiven.containsAll(cardsSelected);
     }
