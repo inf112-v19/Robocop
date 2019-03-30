@@ -3,6 +3,7 @@ package inf112.skeleton.server.WorldMap;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.TileDefinition;
@@ -12,6 +13,7 @@ import inf112.skeleton.server.WorldMap.entity.mapEntities.BlackHole;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.Laser;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public abstract class GameBoard {
@@ -114,6 +116,17 @@ public abstract class GameBoard {
         );
     }
 
+    public boolean isTileWalkable (Vector2 coord) {
+        TileDefinition tile = getTileDefinitionByCoordinate(0, (int)coord.x, (int)coord.y);
+        if(tile!=null) {
+
+
+            System.out.println(tile.getName() + "("+coord.x+", "+coord.y+")");
+            return tile.isCollidable();
+        }
+        return true;
+    }
+
     /**
      * Gets a tile at a specified coordinate on the game board.
      *
@@ -123,6 +136,11 @@ public abstract class GameBoard {
      * @return
      */
     public abstract TileDefinition getTileDefinitionByCoordinate(int layer, int col, int row);
+
+
+    public abstract TiledMapTileLayer.Cell getCellByCoordinate(int layer, int col, int row);
+
+    public abstract int getTileRotationByCoordinate(int layer, int col, int row);
 
 
     public abstract int getWidth();

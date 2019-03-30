@@ -12,6 +12,7 @@ import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.RoboCopServerHandler;
+import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.user.User;
 import inf112.skeleton.server.util.Utility;
 import io.netty.channel.Channel;
@@ -202,23 +203,80 @@ public class Player {
 
     public void startMovement(Directions direction, int amount) {
         if (!processMovement(System.currentTimeMillis())) {
+            GameBoard gameBoard = owner.getLobby().getGame().getGameBoard();
             this.timeMoved = System.currentTimeMillis();
-            this.movingTiles = amount;
             this.direction = direction;
             switch (direction) {
                 case SOUTH:
+                    for (int i = 1; i <= amount; i++) {
+                        Vector2 toCheck = new Vector2(this.movingTo.x, this.movingTo.y - i);
+                        if (!gameBoard.isTileWalkable(toCheck)) {
+                            amount = i-1;
+                            break;
+                        }
+                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                amount = i;
+                                break;
+                            }
+                        }
+                    }
                     this.movingTo.add(0, -amount);
                     break;
                 case NORTH:
+                    for (int i = 1; i <= amount; i++) {
+                        Vector2 toCheck = new Vector2(this.movingTo.x, this.movingTo.y + i);
+                        if (!gameBoard.isTileWalkable(toCheck)) {
+                            amount = i-1;
+                            break;
+                        }
+                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                amount = i;
+                                break;
+                            }
+                        }
+                    }
                     this.movingTo.add(0, amount);
                     break;
                 case EAST:
+                    for (int i = 1; i <= amount; i++) {
+                        Vector2 toCheck = new Vector2(this.movingTo.x+i, this.movingTo.y);
+                        if (!gameBoard.isTileWalkable(toCheck)) {
+                            amount = i-1;
+                            break;
+                        }
+                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                amount = i;
+                                break;
+                            }
+                        }
+                    }
                     this.movingTo.add(amount, 0);
                     break;
                 case WEST:
+                    for (int i = 1; i <= amount; i++) {
+                        Vector2 toCheck = new Vector2(this.movingTo.x-i, this.movingTo.y);
+                        if (!gameBoard.isTileWalkable(toCheck)) {
+                            amount = i-1;
+                            break;
+                        }
+                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                amount = i;
+                                break;
+                            }
+                        }
+                    }
                     this.movingTo.add(-amount, 0);
                     break;
             }
+            this.movingTiles = amount;
 
             FromServer pktId = FromServer.PLAYER_UPDATE;
             UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo);

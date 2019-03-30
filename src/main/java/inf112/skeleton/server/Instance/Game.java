@@ -236,6 +236,10 @@ public class Game {
         deck = new CardDeck();
     }
 
+    public GameBoard getGameBoard() {
+        return gameBoard;
+    }
+
     public void initPlayers() {
         System.out.println("[Game serverside - initPlayers] called initPlayers in game");
 
