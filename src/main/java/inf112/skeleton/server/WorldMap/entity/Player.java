@@ -60,6 +60,7 @@ public class Player {
         this.timeInit = System.currentTimeMillis();
         this.cardsGiven = new ArrayList<>();
         this.cardsSelected = new ArrayList<>();
+        this.burnt = new ArrayList<>();
     }
 
     public Directions getDirection() {
@@ -150,7 +151,8 @@ public class Player {
         }
         //Trim selectedCards if too long.
         if(cardsSelected.size() > 5) {
-            for (int i = cardsSelected.size(); i > 5; i--) {
+            for (int i = cardsSelected.size()-1; i >= 5; i--) {
+                System.out.println("[Player serverside - storeSelectedCards] - trimmed away 1 card.");
                 cardsSelected.remove(i);
             }
         }
