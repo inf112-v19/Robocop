@@ -1,27 +1,21 @@
 package inf112.skeleton.app.GUI;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import io.netty.channel.Channel;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
@@ -37,8 +31,8 @@ public class PlayerDeck {
 
     private Stage stage, altStage;
     private Table chooseFrom, chooseTo;
-    private LinkedList<ImageButton> chooseFromButtons, chooseToButtons, greyButtons;
-    private HashMap<ImageButton, Card> pCards;
+    private LinkedList<ImageTextButton> chooseFromButtons, chooseToButtons, greyButtons;
+    private HashMap<ImageTextButton, Card> pCards;
     private Drawable greyCardDrawable = new Card(0,GREY).getDrawable();
     private TextButton btn_chooseCards, btn_done;
 
@@ -86,7 +80,7 @@ public class PlayerDeck {
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 swapStages();
                 // Iterate through clicked cards and add them to the players selected cards list.
-                for (ImageButton cardButton : chooseToButtons) {
+                for (ImageTextButton cardButton : chooseToButtons) {
                     RoboRally.gameBoard.myPlayer.selectedCards.add(pCards.get(cardButton));
                 }
             }
@@ -110,15 +104,18 @@ public class PlayerDeck {
             }
         }
 
-        ImageButton tmpButton;
+        ImageTextButton tmpButton;
 
         // Initialize the deck of cards which may be chosen.
         for(Card card : cards) {
-            tmpButton = new ImageButton(card.getDrawable());
+            tmpButton = new ImageTextButton(""+card.getPriority(), new ImageTextButton.ImageTextButtonStyle(
+                    card.getDrawable(), card.getDrawable(), card.getDrawable(), new BitmapFont()));
+            tmpButton.getStyle().fontColor = Color.RED;
+            tmpButton.top().padTop(11).padLeft(38);
             tmpButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent changeEvent, Actor actor) {
-                    ImageButton btn = (ImageButton) actor;
+                    ImageTextButton btn = (ImageTextButton) actor;
                     if (chooseFromButtons.contains(btn)) {
                         if (numberOfChosenButtons < 5) {
                             greyButtons.add(chooseToButtons.removeLast());
@@ -140,8 +137,12 @@ public class PlayerDeck {
         }
 
         // Initialize the deck of cards which is already chosen.
-        for (int i = 0; i < NUM_CARDS_TO; i++)
-            chooseToButtons.add(new ImageButton(greyCardDrawable));
+        for (int i = 0; i < NUM_CARDS_TO; i++) {
+            ImageTextButton.ImageTextButtonStyle btnStyle = new ImageTextButton.ImageTextButtonStyle(greyCardDrawable,greyCardDrawable,greyCardDrawable,new BitmapFont());
+            btnStyle.fontColor = Color.RED;
+            chooseToButtons.add(new ImageTextButton("", btnStyle));
+        }
+
 
         // Set up the tables for the displayable cards.
         chooseFrom = new Table();   //Card pool.
@@ -177,9 +178,9 @@ public class PlayerDeck {
 
         chooseFrom.add(btn_done).width(btn_done.getWidth()).height(btn_done.getHeight()).colspan(chooseFromButtons.size()).center();
         chooseFrom.row();
-        for (ImageButton btn : chooseFromButtons)
+        for (ImageTextButton btn : chooseFromButtons)
             chooseFrom.add(btn).size(CARD_WIDTH, CARD_HEIGHT);
-        for (ImageButton btn : chooseToButtons)
+        for (ImageTextButton btn : chooseToButtons)
             chooseTo.add(btn).size(CARD_WIDTH, CARD_HEIGHT).pad(-8);
 
         chooseFrom.row();
