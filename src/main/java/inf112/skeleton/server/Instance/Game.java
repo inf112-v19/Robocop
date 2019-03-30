@@ -49,8 +49,6 @@ public class Game {
 
 
     public void update() {
-        //Count down the timer. The server will not handle any other events if this is not 0.
-        //TODO Use player.checkTimePassed instead.
         if (tickCountdown > 0) {
             tickCountdown--;
             //System.out.println("[Game serverside - update] Timer currently: " + tickCountdown);
@@ -98,15 +96,12 @@ public class Game {
                     if (!cardsForOneRound.isEmpty()) {
                         useCard();
                     } else {
-                        //TODO Use allPlayersReady instead?
-                        turnsPlayed++;
-                        if(turnsPlayed == 5) {
-                            Gdx.app.log("Game - update - MOVING", "Moving to DEALING-stage.");
-                            gameStage = DEALING;
-                        } else {
+                        if(allPlayersReady()) {
                             for (Player player : players) {
                                 cardsForOneRound.put(player, player.getNextFromSelected());
                             }
+                        } else {
+                            gameStage = DEALING;
                         }
                     }
                     break;
