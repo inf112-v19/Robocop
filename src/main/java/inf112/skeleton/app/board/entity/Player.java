@@ -94,25 +94,22 @@ public class Player {
         for (int i = 0; i < foo.length; i++) {
             cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(foo[i]);
         }
+        selectedCards.clear();
     }
 
     /**
-     * Creates a packet containing move instructions from the selected cards.
-     *
-     * @return True if packet could be constructed and has been sent, false otherwise.
+     * Send one card to server where it will be used as a burnt card.
+     * Call this when players hitpoints are below 5.
      */
-    public boolean sendNextSelectedCard() {
+    public void sendBurntCardToServer() {
         if (selectedCards.isEmpty()) {
-            Gdx.app.log("Player clientside - sendNextSelectedCard", "Returning false");
-            return false;
+            Gdx.app.log("Player clientside - sendBurntCardToServer", "No cards selected");
+            return;
         }
         CardPacket data = new CardPacket(selectedCards.remove(0));
-        Gdx.app.log("Player clientside - sendNextSelectedCard", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
         Packet packet = new Packet(ToServer.CARD_PACKET.ordinal(), data);
-        Gdx.app.log("Player clientside - sendNextSelectedCard", "Constructed packet: " + Tools.GSON.toJson(packet));
         RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r \n");
-        Gdx.app.log("Player clientside - sendNextSelectedCard", "Returning true");
-        return true;
+        Gdx.app.log("Player clientside - sendBurntCardToServer", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
     }
 
     //TODO Refactor this.
@@ -134,7 +131,6 @@ public class Player {
         for (int i = 0; i < hand.length; i++) {
             hand[i] = selectedCards.remove(0);
         }
-        selectedCards.clear();
 
         CardHandPacket data = new CardHandPacket(hand);
         Packet packet = new Packet(ToServer.CARD_HAND_PACKET.ordinal(), data);

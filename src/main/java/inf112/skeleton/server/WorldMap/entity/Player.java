@@ -32,6 +32,7 @@ public class Player {
     User owner;
     ArrayList<Card> cardsGiven;
     ArrayList<Card> cardsSelected;
+    ArrayList<Card> burnt;
 
     int slot;
     int currentHP;
@@ -135,13 +136,31 @@ public class Player {
             cardsSelected.add(hand[i]);
         }
         if(!isSelectedSubsetOfDealt()) {    //Client have been naughty, overrule and give random hand (cards are dealt randomly in the first place).
-            System.out.println("Y U BULLYIN ME?");
+            System.out.println("[Player serverside - storeSelectedCards] - cards received from client is not a subset of cards dealt.");
             cardsSelected.clear();
             for (int i = 0; i < 5; i++) {
                 cardsSelected.add(cardsGiven.remove(0));
             }
         }
+        //Handle burnt cards, if any.
+        if(!burnt.isEmpty()) {
+            for (int i = 0; i < burnt.size(); i++) {
+                cardsSelected.add(i, burnt.get(i));
+            }
+        }
+        //Trim selectedCards if too long.
+        if(cardsSelected.size() > 5) {
+            for (int i = cardsSelected.size(); i > 5; i--) {
+                cardsSelected.remove(i);
+            }
+        }
         readyForTurn = true;
+    }
+
+    public void storeBurntCard(Card card) {
+        if(burnt.size() < 5) {
+            burnt.add(card);
+        }
     }
 
     public Card getNextFromSelected() {
@@ -153,7 +172,6 @@ public class Player {
         return cardsSelected.remove(0);
     }
 
-    //TODO Use this to prevent non-dealt cards being played by the client.
     public boolean isSelectedSubsetOfDealt() {
         return cardsGiven.containsAll(cardsSelected);
     }

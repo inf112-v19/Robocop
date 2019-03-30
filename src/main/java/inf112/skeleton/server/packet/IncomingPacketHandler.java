@@ -79,7 +79,7 @@ public class IncomingPacketHandler {
             case CARD_PACKET:
                 CardPacket cardPacket = CardPacket.parseJSON(jsonObject);
                 User cardUser = handler.getEntityFromLoggedIn(incoming);
-                cardUser.getLobby().getGame().addPlayerAndCard(cardUser.player, Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority()));
+                cardUser.player.storeBurntCard(Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority()));
                 System.out.println("[IncomingPacketHandler - handleIncomingPacket] - Case CARD_PACKET");
                 break;
             case CARD_HAND_PACKET:
