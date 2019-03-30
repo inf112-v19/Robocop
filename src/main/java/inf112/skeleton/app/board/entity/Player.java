@@ -115,9 +115,18 @@ public class Player {
         return true;
     }
 
+    //TODO Refactor this.
     public void sendSelectedCardsToServer() {
         if(selectedCards.isEmpty() || selectedCards == null) {
             Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards is empty or null.");
+            Card[] hand = new Card[5];  //TODO Robots can take damage..
+            for (int i = 0; i < hand.length; i++) {
+                hand[i] = cards[i];
+            }
+            CardHandPacket data = new CardHandPacket(hand);
+            Packet packet = new Packet(ToServer.CARD_HAND_PACKET.ordinal(), data);
+            RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+            selectedCards.clear();
             return;
         }
 
@@ -125,8 +134,8 @@ public class Player {
         for (int i = 0; i < hand.length; i++) {
             hand[i] = selectedCards.remove(0);
         }
+        selectedCards.clear();
 
-        //TODO Pick cards automatically if the user does not.
         CardHandPacket data = new CardHandPacket(hand);
         Packet packet = new Packet(ToServer.CARD_HAND_PACKET.ordinal(), data);
         RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
