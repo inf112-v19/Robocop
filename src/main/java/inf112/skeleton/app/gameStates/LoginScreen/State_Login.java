@@ -2,12 +2,13 @@ package inf112.skeleton.app.gameStates.LoginScreen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.RoboRally;
@@ -39,6 +40,10 @@ public class State_Login extends GameState {
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
         Skin skin = new Skin(Gdx.files.internal("graphics/ui/uiskin.json"));
         Table loginDetails = new Table();
+
+
+        loginDetails.add(new Image(new TextureRegionDrawable(new TextureRegion(
+                new Texture(Gdx.files.internal("graphics/ui/MainMenu/robocop_logo.png")))))).size(500,190).padBottom(30).colspan(2).row();
 
         // Add a field to display error messages to user...
         TextField.TextFieldStyle txtStyle = new TextField.TextFieldStyle();
@@ -113,7 +118,7 @@ public class State_Login extends GameState {
         loginDetails.add(tmp).colspan(2).center().padTop(2).width(300).row();
 
 
-        loginDetails.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, Align.center);
+        loginDetails.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2 + 100, Align.center);
 
         stage.addActor(loginDetails);
         Gdx.input.setInputProcessor(stage);
