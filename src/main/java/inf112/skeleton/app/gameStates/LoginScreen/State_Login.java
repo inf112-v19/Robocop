@@ -25,7 +25,7 @@ import static inf112.skeleton.common.status.LoginResponseStatus.NO_RESPONSE_YET;
 public class State_Login extends GameState {
     private final Color color_primary   = new Color(0.6f,0.4f,0.2f,1);
     private String username, password;
-    private TextField usernameField;
+    private TextField usernameField, passwordField;
     Stage stage;
     TextField messageToUser;
     public LoginResponseStatus loginStatus;
@@ -73,11 +73,11 @@ public class State_Login extends GameState {
         loginDetails.add(tmp).right();
 
         // Add input-field for typing password.
-        tmp = new TextField("", skin);
-        tmp.setMessageText("********");
-        tmp.setPasswordMode(true);
-        tmp.setPasswordCharacter('*');
-        tmp.setTextFieldListener(new TextField.TextFieldListener() {
+        passwordField = new TextField("", skin);
+        passwordField.setMessageText("********");
+        passwordField.setPasswordMode(true);
+        passwordField.setPasswordCharacter('*');
+        passwordField.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char c) {
                 // 10 = Keys.ENTER (Libgdx uses a different keyboard system)
@@ -87,7 +87,7 @@ public class State_Login extends GameState {
                     password = textField.getText();
             }
         });
-        loginDetails.add(tmp).left().row();
+        loginDetails.add(passwordField).left().row();
 
         // Add login button.
         tmp = new TextField("Login ", skin);
@@ -126,6 +126,22 @@ public class State_Login extends GameState {
         // If nothing typed, focus username field and return without contacting server.
         if (username == null || password == null) {
             stage.setKeyboardFocus(usernameField);
+            loginStatus = null;
+            return;
+        }
+
+        if (username.length() < 3) {
+            stage.setKeyboardFocus(usernameField);
+            messageToUser.getStyle().fontColor = Color.RED;
+            messageToUser.setText("Username must have at least 3 characters...");
+            loginStatus = null;
+        return;
+    }
+
+        if (password.length() < 5) {
+            stage.setKeyboardFocus(passwordField);
+            messageToUser.getStyle().fontColor = Color.RED;
+            messageToUser.setText("Password must have at least 5 characters...");
             loginStatus = null;
             return;
         }
