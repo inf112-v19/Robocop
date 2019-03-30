@@ -2,7 +2,12 @@ package inf112.skeleton.app.GUI;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -10,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.app.gameStates.GameStateManager;
@@ -23,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 import static inf112.skeleton.common.specs.CardType.GREY;
 
 public class PlayerDeck {
+    private BitmapFont font;
+
     private GameStateManager gsm;
     private InputMultiplexer inputMultiplexer;
     private Channel channel;
@@ -50,6 +58,9 @@ public class PlayerDeck {
 
         stage = new Stage();
         altStage = new Stage();
+
+        font = new BitmapFont();
+        font.setColor(Color.RED);
 
         chooseFromButtons = new LinkedList<>();
         chooseToButtons = new LinkedList<>();
