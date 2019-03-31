@@ -87,6 +87,7 @@ public class PlayerDeck {
                 RoboRally.gameBoard.myPlayer.sendSelectedCardsToServer();
                 RoboRally.gameBoard.myPlayer.cards = null;
                 RoboRally.gameBoard.hud.removeDeck();
+                inputMultiplexer.removeProcessor(stage);
             }
         });
 
