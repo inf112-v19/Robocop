@@ -55,7 +55,7 @@ public class IncomingPacketHandler {
                     LoginResponsePacket loginResponsePacket =
                             new LoginResponsePacket(status.ordinal(), "", "Failure");
                     Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
-                    loggingIn.sendPacket(responsePacket);
+                    responsePacket.sendPacket(incoming);
                 }
                 break;
             case CHAT_MESSAGE:
