@@ -198,16 +198,6 @@ public class Game {
     }
 
     /**
-     * Add a user and a card to the hashmap.
-     *
-     * @param player key
-     * @param card   value
-     */
-    public void addPlayerAndCard(Player player, Card card) {
-        cardsForOneRound.put(player, card);
-    }
-
-    /**
      * Gets the user with the highest priority card from the hashmap.
      *
      * @return User with highest priority.

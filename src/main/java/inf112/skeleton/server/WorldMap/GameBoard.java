@@ -67,15 +67,9 @@ public abstract class GameBoard {
     }
 
     /**
-     * Actions to be executed when stopping
-     */
-    public abstract void dispose();
-
-
-    /**
      * Check if a tile at a coordinate is walkable
      * @param coord
-     * @return tru if walkable
+     * @return true if walkable
      */
     public boolean isTileWalkable(Vector2 coord) {
         TileDefinition tile = getTileDefinitionByCoordinate(0, (int) coord.x, (int) coord.y);

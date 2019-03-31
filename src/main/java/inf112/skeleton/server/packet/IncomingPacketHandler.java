@@ -32,7 +32,7 @@ public class IncomingPacketHandler {
                 if (loggingIn != null) {
                     if (!handler.loggedInPlayers.contains(loggingIn)) {
                         if (handler.alreadyLoggedIn(loggingIn.getName())) {
-                            AlreadyLoggedIn(incoming, handler, loggingIn.getName());
+                            AlreadyLoggedIn(incoming, loggingIn.getName());
                             return;
                         }
 
@@ -47,7 +47,7 @@ public class IncomingPacketHandler {
 
                         handler.connections.remove(loggingIn);
                     } else {
-                        AlreadyLoggedIn(incoming, handler, loggingIn.getName());
+                        AlreadyLoggedIn(incoming, loggingIn.getName());
                     }
                 } else {
                     FromServer response = FromServer.LOGINRESPONSE;
@@ -189,18 +189,16 @@ public class IncomingPacketHandler {
     /**
      * User failed auth because a user with the same name is already loggid in, send a message to the new connection to
      * inform them.
-     *
-     * @param incoming
-     * @param handler
+     *  @param incoming
      * @param name
      */
-    private void AlreadyLoggedIn(Channel incoming, RoboCopServerHandler handler, String name) {
+    private void AlreadyLoggedIn(Channel incoming, String name) {
         FromServer response = FromServer.LOGINRESPONSE;
         LoginResponseStatus status = LoginResponseStatus.ALREADY_LOGGEDIN;
         LoginResponsePacket loginResponsePacket =
                 new LoginResponsePacket(status.ordinal(), name, "User already logged in");
         Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
-        incoming.writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
+        responsePacket.sendPacket(incoming);
     }
 
 }

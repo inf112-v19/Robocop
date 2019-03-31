@@ -33,9 +33,6 @@ public class PlayerInitPacket implements PacketData {
         return uuid;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public Vector2 getPos() {
         return pos;

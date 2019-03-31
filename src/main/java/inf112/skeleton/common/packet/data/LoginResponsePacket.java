@@ -15,13 +15,8 @@ public class LoginResponsePacket implements PacketData {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+
 
     public int getStatusCode() {
         return statusCode;
