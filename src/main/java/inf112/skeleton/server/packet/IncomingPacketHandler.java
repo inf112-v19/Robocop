@@ -11,7 +11,7 @@ import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.login.UserLogging;
 import inf112.skeleton.server.user.User;
-import inf112.skeleton.server.util.Utility;
+import inf112.skeleton.common.utility.StringUtilities;
 import io.netty.channel.Channel;
 
 public class IncomingPacketHandler {
@@ -43,9 +43,7 @@ public class IncomingPacketHandler {
                                 new LoginResponsePacket(status.ordinal(), loggingIn.name, "Success");
                         Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
                         incoming.writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
-                        loggingIn.setLoggedIn(true);
                         loggingIn.initClient();
-//                        loggingIn.player.sendInit();
 
                         handler.connections.remove(loggingIn);
                     } else {
@@ -141,7 +139,7 @@ public class IncomingPacketHandler {
                 if (command.length > 2) {
                     if (Directions.fromString(command[1].toUpperCase()) != null) {
                         Directions direction = Directions.valueOf(command[1].toUpperCase());
-                        if (Utility.isStringInt(command[2])) {
+                        if (StringUtilities.isStringInt(command[2])) {
                             messagingUser.player.startMovement(direction, Integer.parseInt(command[2]));
                             return;
                         }

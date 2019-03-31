@@ -9,6 +9,12 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
 public class RoboCopServerInitializer extends ChannelInitializer<SocketChannel> {
+
+    /**
+     * Set up Channel pipeline
+     * @param socketChannel
+     * @throws Exception
+     */
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline pipeline = socketChannel.pipeline();

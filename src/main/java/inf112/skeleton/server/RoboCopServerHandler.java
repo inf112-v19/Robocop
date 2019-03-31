@@ -8,7 +8,7 @@ import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.login.UserLogging;
 import inf112.skeleton.server.packet.IncomingPacketHandler;
 import inf112.skeleton.server.user.User;
-import inf112.skeleton.server.util.Utility;
+import inf112.skeleton.common.utility.StringUtilities;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -21,14 +21,12 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     public static final Collection<User> connections = new ArrayList<>(); // Users who are not logged in but connected
     public static final Collection<User> loggedInPlayers = new ArrayList<>(); // Users who have logged in
 
-
     private IncomingPacketHandler incomingPacketHandler = new IncomingPacketHandler();
     public GameWorldInstance game;
 
     public RoboCopServerHandler() {
         this.game = Server.game;
     }
-    //private GameBoard gameBoard = new TiledMapLoader();
 
     /**
      * Receive a new connection, set it up with a simple User and add it to the current connections.
@@ -37,11 +35,10 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
         /**
-         * Adding the ToServer channel to the collection of users who are not logged in.
+         * Adding the incomming channel to the collection of users who are not logged in.
          */
         System.out.println("Received new connection");
         User user = new User(incoming);
-        user.setLoggedIn(false); //Setting the is logged in boolean to false.
         if (!connections.contains(user)) {
             connections.add(user);
         }
@@ -56,17 +53,17 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
         FromServer pktId = FromServer.REMOVE_PLAYER;
         PlayerRemovePacket data = new PlayerRemovePacket(getEntityFromLoggedIn(incoming).getUUID());
         Packet pkt = new Packet(pktId, data);
+        User leavingUser = getEntityFromLoggedIn(incoming);
+        String message = "[SERVER] - " + StringUtilities.formatPlayerName(leavingUser.getName()) + " has left the channel!";
 
-        String message = "[SERVER] - " + Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()) + " has left the channel!";
-        getEntityFromLoggedIn(incoming).leaveLobby();
-
-        UserLogging.logoff(getEntityFromLoggedIn(incoming)); //Save the user in a json file
-        for (User entity : loggedInPlayers) { //looping through all the other users and telling them that this user has left. Also removing the user from the list.
-            if (entity.getChannel() == incoming)
-                continue;
-            entity.sendPacket(pkt);
-            entity.sendChatMessage(message);
+        if (leavingUser.isInLobby()) {
+            leavingUser.getLobby().broadcastChatMessage(message);
+            leavingUser.getLobby().broadcastPacket(pkt);
+            leavingUser.leaveLobby();
         }
+
+        UserLogging.logoff(leavingUser); //Save the user in a json file
+
         /**
          * Removing the user from the collections
          */
@@ -89,7 +86,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
         return null;
     }
 
-    public Collection<User> getLoggedInUsers (){
+    public Collection<User> getLoggedInUsers() {
         return loggedInPlayers;
     }
 
@@ -116,12 +113,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
      */
     public static void globalMessage(String message, Channel channel, boolean everyone) {
         for (User entity : loggedInPlayers) {
-            if (!everyone)
-                if (entity.getChannel() == channel)
-                    continue;
-            if (entity.getChannel() != null) {
-                entity.getChannel().writeAndFlush(message + "\r\n");
-            }
+            entity.sendServerMessage(message);
         }
     }
 
@@ -143,24 +135,11 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     @Override
     protected void channelRead0(ChannelHandlerContext arg0, final String arg1) throws Exception {
         Channel incoming = arg0.channel();
-        System.out.println(arg1);
         if (arg1.startsWith("{")) {
             JsonObject jsonObject = Tools.GSON.fromJson(arg1, JsonObject.class);
             incomingPacketHandler.handleIncomingPacket(incoming, jsonObject, this);
-            return;
-        }
-
-        for (User entity : loggedInPlayers) {
-            if (entity.getChannel() == incoming) {
-                entity.getChannel().write("[You] " + arg1 + "\n");
-                entity.getChannel().write("[You] " + game.gameBoard.getTileDefinitionByCoordinate(0, 10, 10).getId() + "\n");
-
-                entity.getChannel().flush();
-                continue;
-            }
-            entity.getChannel().write("[" + (getEntityFromLoggedIn(incoming).getRights().getPrefix().equalsIgnoreCase("") ? "" : getEntityFromLoggedIn(incoming).getRights().getPrefix() + " - ") + (getEntityFromLoggedIn(incoming).getName() == null
-                    ? incoming.remoteAddress() : Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName())) + "] " + arg1 + "\n");
-            entity.getChannel().flush();
+        } else {
+            System.err.printf("Malformed packet: %s/r/n", arg1);
         }
     }
 

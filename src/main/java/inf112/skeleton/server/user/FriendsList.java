@@ -1,7 +1,7 @@
 package inf112.skeleton.server.user;
 
+import inf112.skeleton.common.utility.Pair;
 import inf112.skeleton.server.RoboCopServerHandler;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 

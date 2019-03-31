@@ -5,8 +5,17 @@ import inf112.skeleton.common.specs.TileDefinition;
 
 public interface TileEntity {
 
+    /**
+     * Is a coordinate colliding with this TileEntity
+     * @param coords
+     * @return true if colliding
+     */
     boolean detectCollision(Vector2 coords);
 
+    /**
+     * Get the tile type
+     * @return TileDefinition
+     */
     TileDefinition getTileType();
 
     /**
@@ -15,7 +24,14 @@ public interface TileEntity {
      */
     void walkOn(Player player);
 
+    /**
+     * Actions to be ran every tick
+     */
     void update();
 
+    /**
+     * If a player move on top of the tileEntity, should it continue walking
+     * @return if it can continue walking
+     */
     boolean canContinueWalking();
 }

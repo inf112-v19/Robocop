@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.CardHandPacket;
-import inf112.skeleton.common.packet.data.CardPacket;
 import inf112.skeleton.common.packet.data.PlayerInitPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
@@ -14,13 +13,10 @@ import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.user.User;
-import inf112.skeleton.server.util.Utility;
+import inf112.skeleton.common.utility.StringUtilities;
 import io.netty.channel.Channel;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
 
 import static inf112.skeleton.common.specs.Directions.*;
 
@@ -186,9 +182,7 @@ public class Player {
                 new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
         owner.getChannel().writeAndFlush(Tools.GSON.toJson(initPacket) + "\r\n");
-        //TODO: send init player to client, then broadcast to all others
 
-        RoboCopServerHandler.globalMessage("[SERVER] - " + (owner.getRights().getPrefix().equalsIgnoreCase("") ? "" : "[" + owner.getRights().getPrefix() + "] ") + Utility.formatPlayerName(owner.getName().toLowerCase()) + " has just joined!", owner.getChannel(), false);
         initAll();
     }
 
@@ -216,7 +210,7 @@ public class Player {
                 new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
         newUserChannel.writeAndFlush(Tools.GSON.toJson(initPacket) + "\r\n");
-//        newUserChannel.writeAndFlush("list:" + Utility.formatPlayerName(owner.getName().toLowerCase()) + "\r\n");
+//        newUserChannel.writeAndFlush("list:" + StringUtilities.formatPlayerName(owner.getName().toLowerCase()) + "\r\n");
 
         //TODO: send init player to a new connection
     }
