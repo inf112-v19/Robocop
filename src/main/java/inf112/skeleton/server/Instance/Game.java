@@ -2,9 +2,6 @@ package inf112.skeleton.server.Instance;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.common.packet.FromServer;
-import inf112.skeleton.common.packet.Packet;
-import inf112.skeleton.common.packet.data.CardRequestPacket;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.MapFile;
@@ -28,14 +25,13 @@ public class Game {
     GameBoard gameBoard;
     boolean active = false;
 
-    int roundSelectTime = 32; //The time the player will have to select their cards.
+    int roundSelectTime = 12; //The time the player will have to select their cards.
     int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
     long timerStarted = 0;
     long timerCountdownSeconds = 0;
+    int cardsStored = 0;
 
     GameStage gameStage = LOBBY;
-    int turnsPlayed = 0;
-    //TODO Handle received cards differently, requires changes to cardsForOneRound and cardRequests.
 
     public Game(Lobby lobby, MapFile mapFile) {
         this.lobby = lobby;
@@ -72,31 +68,26 @@ public class Game {
                     if (checkTimer()) {
                         Gdx.app.log("Game - update - WAITING", "Moving to REQUEST-stage.");
                         timerStarted = 0;
-                        gameStage = REQUEST;
-                    }
-
-                    if(allPlayersReady() && !players.isEmpty()) {
-                        for(Player player : players) {
+                        if (!allPlayersReady() && !players.isEmpty()) {
+                            forcePlayersReady();
+                        }
+                        for (Player player : players) {
                             cardsForOneRound.put(player, player.getNextFromSelected());
                         }
-                        Gdx.app.log("Game - update - WAITING", "Moving to MOVING-stage.");
-                        gameStage = MOVING;
+                        cardsStored++;
+                        if(cardsStored == 5) {
+                            gameStage = MOVING;
+                            cardsStored = 0;
+                            Gdx.app.log("Game - update - WAITING", "Moving to MOVING-stage.");
+                        }
                     }
-                    break;
 
-                case REQUEST:   //Request the players' selected cards.
-                    CardRequestPacket cRPkt = new CardRequestPacket(5);
-                    Packet pkt = new Packet(FromServer.CARD_REQUEST_PACKET.ordinal(), cRPkt);
-                    lobby.broadcastPacket(pkt);
-                    Gdx.app.log("Game - update - REQUEST", "Moving to WAITING-stage.");
-                    gameStage = WAITING;
                     break;
-
                 case MOVING:    //Move the robots in correct order.
                     if (!cardsForOneRound.isEmpty()) {
                         useCard();
                     } else {
-                        if(allPlayersReady()) {
+                        if (allPlayersReady()) {
                             for (Player player : players) {
                                 cardsForOneRound.put(player, player.getNextFromSelected());
                             }
@@ -120,7 +111,7 @@ public class Game {
     }
 
     public void handleMovement(Player player, Card card) {
-        if(card.getType().moveAmount <= 0) { // For rotation cards and backward1 (special case)
+        if (card.getType().moveAmount <= 0) { // For rotation cards and backward1 (special case)
             setTimerTicks(10);
         } else {
             setTimerTicks(10 * card.getType().moveAmount); // For other cards.
@@ -142,6 +133,7 @@ public class Game {
 
     /**
      * Set the amount of ticks (loops of update-method) that the server will skip.
+     *
      * @param ticks
      */
     private void setTimerTicks(int ticks) {
@@ -150,6 +142,7 @@ public class Game {
 
     /**
      * Set a timer in seconds for the server while in WAITING-stage.
+     *
      * @param seconds
      */
     private void setTimer(int seconds) {
@@ -159,11 +152,12 @@ public class Game {
 
     /**
      * Check if server has waited for the set amount.
+     *
      * @return
      */
     private boolean checkTimer() {
         if (timerStarted == 0)
-            return false;
+            return true;
         if (System.currentTimeMillis() >= timerStarted + timerCountdownSeconds)
             return true;
         return false;
@@ -171,22 +165,32 @@ public class Game {
 
     /**
      * Checks if all players on the server have a hand of selected cards stored.
+     *
      * @return True if all ready, false otherwise.
      */
     private boolean allPlayersReady() {
-        for(Player player : players) {
-            if(!player.getReadyStatus()) {
+        for (Player player : players) {
+            if (!player.getReadyStatus()) {
                 return false;
             }
         }
         return true;
     }
 
+    private void forcePlayersReady() {
+        for (Player player : players) {
+            if (!player.getReadyStatus()) {
+                player.forceSelect();
+                player.getOwner().sendServerMessage("You did not select cards in time, selecting automatically.");
+            }
+        }
+    }
+
     /**
      * Add a user and a card to the hashmap.
      *
      * @param player key
-     * @param card value
+     * @param card   value
      */
     public void addPlayerAndCard(Player player, Card card) {
         cardsForOneRound.put(player, card);

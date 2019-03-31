@@ -177,9 +177,7 @@ public class Player {
 
         if (!isSelectedSubsetOfDealt()) {    //Client have been naughty, overrule and give random hand (cards are dealt randomly in the first place).
             System.out.println("[Player serverside - storeSelectedCards] - cards received from client is not a subset of cards dealt.");
-            for (int i = 0; i < 5; i++) {
-                cardsSelected[i] = cardsGiven[i];
-            }
+            forceSelect();
         }
 
         //Handle burnt cards, if any.
@@ -189,9 +187,15 @@ public class Player {
             }
         }
 
-
         currentCard = 0;
         readyForTurn = true;
+    }
+
+    public void forceSelect() {
+        System.out.println("[Player serverside - forceSelect] - selecting cards automatically.");
+        for (int i = 0; i < 5; i++) {
+            cardsSelected[i] = cardsGiven[i];
+        }
     }
 
     /**
@@ -351,5 +355,9 @@ public class Player {
      */
     void setCardsSelected(Card[] cardsSelected) {
         this.cardsSelected = cardsSelected;
+    }
+
+    public User getOwner() {
+        return this.owner;
     }
 }
