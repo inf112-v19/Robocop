@@ -10,15 +10,15 @@ import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
+import inf112.skeleton.server.Instance.Lobby;
 import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.user.User;
-import inf112.skeleton.common.utility.StringUtilities;
 import io.netty.channel.Channel;
 
 import java.util.ArrayList;
 
-import static inf112.skeleton.common.specs.Directions.*;
+import static inf112.skeleton.common.specs.Directions.values;
 
 
 public class Player {
@@ -132,7 +132,7 @@ public class Player {
         for (int i = 0; i < hand.length; i++) {
             cardsSelected.add(hand[i]);
         }
-        if(!isSelectedSubsetOfDealt()) {    //Client have been naughty, overrule and give random hand (cards are dealt randomly in the first place).
+        if (!isSelectedSubsetOfDealt()) {    //Client have been naughty, overrule and give random hand (cards are dealt randomly in the first place).
             System.out.println("[Player serverside - storeSelectedCards] - cards received from client is not a subset of cards dealt.");
             cardsSelected.clear();
             for (int i = 0; i < 5; i++) {
@@ -140,15 +140,15 @@ public class Player {
             }
         }
         //Handle burnt cards, if any.
-        if(!burnt.isEmpty()) {
+        if (!burnt.isEmpty()) {
             for (int i = 0; i < burnt.size(); i++) {
                 cardsSelected.add(i, burnt.get(i));
             }
         }
         //Trim selectedCards if too long.
-        if(cardsSelected.size() > 5) {
+        if (cardsSelected.size() > 5) {
             System.out.println("[Player serverside - storeSelectedCards] - trimmed away " + (cardsSelected.size() - 5) + " cards.");
-            for (int i = cardsSelected.size()-1; i >= 5; i--) {
+            for (int i = cardsSelected.size() - 1; i >= 5; i--) {
                 cardsSelected.remove(i);
             }
         }
@@ -156,7 +156,7 @@ public class Player {
     }
 
     public void storeBurntCard(Card card) {
-        if(burnt.size() < 5) {
+        if (burnt.size() < 5) {
             burnt.add(card);
         }
     }
@@ -181,18 +181,16 @@ public class Player {
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
-        owner.getChannel().writeAndFlush(Tools.GSON.toJson(initPacket) + "\r\n");
+        owner.sendPacket(initPacket);
 
-        initAll();
     }
 
-    public void initAll() {
+    public void initAll(Lobby lobby) {
         FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
                 new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
-        RoboCopServerHandler.globalMessage(Tools.GSON.toJson(initPacket), owner.getChannel(), true);
-
+        lobby.broadcastPacket(initPacket);
     }
 
     public void sendUpdate() {
@@ -200,20 +198,9 @@ public class Player {
         FromServer pktId = FromServer.PLAYER_UPDATE;
         UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo);
         Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
-        RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);
+        owner.getLobby().broadcastPacket(updatePacket);
     }
 
-
-    public void sendToNewClient(Channel newUserChannel) {
-        FromServer initPlayer = FromServer.INIT_PLAYER;
-        PlayerInitPacket playerInitPacket =
-                new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, slot, direction);
-        Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
-        newUserChannel.writeAndFlush(Tools.GSON.toJson(initPacket) + "\r\n");
-//        newUserChannel.writeAndFlush("list:" + StringUtilities.formatPlayerName(owner.getName().toLowerCase()) + "\r\n");
-
-        //TODO: send init player to a new connection
-    }
 
     public void getPushed(Directions direction, int amount) {
         if (!processMovement(System.currentTimeMillis())) {
@@ -309,7 +296,7 @@ public class Player {
                     for (int i = 1; i <= amount; i++) {
                         Vector2 toCheck = new Vector2(this.movingTo.x, this.movingTo.y - i);
                         if (!gameBoard.isTileWalkable(toCheck)) {
-                            amount = i-1;
+                            amount = i - 1;
                             break;
                         }
                         TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
@@ -326,7 +313,7 @@ public class Player {
                     for (int i = 1; i <= amount; i++) {
                         Vector2 toCheck = new Vector2(this.movingTo.x, this.movingTo.y + i);
                         if (!gameBoard.isTileWalkable(toCheck)) {
-                            amount = i-1;
+                            amount = i - 1;
                             break;
                         }
                         TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
@@ -341,9 +328,9 @@ public class Player {
                     break;
                 case EAST:
                     for (int i = 1; i <= amount; i++) {
-                        Vector2 toCheck = new Vector2(this.movingTo.x+i, this.movingTo.y);
+                        Vector2 toCheck = new Vector2(this.movingTo.x + i, this.movingTo.y);
                         if (!gameBoard.isTileWalkable(toCheck)) {
-                            amount = i-1;
+                            amount = i - 1;
                             break;
                         }
                         TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
@@ -358,9 +345,9 @@ public class Player {
                     break;
                 case WEST:
                     for (int i = 1; i <= amount; i++) {
-                        Vector2 toCheck = new Vector2(this.movingTo.x-i, this.movingTo.y);
+                        Vector2 toCheck = new Vector2(this.movingTo.x - i, this.movingTo.y);
                         if (!gameBoard.isTileWalkable(toCheck)) {
-                            amount = i-1;
+                            amount = i - 1;
                             break;
                         }
                         TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
@@ -379,8 +366,7 @@ public class Player {
             FromServer pktId = FromServer.PLAYER_UPDATE;
             UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo);
             Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
-            RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);
-
+            owner.getLobby().broadcastPacket(updatePacket);
         }
 
     }

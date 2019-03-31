@@ -248,6 +248,7 @@ public class Game {
                 Player player = new Player(lobby.users[i].getName(), new Vector2(10, 10), 9, i, Directions.SOUTH, lobby.users[i]);
                 this.players.add(player);
                 player.sendInit();
+                player.initAll(lobby);
             }
         }
     }
