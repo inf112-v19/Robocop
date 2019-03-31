@@ -44,7 +44,7 @@ public class PlayerDeck {
                 CARD_WIDTH = 110,
                 CARD_HEIGHT = (int)(CARD_WIDTH * 1.386);
 
-    public PlayerDeck(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, final Channel channel) {
+    public PlayerDeck(GameStateManager gameStateManager, final InputMultiplexer inputMultiplexer, final Channel channel) {
         this.gsm = gameStateManager;
         this.inputMultiplexer = inputMultiplexer;
         this.channel = channel;

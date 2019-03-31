@@ -28,7 +28,7 @@ public class Client {
         game.channel = f.channel(); // creating a connection with the server
         Lwjgl3ApplicationConfiguration application = new Lwjgl3ApplicationConfiguration();
         application.setWindowedMode(RoboRally.width, RoboRally.height);
-        application.setWindowSizeLimits(1024, 576, 7680, 4320);
+        application.setResizable(false);
         application.setTitle(RoboRally.TITLE);
 
         game.nioWorkerGroup = group;
