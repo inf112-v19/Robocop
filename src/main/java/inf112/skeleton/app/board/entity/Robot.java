@@ -35,7 +35,6 @@ public class Robot extends Entity {
     Player player;
     BitmapFont font = new BitmapFont();
 
-    public ArrayList<Card> cardsChosen;
     private int movementDirection = 1;
 
     public Robot(float x, float y,int slot, Player player) {
@@ -44,7 +43,7 @@ public class Robot extends Entity {
         this.position = new int[2];
         this.position[0] = (int) x * 64;
         this.position[1] = (int) y * 64;
-        this.health = 5;
+        this.health = player.initalHp;
         this.colour = slot;
         System.out.println("Robot constructor, slot = " + this.colour);
         this.facing = player.initalDirection;
@@ -55,6 +54,10 @@ public class Robot extends Entity {
 
     public int getHealth() {
         return health;
+    }
+
+    public void getHit() {
+        health--;
     }
 
     public Directions getFacingDirection() {
