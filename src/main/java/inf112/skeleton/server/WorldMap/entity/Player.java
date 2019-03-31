@@ -151,8 +151,8 @@ public class Player {
         }
         //Trim selectedCards if too long.
         if(cardsSelected.size() > 5) {
+            System.out.println("[Player serverside - storeSelectedCards] - trimmed away " + (cardsSelected.size() - 5) + " cards.");
             for (int i = cardsSelected.size()-1; i >= 5; i--) {
-                System.out.println("[Player serverside - storeSelectedCards] - trimmed away 1 card.");
                 cardsSelected.remove(i);
             }
         }
@@ -174,7 +174,7 @@ public class Player {
         return cardsSelected.remove(0);
     }
 
-    public boolean isSelectedSubsetOfDealt() {
+    private boolean isSelectedSubsetOfDealt() {
         return cardsGiven.containsAll(cardsSelected);
     }
 
@@ -219,6 +219,90 @@ public class Player {
 //        newUserChannel.writeAndFlush("list:" + Utility.formatPlayerName(owner.getName().toLowerCase()) + "\r\n");
 
         //TODO: send init player to a new connection
+    }
+
+    public void getPushed(Directions direction, int amount) {
+        if (!processMovement(System.currentTimeMillis())) {
+            GameBoard gameBoard = owner.getLobby().getGame().getGameBoard();
+            this.timeMoved = System.currentTimeMillis();
+            switch (direction) {
+                case SOUTH:
+                    for (int i = 1; i <= amount; i++) {
+                        Vector2 toCheck = new Vector2(this.movingTo.x, this.movingTo.y - i);
+                        if (!gameBoard.isTileWalkable(toCheck)) {
+                            amount = i - 1;
+                            break;
+                        }
+                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                amount = i;
+                                break;
+                            }
+                        }
+                    }
+                    this.movingTo.add(0, -amount);
+                    break;
+                case NORTH:
+                    for (int i = 1; i <= amount; i++) {
+                        Vector2 toCheck = new Vector2(this.movingTo.x, this.movingTo.y + i);
+                        if (!gameBoard.isTileWalkable(toCheck)) {
+                            amount = i - 1;
+                            break;
+                        }
+                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                amount = i;
+                                break;
+                            }
+                        }
+                    }
+                    this.movingTo.add(0, amount);
+                    break;
+                case EAST:
+                    for (int i = 1; i <= amount; i++) {
+                        Vector2 toCheck = new Vector2(this.movingTo.x + i, this.movingTo.y);
+                        if (!gameBoard.isTileWalkable(toCheck)) {
+                            amount = i - 1;
+                            break;
+                        }
+                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                amount = i;
+                                break;
+                            }
+                        }
+                    }
+                    this.movingTo.add(amount, 0);
+                    break;
+                case WEST:
+                    for (int i = 1; i <= amount; i++) {
+                        Vector2 toCheck = new Vector2(this.movingTo.x - i, this.movingTo.y);
+                        if (!gameBoard.isTileWalkable(toCheck)) {
+                            amount = i - 1;
+                            break;
+                        }
+                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                amount = i;
+                                break;
+                            }
+                        }
+                    }
+                    this.movingTo.add(-amount, 0);
+                    break;
+            }
+            this.movingTiles = amount;
+
+            FromServer pktId = FromServer.PLAYER_UPDATE;
+            UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), this.getDirection(), movingTiles, currentPos, movingTo);
+            Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
+            RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);
+
+        }
     }
 
     public void startMovement(Directions direction, int amount) {

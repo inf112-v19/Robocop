@@ -28,7 +28,7 @@ public class Game {
     GameBoard gameBoard;
     boolean active = false;
 
-    int roundSelectTime = 10; //The time the player will have to select their cards.
+    int roundSelectTime = 32; //The time the player will have to select their cards.
     int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
     long timerStarted = 0;
     long timerCountdownSeconds = 0;
