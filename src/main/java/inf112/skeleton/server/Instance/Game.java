@@ -42,7 +42,7 @@ public class Game {
         gameBoard = new TiledMapLoader(mapFile);
 
         for (User user :
-                lobby.users) {
+                lobby.getUsers()) {
 //            this.players.add(new Player(user.getName(),new Vector2(10,10), 10, Directions.SOUTH, user));
         }
     }
@@ -125,7 +125,7 @@ public class Game {
         } else {
             setTimerTicks(10 * card.getType().moveAmount); // For other cards.
         }
-        player.startMovement(player.getDirection(), card.getType().moveAmount);
+        player.startMovement(player.getDirection(), card.getType().moveAmount, false);
         player.rotate(card.getType());
     }
 
@@ -242,10 +242,10 @@ public class Game {
 
     public void initPlayers() {
         System.out.println("[Game serverside - initPlayers] called initPlayers in game");
-
-        for (int i = 0; i < lobby.users.length; i++) {
-            if (lobby.users[i] != null) {
-                Player player = new Player(lobby.users[i].getName(), new Vector2(10, 10), 9, i, Directions.SOUTH, lobby.users[i]);
+        User[] users = lobby.getUsers();
+        for (int i = 0; i < users.length; i++) {
+            if (users[i] != null) {
+                Player player = new Player(users[i].getName(), new Vector2(10, 10), 9, i, Directions.SOUTH, users[i]);
                 this.players.add(player);
                 player.sendInit();
                 player.initAll(lobby);

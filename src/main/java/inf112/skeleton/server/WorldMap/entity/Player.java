@@ -17,29 +17,24 @@ import static inf112.skeleton.common.specs.Directions.values;
 
 
 public class Player {
-    String name;
-    Vector2 currentPos;
-    Vector2 movingTo;
-    User owner;
+    private String name;
+    private Vector2 currentPos;
+    private Vector2 movingTo;
+    private User owner;
 
     private final int COUNT_CARDS = 5;
     private final int GIVEN_CARDS = 9;
 
 
-    public Card[] burnt;
-    public Card[] cardsSelected;
-    public Card[] cardsGiven;
-
-//    ArrayList<Card> cardsGiven;
-
-//    ArrayList<Card> cardsSelected;
-//    ArrayList<Card> burnt;
+    private Card[] burnt;
+    private Card[] cardsSelected;
+    private Card[] cardsGiven;
 
 
-    int slot;
-    int currentHP;
-    Directions direction;
-    int movingTiles = 0;
+    private int slot;
+    private int currentHP;
+    private Directions direction;
+    private int movingTiles = 0;
 
 
     private int delayMove = 400;
@@ -58,42 +53,46 @@ public class Player {
         this.slot = slot;
         this.direction = directions;
         this.owner = owner;
+
         owner.setPlayer(this);
-
         this.timeInit = System.currentTimeMillis();
         this.cardsGiven = new Card[GIVEN_CARDS];
         this.cardsSelected = new Card[COUNT_CARDS];
         this.burnt = new Card[COUNT_CARDS];
     }
 
-    public Player(String name, Vector2 pos, int hp, int slot, Directions directions) {
-        this.name = name;
-        this.currentHP = hp;
-        this.currentPos = pos;
-        this.movingTo = new Vector2(currentPos.x, currentPos.y);
-        this.slot = slot;
-        this.direction = directions;
-        this.timeInit = System.currentTimeMillis();
-        this.cardsGiven = new Card[GIVEN_CARDS];
-        this.cardsSelected = new Card[COUNT_CARDS];
-        this.burnt = new Card[COUNT_CARDS];
-    }
-
+    /**
+     * Get the current facing direction of player
+     *
+     * @return facing Direction
+     */
     public Directions getDirection() {
         return this.direction;
     }
 
+    /**
+     * Get the current player hp
+     *
+     * @return CurrentHp
+     */
     public int getCurrentHP() {
         return this.currentHP;
     }
 
+    /**
+     * Check if the player is ready for turn
+     *
+     * @return true if player is ready
+     */
     public boolean getReadyStatus() {
         return readyForTurn;
     }
 
+    /**
+     * Run tick based actions
+     */
     public void update() {
-        if (processMovement(System.currentTimeMillis())) {
-        }
+        processMovement(System.currentTimeMillis());
         if ((System.currentTimeMillis() - this.timeInit) >= this.delayMessage && shouldSendCards) {
             this.timeInit = System.currentTimeMillis();
             shouldSendCards = false;
@@ -101,37 +100,52 @@ public class Player {
 
     }
 
+    /**
+     * rotate the player with a card
+     *
+     * @param cardType the rotation card
+     */
     public void rotate(CardType cardType) {
         direction = values()[(direction.ordinal() + values().length + cardType.turnAmount) % values().length];
         sendUpdate();
     }
 
-
-    public boolean processMovement(long t) {
+    /**
+     * check if the player is ready to move or has finished moving
+     *
+     * @param currentTime the current time
+     * @return boolean false if no movement is occurring
+     */
+    private boolean processMovement(long currentTime) {
         if (this.currentPos.x == this.movingTo.x && this.currentPos.y == this.movingTo.y) {
             return false;
         }
 
-        if ((t - this.timeMoved) >= this.delayMove * movingTiles) {
+        if ((currentTime - this.timeMoved) >= this.delayMove * movingTiles) {
             this.placeAt(this.movingTo.x, this.movingTo.y);
         }
         return true;
 
     }
 
-
-    public void placeAt(float x, float y) {
+    /**
+     * Force place the player at a specific location
+     *
+     * @param x coordinate
+     * @param y coordinate
+     */
+    private void placeAt(float x, float y) {
         this.currentPos.x = x;
         this.currentPos.y = y;
         this.movingTo.x = x;
         this.movingTo.y = y;
     }
 
-
-    public void setSlot(int slot) {
-        this.slot = slot;
-    }
-
+    /**
+     * Send 9 cards to the client to allow a player to select from them
+     *
+     * @param hand of cards
+     */
     public void sendCardHandToClient(Card[] hand) {
         FromServer packetId = FromServer.CARD_HAND_PACKET;
         CardHandPacket data = new CardHandPacket(hand);
@@ -148,12 +162,18 @@ public class Player {
 
     }
 
+    /**
+     * Store cards sent from client
+     *
+     * @param hand of cards
+     */
     public void storeSelectedCards(Card[] hand) {
         for (int i = 0; i < cardsSelected.length; i++) {
             cardsSelected[i] = null;
         }
+        System.out.printf("hand: %d, cardsleected: %d\r\n", hand.length, cardsSelected.length);
+        System.arraycopy(hand, 0, cardsSelected, cardsSelected.length - hand.length, hand.length);
 
-        System.arraycopy(hand, 0, cardsSelected, 0, cardsSelected.length);
 
         if (!isSelectedSubsetOfDealt()) {    //Client have been naughty, overrule and give random hand (cards are dealt randomly in the first place).
             System.out.println("[Player serverside - storeSelectedCards] - cards received from client is not a subset of cards dealt.");
@@ -169,17 +189,17 @@ public class Player {
             }
         }
 
-        //Trim selectedCards if too long.
-//        if (cardsSelected.size() > 5) {
-//            System.out.println("[Player serverside - storeSelectedCards] - trimmed away " + (cardsSelected.size() - 5) + " cards.");
-//            for (int i = cardsSelected.size() - 1; i >= 5; i--) {
-//                cardsSelected.remove(i);
-//            }
-//        }
+
         currentCard = 0;
         readyForTurn = true;
     }
 
+    /**
+     * Store burnt cards
+     * (burnt cards are always played first)
+     *
+     * @param card to be burnt
+     */
     public void storeBurntCard(Card card) {
         for (int i = 0; i < burnt.length; i++) {
             if (burnt[i] == null) {
@@ -189,6 +209,11 @@ public class Player {
         }
     }
 
+    /**
+     * Get the next card to be played in a rogue-like system
+     *
+     * @return next card
+     */
     public Card getNextFromSelected() {
         if (currentCard == cardsSelected.length) {
             return null;
@@ -199,9 +224,17 @@ public class Player {
         return cardsSelected[currentCard++];
     }
 
-    public boolean isSelectedSubsetOfDealt() {
+    /**
+     * Check if a client is lying
+     *
+     * @return true if the client is telling the truth
+     */
+    boolean isSelectedSubsetOfDealt() {
         boolean[] usedCards = new boolean[cardsGiven.length];
         for (Card card : cardsSelected) {
+            if (card == null) {
+                continue;
+            }
             boolean cardFound = false;
             for (int j = 0; j < cardsGiven.length; j++) {
                 if (card.equals(cardsGiven[j])) {
@@ -219,6 +252,9 @@ public class Player {
         return true;
     }
 
+    /**
+     * Initialise the client who is linked to the player
+     */
     public void sendInit() {
         System.out.println("called sendInit");
 
@@ -229,6 +265,11 @@ public class Player {
         owner.sendPacket(initPacket);
     }
 
+    /**
+     * Initialise the player with all clients in the game
+     *
+     * @param lobby of the game
+     */
     public void initAll(Lobby lobby) {
         FromServer initPlayer = FromServer.INIT_PLAYER;
         PlayerInitPacket playerInitPacket =
@@ -237,6 +278,9 @@ public class Player {
         lobby.broadcastPacket(initPacket);
     }
 
+    /**
+     * Send an update pack of all changes that needs to be reflected in the client
+     */
     public void sendUpdate() {
         FromServer pktId = FromServer.PLAYER_UPDATE;
         UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo);
@@ -244,173 +288,68 @@ public class Player {
         owner.getLobby().broadcastPacket(updatePacket);
     }
 
-
-    public void getPushed(Directions direction, int amount) {
+    /**
+     * Initialise movement for the player
+     *
+     * @param direction to move in
+     * @param amount    to move
+     * @param pushed    if the player has been pushed to move
+     */
+    public void startMovement(Directions direction, int amount, boolean pushed) {
         if (!processMovement(System.currentTimeMillis())) {
             GameBoard gameBoard = owner.getLobby().getGame().getGameBoard();
             this.timeMoved = System.currentTimeMillis();
+
+            if (!pushed) {
+                this.direction = direction;
+            }
+            int dx = 0;
+            int dy = 0;
+
+
             switch (direction) {
                 case SOUTH:
-                    for (int i = 1; i <= amount; i++) {
-                        Vector2 toCheck = new Vector2(this.movingTo.x, this.movingTo.y - i);
-                        if (!gameBoard.isTileWalkable(toCheck)) {
-                            amount = i - 1;
-                            break;
-                        }
-                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                        if (entity != null) {
-                            if (!entity.canContinueWalking()) {
-                                amount = i;
-                                break;
-                            }
-                        }
-                    }
-                    this.movingTo.add(0, -amount);
+                    dy = -1;
                     break;
                 case NORTH:
-                    for (int i = 1; i <= amount; i++) {
-                        Vector2 toCheck = new Vector2(this.movingTo.x, this.movingTo.y + i);
-                        if (!gameBoard.isTileWalkable(toCheck)) {
-                            amount = i - 1;
-                            break;
-                        }
-                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                        if (entity != null) {
-                            if (!entity.canContinueWalking()) {
-                                amount = i;
-                                break;
-                            }
-                        }
-                    }
-                    this.movingTo.add(0, amount);
+                    dy = 1;
                     break;
                 case EAST:
-                    for (int i = 1; i <= amount; i++) {
-                        Vector2 toCheck = new Vector2(this.movingTo.x + i, this.movingTo.y);
-                        if (!gameBoard.isTileWalkable(toCheck)) {
-                            amount = i - 1;
-                            break;
-                        }
-                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                        if (entity != null) {
-                            if (!entity.canContinueWalking()) {
-                                amount = i;
-                                break;
-                            }
-                        }
-                    }
-                    this.movingTo.add(amount, 0);
+                    dx = 1;
                     break;
                 case WEST:
-                    for (int i = 1; i <= amount; i++) {
-                        Vector2 toCheck = new Vector2(this.movingTo.x - i, this.movingTo.y);
-                        if (!gameBoard.isTileWalkable(toCheck)) {
-                            amount = i - 1;
-                            break;
-                        }
-                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                        if (entity != null) {
-                            if (!entity.canContinueWalking()) {
-                                amount = i;
-                                break;
-                            }
-                        }
-                    }
-                    this.movingTo.add(-amount, 0);
+                    dx = -1;
                     break;
             }
+            for (int i = 1; i <= amount; i++) {
+                Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
+                if (!gameBoard.isTileWalkable(toCheck)) {
+                    amount = i - 1;
+                    break;
+                }
+                TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                if (entity != null) {
+                    if (!entity.canContinueWalking()) {
+                        amount = i;
+                        break;
+                    }
+                }
+            }
+            this.movingTo.add(dx * amount, dy * amount);
             this.movingTiles = amount;
 
-            FromServer pktId = FromServer.PLAYER_UPDATE;
-            UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), this.getDirection(), movingTiles, currentPos, movingTo);
-            Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
-            owner.getLobby().broadcastPacket(updatePacket);
-
+            sendUpdate();
         }
+
     }
 
-    public void startMovement(Directions direction, int amount) {
-        if (!processMovement(System.currentTimeMillis())) {
-            GameBoard gameBoard = owner.getLobby().getGame().getGameBoard();
-            this.timeMoved = System.currentTimeMillis();
-            this.direction = direction;
-            switch (direction) {
-                case SOUTH:
-                    for (int i = 1; i <= amount; i++) {
-                        Vector2 toCheck = new Vector2(this.movingTo.x, this.movingTo.y - i);
-                        if (!gameBoard.isTileWalkable(toCheck)) {
-                            amount = i - 1;
-                            break;
-                        }
-                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                        if (entity != null) {
-                            if (!entity.canContinueWalking()) {
-                                amount = i;
-                                break;
-                            }
-                        }
-                    }
-                    this.movingTo.add(0, -amount);
-                    break;
-                case NORTH:
-                    for (int i = 1; i <= amount; i++) {
-                        Vector2 toCheck = new Vector2(this.movingTo.x, this.movingTo.y + i);
-                        if (!gameBoard.isTileWalkable(toCheck)) {
-                            amount = i - 1;
-                            break;
-                        }
-                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                        if (entity != null) {
-                            if (!entity.canContinueWalking()) {
-                                amount = i;
-                                break;
-                            }
-                        }
-                    }
-                    this.movingTo.add(0, amount);
-                    break;
-                case EAST:
-                    for (int i = 1; i <= amount; i++) {
-                        Vector2 toCheck = new Vector2(this.movingTo.x + i, this.movingTo.y);
-                        if (!gameBoard.isTileWalkable(toCheck)) {
-                            amount = i - 1;
-                            break;
-                        }
-                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                        if (entity != null) {
-                            if (!entity.canContinueWalking()) {
-                                amount = i;
-                                break;
-                            }
-                        }
-                    }
-                    this.movingTo.add(amount, 0);
-                    break;
-                case WEST:
-                    for (int i = 1; i <= amount; i++) {
-                        Vector2 toCheck = new Vector2(this.movingTo.x - i, this.movingTo.y);
-                        if (!gameBoard.isTileWalkable(toCheck)) {
-                            amount = i - 1;
-                            break;
-                        }
-                        TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                        if (entity != null) {
-                            if (!entity.canContinueWalking()) {
-                                amount = i;
-                                break;
-                            }
-                        }
-                    }
-                    this.movingTo.add(-amount, 0);
-                    break;
-            }
-            this.movingTiles = amount;
-
-            FromServer pktId = FromServer.PLAYER_UPDATE;
-            UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo);
-            Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
-            owner.getLobby().broadcastPacket(updatePacket);
-        }
-
+    /**
+     * Manually set the current selected cards
+     * used in testing
+     *
+     * @param cardsSelected the new selected cards
+     */
+    void setCardsSelected(Card[] cardsSelected) {
+        this.cardsSelected = cardsSelected;
     }
 }

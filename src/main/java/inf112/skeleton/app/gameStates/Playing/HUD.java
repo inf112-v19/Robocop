@@ -60,7 +60,7 @@ public class HUD {
 
         setupGameChatAndPushWelcome();
 
-        stage.addActor(to_mainMenu);
+        // stage.addActor(to_mainMenu);
 
         status = new Status(gsm,inputMultiplexer,channel);
         status.add("Person1");
@@ -73,6 +73,11 @@ public class HUD {
     public void addDeck() {
         playerDeck = new PlayerDeck(gsm, inputMultiplexer, channel);
         System.out.println("adding deck");
+    }
+
+    public void removeDeck() {
+        playerDeck = null;
+        System.out.println("remove deck");
     }
 
     public boolean hasDeck() {

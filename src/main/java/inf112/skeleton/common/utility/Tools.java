@@ -39,9 +39,5 @@ public class Tools {
             }
             return null;
         }
-
-        public int deconstructCard(Card card) {
-            return card.getPriority();
-        }
     }
 }

@@ -80,9 +80,13 @@ public class PlayerDeck {
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 swapStages();
                 // Iterate through clicked cards and add them to the players selected cards list.
-                for (ImageTextButton cardButton : chooseToButtons) {
-                    RoboRally.gameBoard.myPlayer.selectedCards.add(pCards.get(cardButton));
+                for (int i = 0; i < 5; i++) {
+                    ImageTextButton cardButton = chooseToButtons.get(i);
+                    RoboRally.gameBoard.myPlayer.selectedCards[i] = pCards.get(cardButton);
                 }
+                RoboRally.gameBoard.myPlayer.sendSelectedCardsToServer();
+                RoboRally.gameBoard.myPlayer.cards = null;
+                RoboRally.gameBoard.hud.removeDeck();
             }
         });
 

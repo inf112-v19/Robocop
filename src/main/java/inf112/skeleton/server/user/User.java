@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class User {
-    public String name;
-    public Channel channel;
-    public String password;
-    public Player player;
-    public FriendsList friendsList;
+    private String name;
+    private Channel channel;
+    private String password;
+    private Player player;
+    private FriendsList friendsList;
     private Lobby lobby;
     private String uuid;
 
@@ -125,7 +125,7 @@ public class User {
         ArrayList<LobbyInfo> lobbyInfos = new ArrayList<>();
 
         for (Lobby lobby : lobbies) {
-            if (!lobby.gameStarted) {
+            if (!lobby.isGameStarted()) {
                 LobbyInfo info = new LobbyInfo(
                         lobby.getName(),
                         lobby.getHost().getName(),
@@ -295,5 +295,13 @@ public class User {
      */
     public void setFriendsList(FriendsList friendsList) {
         this.friendsList = friendsList;
+    }
+
+    /**
+     * Get the users ingame player
+     * @return player
+     */
+    public Player getPlayer() {
+        return player;
     }
 }

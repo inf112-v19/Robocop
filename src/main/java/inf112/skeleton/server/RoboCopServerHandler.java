@@ -62,7 +62,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
             leavingUser.leaveLobby();
         }
 
-        UserLogging.logoff(leavingUser); //Save the user in a json file
+        UserLogging.logout(leavingUser); //Save the user in a json file
 
         /**
          * Removing the user from the collections

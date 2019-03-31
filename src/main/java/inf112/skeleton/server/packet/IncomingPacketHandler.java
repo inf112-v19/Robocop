@@ -32,7 +32,7 @@ public class IncomingPacketHandler {
                 if (loggingIn != null) {
                     if (!handler.loggedInPlayers.contains(loggingIn)) {
                         if (handler.alreadyLoggedIn(loggingIn.getName())) {
-                            AlreadyLoggedIn(incoming, handler, loggingIn.name);
+                            AlreadyLoggedIn(incoming, handler, loggingIn.getName());
                             return;
                         }
 
@@ -40,14 +40,14 @@ public class IncomingPacketHandler {
                         FromServer response = FromServer.LOGINRESPONSE;
                         LoginResponseStatus status = LoginResponseStatus.LOGIN_SUCCESS;
                         LoginResponsePacket loginResponsePacket =
-                                new LoginResponsePacket(status.ordinal(), loggingIn.name, "Success");
+                                new LoginResponsePacket(status.ordinal(), loggingIn.getName(), "Success");
                         Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
-                        incoming.writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
+                        loggingIn.sendPacket(responsePacket);
                         loggingIn.initClient();
 
                         handler.connections.remove(loggingIn);
                     } else {
-                        AlreadyLoggedIn(incoming, handler, loggingIn.name);
+                        AlreadyLoggedIn(incoming, handler, loggingIn.getName());
                     }
                 } else {
                     FromServer response = FromServer.LOGINRESPONSE;
@@ -55,7 +55,7 @@ public class IncomingPacketHandler {
                     LoginResponsePacket loginResponsePacket =
                             new LoginResponsePacket(status.ordinal(), "", "Failure");
                     Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
-                    incoming.writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
+                    loggingIn.sendPacket(responsePacket);
                 }
                 break;
             case CHAT_MESSAGE:
@@ -77,8 +77,7 @@ public class IncomingPacketHandler {
             case CARD_PACKET:
                 CardPacket cardPacket = CardPacket.parseJSON(jsonObject);
                 User cardUser = handler.getEntityFromLoggedIn(incoming);
-                cardUser.player.storeBurntCard(Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority()));
-                System.out.println("[IncomingPacketHandler - handleIncomingPacket] - Case CARD_PACKET");
+                cardUser.getPlayer().storeBurntCard(Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority()));
                 break;
             case CARD_HAND_PACKET:
                 User cardHandUser = handler.getEntityFromLoggedIn(incoming);
@@ -87,7 +86,7 @@ public class IncomingPacketHandler {
                 for (int i = 0; i < hand.length; i++) {
                     hand[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packetData[i]);
                 }
-                cardHandUser.player.storeSelectedCards(hand);
+                cardHandUser.getPlayer().storeSelectedCards(hand);
                 break;
             case CREATE_LOBBY:
                 User actionUser = handler.getEntityFromLoggedIn(incoming);
@@ -140,7 +139,7 @@ public class IncomingPacketHandler {
                     if (Directions.fromString(command[1].toUpperCase()) != null) {
                         Directions direction = Directions.valueOf(command[1].toUpperCase());
                         if (StringUtilities.isStringInt(command[2])) {
-                            messagingUser.player.startMovement(direction, Integer.parseInt(command[2]));
+                            messagingUser.getPlayer().startMovement(direction, Integer.parseInt(command[2]), false);
                             return;
                         }
                     }
@@ -153,7 +152,7 @@ public class IncomingPacketHandler {
                     if (CardType.fromString(command[1].toUpperCase()) != null) {
                         CardType cardType = CardType.valueOf(command[1].toUpperCase());
                         Card card = new Card(999, cardType);
-                        messagingUser.getLobby().getGame().handleMovement(messagingUser.player, card);
+                        messagingUser.getLobby().getGame().handleMovement(messagingUser.getPlayer(), card);
                         return;
                     }
                 }
@@ -164,7 +163,7 @@ public class IncomingPacketHandler {
                 break;
             case "whisper":
             case "w":
-                if(command.length > 2) {
+                if (command.length > 2) {
                     StringBuilder message = new StringBuilder();
                     for (int i = 2; i < command.length; i++) {
                         message.append(command[i]).append(" ");
@@ -182,7 +181,6 @@ public class IncomingPacketHandler {
                 break;
         }
     }
-
 
 
     /**

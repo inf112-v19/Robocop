@@ -18,12 +18,17 @@ import java.util.UUID;
 
 public class UserLogging {
 
+    /**
+     * Login user, register it if it doesnt already exist.
+     * @param login
+     * @param channel
+     * @return logged in user
+     */
     public static User login(LoginPacket login, Channel channel) {
         String username = login.getUsername();
         String password = login.getPassword();
         File file = Gdx.files.internal("data/users/" + username.toLowerCase() + ".json").file();
         System.out.println("loading file");
-//        path.toFile();
         String jsonName = "";
         ArrayList<String> friendslist = new ArrayList<>();
         String jsonPassword = "";
@@ -67,7 +72,11 @@ public class UserLogging {
         return null;
     }
 
-    public static void logoff(User user) {
+    /**
+     * logout user and save all important values
+     * @param user to be logged out
+     */
+    public static void logout(User user) {
         if (user == null || user.getName() == null || user.getName().equalsIgnoreCase("null"))
             return;
 
@@ -75,8 +84,6 @@ public class UserLogging {
 
         file.getParentFile().setWritable(true);
 
-        // Attempt to make the player save directory if it doesn't
-        // exist.
         if (!file.getParentFile().exists()) {
             try {
                 file.getParentFile().mkdirs();
