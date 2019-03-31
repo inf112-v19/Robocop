@@ -25,11 +25,11 @@ public class Game {
     GameBoard gameBoard;
     boolean active = false;
 
-    int roundSelectTime = 12; //The time the player will have to select their cards.
+    int roundSelectTime = 2; //The time the player will have to select their cards.
     int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
     long timerStarted = 0;
     long timerCountdownSeconds = 0;
-    int cardsStored = 0;
+    int cardRound = 0;
 
     GameStage gameStage = LOBBY;
 
@@ -37,10 +37,6 @@ public class Game {
         this.lobby = lobby;
         gameBoard = new TiledMapLoader(mapFile);
 
-        for (User user :
-                lobby.getUsers()) {
-//            this.players.add(new Player(user.getName(),new Vector2(10,10), 10, Directions.SOUTH, user));
-        }
     }
 
 
@@ -59,6 +55,7 @@ public class Game {
                         player.sendCardHandToClient(createCardHand(player));
                     }
                     deck = new CardDeck();//🦀🦀Let🦀🦀garbage🦀🦀collector🦀🦀collect🦀🦀garbage🦀🦀
+
                     setTimer(roundSelectTime);
                     Gdx.app.log("Game - update - DEALING", "Moving to WAITING-stage.");
                     gameStage = WAITING;
@@ -71,30 +68,28 @@ public class Game {
                         if (!allPlayersReady() && !players.isEmpty()) {
                             forcePlayersReady();
                         }
-                        for (Player player : players) {
-                            cardsForOneRound.put(player, player.getNextFromSelected());
-                        }
-                        cardsStored++;
-                        if(cardsStored == 5) {
-                            gameStage = MOVING;
-                            cardsStored = 0;
-                            Gdx.app.log("Game - update - WAITING", "Moving to MOVING-stage.");
-                        }
+                        gameStage = GET_CARDS;
                     }
 
+                    break;
+                case GET_CARDS:
+                    for (Player player : players) {
+                        cardsForOneRound.put(player, player.getNextFromSelected());
+                    }
+                    cardRound++;
+                    gameStage = MOVING;
+                    if(cardRound > 5) {
+                        gameStage = DEALING;
+                        cardRound = 0;
+                        Gdx.app.log("Game - update - WAITING", "Moving to MOVING-stage.");
+                    }
                     break;
                 case MOVING:    //Move the robots in correct order.
                     if (!cardsForOneRound.isEmpty()) {
                         useCard();
-                    } else {
-                        if (allPlayersReady()) {
-                            for (Player player : players) {
-                                cardsForOneRound.put(player, player.getNextFromSelected());
-                            }
-                        } else {
-                            gameStage = DEALING;
-                        }
+                        return;
                     }
+                    gameStage = GET_CARDS;
                     break;
 
                 case VICTORY:   //Some pleb won the game. HAX! Obviously.
@@ -126,6 +121,12 @@ public class Game {
     private void useCard() {
         Player player = findUserWithHighestPriorityCard();
         Card card = cardsForOneRound.get(player);
+        if(card == null) {
+            System.out.println("CARD IS NULL!!!!!!!");
+        }
+        if(player == null) {
+            System.out.println("player IS NULL!!!!!!!");
+        }
         Gdx.app.log("Game - useCard", "Moving player " + player.toString() + " with card " + card.toString());
         handleMovement(player, card);
         cardsForOneRound.remove(player);
