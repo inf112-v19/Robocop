@@ -25,12 +25,10 @@ public class State_Playing extends GameState {
     private CameraHandler cameraHandler;
     private static GameBoard gameBoard;
     private HUD hud;
-    private Channel channel;
     public boolean displayHUD = true;
 
     public State_Playing(GameStateManager gsm, Channel channel) {
         super(gsm, channel);
-        this.channel = channel;
         viewport = new FillViewport(width, height, camera);
         camera.setToOrtho(false, width, height);
         camera.update();

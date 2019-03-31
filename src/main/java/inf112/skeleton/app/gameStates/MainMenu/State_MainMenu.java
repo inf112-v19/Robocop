@@ -30,11 +30,6 @@ import io.netty.channel.Channel;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-enum MenuStates {
-    Welcome,
-    Lobbies,
-}
-
 public class State_MainMenu extends GameState {
     private final Color color_primary   = new Color(0.6f,0.4f,0.2f,1);
     public Stage stage;
@@ -47,7 +42,6 @@ public class State_MainMenu extends GameState {
     LinkedHashMap<String, ImageTextButton> tabButtons;
 
     ImageTextButton currentTab;
-    Channel channel;
 
     public InputMultiplexer im;
 
@@ -65,7 +59,6 @@ public class State_MainMenu extends GameState {
 
     public State_MainMenu(GameStateManager gameStateManager, Channel ch) {
         super(gameStateManager, ch);
-        channel = ch;
         im = new InputMultiplexer();
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
 

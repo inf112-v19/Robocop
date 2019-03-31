@@ -27,11 +27,9 @@ public class State_Login extends GameState {
 
     public LoginResponseStatus loginStatus;
     private long loginRequestTime, loginRequestNextStop;
-    private Channel channel;
 
     public State_Login(GameStateManager gsm, Channel channel) {
         super(gsm, channel);
-        this.channel = channel;
 
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
         Table loginDetails = new Table();
