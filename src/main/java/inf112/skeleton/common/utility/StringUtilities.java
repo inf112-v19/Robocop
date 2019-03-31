@@ -1,6 +1,6 @@
-package inf112.skeleton.server.util;
+package inf112.skeleton.common.utility;
 
-public class Utility {
+public class StringUtilities {
     /**
      * Uppercase first letter of a string
      * @param string

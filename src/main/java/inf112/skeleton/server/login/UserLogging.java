@@ -9,7 +9,6 @@ import inf112.skeleton.common.packet.data.LoginPacket;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.user.FriendsList;
 import inf112.skeleton.server.user.User;
-import inf112.skeleton.server.user.UserPrivilege;
 import io.netty.channel.Channel;
 
 import java.io.*;
@@ -29,14 +28,11 @@ public class UserLogging {
         ArrayList<String> friendslist = new ArrayList<>();
         String jsonPassword = "";
         String uuid = UUID.randomUUID().toString();
-        UserPrivilege jsonRights = UserPrivilege.PLAYER;
         System.out.println(file.toString());
         System.out.println(file.getPath());
         if (!file.exists()) {
             User user = new User(uuid, username.toLowerCase(), password, channel);
-            user.setRights(UserPrivilege.PLAYER);
             user.setFriendsList(new FriendsList());
-            user.setLoggedIn(true);
             return user;
         }
 
@@ -53,10 +49,6 @@ public class UserLogging {
             if (reader.has("password")) {
                 jsonPassword = reader.get("password").getAsString();
             }
-            if (reader.has("UserPrivilege")) {
-                String jsonRightsName = reader.get("UserPrivilege").getAsString();
-                jsonRights = UserPrivilege.getFromName(jsonRightsName);
-            }
             if (reader.has("Friendslist")) {
                 String jsonFriendslist = reader.get("Friendslist").getAsString();
                 friendslist = Tools.GSON.fromJson(jsonFriendslist, ArrayList.class);
@@ -65,9 +57,7 @@ public class UserLogging {
                 return null;
             }
             User user = new User(uuid, jsonName, jsonPassword, channel);
-            user.setLoggedIn(true);
             user.setFriendsList(new FriendsList(friendslist));
-            user.setRights(jsonRights);
             return user;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -101,7 +91,6 @@ public class UserLogging {
             object.addProperty("uuid", user.getUUID());
             object.addProperty("username", user.getName().toLowerCase());
             object.addProperty("password", user.getPassword());
-            object.addProperty("UserPrivilege", user.getRights().getPrefix());
             object.addProperty("Friendslist", Tools.GSON.toJson(user.getFriendsList().getList()));
             writer.write(builder.toJson(object));
         } catch (IOException e) {

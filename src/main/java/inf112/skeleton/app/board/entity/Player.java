@@ -28,14 +28,14 @@ public class Player {
     /**
      * Player has its own class, which owns a robot, to avoid rendring on socket thread.
      *
-     * @param uuid Unique id of owner
+     * @param uuid       Unique id of owner
      * @param name
      * @param pos
      * @param hp
      * @param slot
      * @param directions
      */
-    public Player(String uuid,String name, Vector2 pos, int hp, int slot, Directions directions) {
+    public Player(String uuid, String name, Vector2 pos, int hp, int slot, Directions directions) {
         this.uuid = uuid;
         this.name = name;
         this.initalHp = hp;
@@ -47,12 +47,12 @@ public class Player {
 
     /**
      * If robot is not yet created for player it should create it.
-     *
+     * <p>
      * TODO: move packets related to player actions here.
      */
     public void update() {
         if (robot == null) {
-            this.robot = new Robot(initialPos.x, initialPos.y,slot, this);
+            this.robot = new Robot(initialPos.x, initialPos.y, slot, this);
             RoboRally.gameBoard.addEntity(robot);
         }
         if (!RoboRally.gameBoard.hud.hasDeck()) {
@@ -94,29 +94,46 @@ public class Player {
         for (int i = 0; i < foo.length; i++) {
             cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(foo[i]);
         }
+        selectedCards.clear();
     }
 
     /**
-     * Creates a packet containing move instructions from the selected cards.
-     *
-     * @return True if packet could be constructed and has been sent, false otherwise.
+     * Send one card to server where it will be used as a burnt card.
+     * Call this when players hitpoints are below 5.
      */
-    public boolean sendNextSelectedCard() {
+    public void sendBurntCardToServer() {
         if (selectedCards.isEmpty()) {
-            Gdx.app.log("Player clientside - sendNextSelectedCard", "Returning false");
-            return false;
+            Gdx.app.log("Player clientside - sendBurntCardToServer", "No cards selected");
+            return;
         }
         CardPacket data = new CardPacket(selectedCards.remove(0));
-        Gdx.app.log("Player clientside - sendNextSelectedCard", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
         Packet packet = new Packet(ToServer.CARD_PACKET.ordinal(), data);
-        Gdx.app.log("Player clientside - sendNextSelectedCard", "Constructed packet: " + Tools.GSON.toJson(packet));
         RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r \n");
-        Gdx.app.log("Player clientside - sendNextSelectedCard", "Returning true");
-        return true;
+        Gdx.app.log("Player clientside - sendBurntCardToServer", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
     }
 
     //TODO Refactor this.
     public void sendSelectedCardsToServer() {
+        Card[] hand;
+        if (!selectedCards.isEmpty() && selectedCards != null) {
+            hand = new Card[selectedCards.size()];
+            for (int i = 0; i < hand.length; i++) {
+                hand[i] = selectedCards.get(i);
+            }
+        } else {
+            if (robot.getHealth() < 5) {
+                hand = new Card[robot.getHealth()];
+            } else {
+                hand = new Card[5];
+                for (int i = 0; i < hand.length; i++) {
+                    hand[i] = cards[i];
+                }
+            }
+        }
+        CardHandPacket data = new CardHandPacket(hand);
+        Packet packet = new Packet(ToServer.CARD_HAND_PACKET.ordinal(), data);
+        RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+/*
         if(selectedCards.isEmpty() || selectedCards == null) {
             Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards is empty or null.");
             Card[] hand = new Card[5];  //TODO Robots can take damage..
@@ -134,12 +151,15 @@ public class Player {
         for (int i = 0; i < hand.length; i++) {
             hand[i] = selectedCards.remove(0);
         }
-        selectedCards.clear();
 
         CardHandPacket data = new CardHandPacket(hand);
         Packet packet = new Packet(ToServer.CARD_HAND_PACKET.ordinal(), data);
-        RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+        RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");*/
         Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards sent to server.");
+    }
+
+    public void getHit() {
+        robot.getHit();
     }
 
 

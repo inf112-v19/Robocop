@@ -28,7 +28,7 @@ public class Game {
     GameBoard gameBoard;
     boolean active = false;
 
-    int roundSelectTime = 10; //The time the player will have to select their cards.
+    int roundSelectTime = 32; //The time the player will have to select their cards.
     int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
     long timerStarted = 0;
     long timerCountdownSeconds = 0;
@@ -248,6 +248,7 @@ public class Game {
                 Player player = new Player(lobby.users[i].getName(), new Vector2(10, 10), 9, i, Directions.SOUTH, lobby.users[i]);
                 this.players.add(player);
                 player.sendInit();
+                player.initAll(lobby);
             }
         }
     }
