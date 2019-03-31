@@ -13,21 +13,9 @@ public class MovementPacket implements PacketData {
         this.lenght = lenght;
     }
 
-    public Directions getDirection() {
-        return direction;
-    }
 
-    public void setDirection(Directions direction) {
-        this.direction = direction;
-    }
 
-    public int getLenght() {
-        return lenght;
-    }
 
-    public void setLenght(int lenght) {
-        this.lenght = lenght;
-    }
 
 
     public static MovementPacket parseJSON(JsonObject jsonObject) {

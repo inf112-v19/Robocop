@@ -7,9 +7,6 @@ import inf112.skeleton.common.specs.Card;
 public class CardPacket implements PacketData {
     int priority;
 
-    public CardPacket(int priority) {
-        this.priority = priority;
-    }
 
     public CardPacket(Card card) {
         this.priority = card.getPriority();
@@ -23,9 +20,5 @@ public class CardPacket implements PacketData {
         return priority;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
 
-    public void setPriority(Card card) { this.priority = card.getPriority(); }
 }

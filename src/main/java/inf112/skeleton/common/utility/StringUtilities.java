@@ -28,7 +28,7 @@ public class StringUtilities {
     }
 
     /**
-     * check if a string is an int.
+     * Check if a string is an int.
      * @param string
      * @return true if string is an int, false if not.
      */

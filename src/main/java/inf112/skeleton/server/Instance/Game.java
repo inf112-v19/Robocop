@@ -18,32 +18,32 @@ import static inf112.skeleton.server.Instance.GameStage.*;
 
 
 public class Game {
-    Lobby lobby;
-    CardDeck deck = new CardDeck();
-    ArrayList<Player> players = new ArrayList<>();
-    HashMap<Player, Card> cardsForOneRound = new HashMap<>();
-    GameBoard gameBoard;
-    boolean active = false;
+    private Lobby lobby;
+    private CardDeck deck = new CardDeck();
+    private ArrayList<Player> players = new ArrayList<>();
+    private HashMap<Player, Card> cardsForOneRound = new HashMap<>();
+    private GameBoard gameBoard;
 
-    int roundSelectTime = 2; //The time the player will have to select their cards.
-    int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
-    long timerStarted = 0;
-    long timerCountdownSeconds = 0;
-    int cardRound = 0;
+    private int roundSelectTime = 30; //The time the player will have to select their cards.
+    private int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
+    private long timerStarted = 0;
+    private long timerCountdownSeconds = 0;
+    private int cardRound = 0;
 
-    GameStage gameStage = LOBBY;
+    private GameStage gameStage = LOBBY;
 
-    public Game(Lobby lobby, MapFile mapFile) {
+    Game(Lobby lobby, MapFile mapFile) {
         this.lobby = lobby;
         gameBoard = new TiledMapLoader(mapFile);
-
     }
 
 
+    /**
+     * Main game loop
+     */
     public void update() {
         if (tickCountdown > 0) {
             tickCountdown--;
-            //System.out.println("[Game serverside - update] Timer currently: " + tickCountdown);
         } else {
             switch (gameStage) {
                 case LOBBY:
@@ -54,7 +54,7 @@ public class Game {
                     for (Player player : players) {
                         player.sendCardHandToClient(createCardHand(player));
                     }
-                    deck = new CardDeck();//🦀🦀Let🦀🦀garbage🦀🦀collector🦀🦀collect🦀🦀garbage🦀🦀
+                    deck = new CardDeck();
 
                     setTimer(roundSelectTime);
                     Gdx.app.log("Game - update - DEALING", "Moving to WAITING-stage.");
@@ -78,7 +78,7 @@ public class Game {
                     }
                     cardRound++;
                     gameStage = MOVING;
-                    if(cardRound > 5) {
+                    if (cardRound > 5) {
                         gameStage = DEALING;
                         cardRound = 0;
                         Gdx.app.log("Game - update - WAITING", "Moving to MOVING-stage.");
@@ -92,8 +92,9 @@ public class Game {
                     gameStage = GET_CARDS;
                     break;
 
-                case VICTORY:   //Some pleb won the game. HAX! Obviously.
-                    lobby.broadcastChatMessage("Winner winner \uD83E\uDD80 dinner.");
+                case VICTORY:
+                    // Unreachable at the moment
+                    lobby.broadcastChatMessage("Winner winner chicken dinner.");
                     break;
             }
         }
@@ -105,6 +106,12 @@ public class Game {
 
     }
 
+    /**
+     * Handle card based movement
+     *
+     * @param player
+     * @param card
+     */
     public void handleMovement(Player player, Card card) {
         if (card.getType().moveAmount <= 0) { // For rotation cards and backward1 (special case)
             setTimerTicks(10);
@@ -121,10 +128,10 @@ public class Game {
     private void useCard() {
         Player player = findUserWithHighestPriorityCard();
         Card card = cardsForOneRound.get(player);
-        if(card == null) {
+        if (card == null) {
             System.out.println("CARD IS NULL!!!!!!!");
         }
-        if(player == null) {
+        if (player == null) {
             System.out.println("player IS NULL!!!!!!!");
         }
         Gdx.app.log("Game - useCard", "Moving player " + player.toString() + " with card " + card.toString());
@@ -178,6 +185,9 @@ public class Game {
         return true;
     }
 
+    /**
+     * Players who have not selected cards get cards
+     */
     private void forcePlayersReady() {
         for (Player player : players) {
             if (!player.getReadyStatus()) {
@@ -241,10 +251,18 @@ public class Game {
         deck = new CardDeck();
     }
 
+    /**
+     * Get the gameBoard
+     *
+     * @return GameBoard
+     */
     public GameBoard getGameBoard() {
         return gameBoard;
     }
 
+    /**
+     * Initialise the players
+     */
     public void initPlayers() {
         System.out.println("[Game serverside - initPlayers] called initPlayers in game");
         User[] users = lobby.getUsers();

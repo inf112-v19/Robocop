@@ -217,10 +217,7 @@ public abstract class GameBoard {
 
 
     public void addPlayer(PlayerInitPacket pkt) {
-        Gdx.app.log("Gameboard clientside - addPlayer", "RoboRally.username: " + RoboRally.username);
-        Gdx.app.log("Gameboard clientside - addPlayer", "pkt.getName: " + pkt.getName());
-        Gdx.app.log("Gameboard clientside - addPlayer", "RoboRally.username equals pkt.getName: " + pkt.getName().equalsIgnoreCase(RoboRally.username));
-        if (pkt.getName().equalsIgnoreCase(RoboRally.username)) {
+        if (pkt.getUUID().equalsIgnoreCase(RoboRally.clientInfo)) {
             this.myPlayer = new Player(pkt.getUUID(), pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getSlot(), pkt.getFacing());
             return;
         }

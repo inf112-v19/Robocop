@@ -15,9 +15,13 @@ import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
 import inf112.skeleton.app.gameStates.Playing.State_Playing;
+import inf112.skeleton.common.packet.Packet;
+import inf112.skeleton.common.packet.ToServer;
+import inf112.skeleton.common.packet.data.DataRequestPacket;
 import inf112.skeleton.common.packet.data.LobbiesListPacket;
 import inf112.skeleton.common.packet.data.LobbyJoinResponsePacket;
 import inf112.skeleton.common.packet.data.LobbyUpdatePacket;
+import inf112.skeleton.common.specs.DataRequest;
 import inf112.skeleton.common.specs.LobbyInfo;
 import io.netty.channel.Channel;
 
@@ -83,6 +87,9 @@ public class State_MainMenu extends GameState {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 gsm.set(new State_Login(gsm, channel));
+                DataRequestPacket logoutCMD = new DataRequestPacket(DataRequest.LOG_OUT);
+                Packet packet = new Packet(ToServer.REQUEST_DATA, logoutCMD);
+                packet.sendPacket(channel);
             }
         });
 
@@ -263,8 +270,14 @@ public class State_MainMenu extends GameState {
                 lobbies.lobbies.clearChildren();
                 lobbies.lobbies.add(lobbies.lobbiesHeader).row();
 
+                boolean lobbyFound = false;
 
                 for (LobbyInfo lobbyInfo : packet.getLobbies()) {
+                    if(lobbies.currentLobby!= null) {
+                        if(lobbies.currentLobby.getText().toString().equals(lobbyInfo.getLobbyName())){
+                            lobbyFound = true;
+                        }
+                    }
                     lobbies.addLobby(new MapInfo(
                             lobbyInfo.getLobbyName(),
                             lobbyInfo.getMapFile().name,
@@ -278,6 +291,10 @@ public class State_MainMenu extends GameState {
                             RoboRally.graphics.getDrawable(RoboRally.graphics.folder_MainMenu + "Lobbies/Map_Preview.png")
                     ));
                 }
+                if(!lobbyFound && lobbies.currentLobby != null){
+                    lobbies.removeDetails();
+                }
+
             }
         }
 

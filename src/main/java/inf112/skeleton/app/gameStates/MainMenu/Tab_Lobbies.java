@@ -216,4 +216,10 @@ public class Tab_Lobbies extends MenuTab {
 
         lobbyViews.put(mapInfo.lobbyName, map);
     }
+
+    public void removeDetails() {
+        currentLobby = null;
+        display.clearChildren();
+        display.add(lobbies).padRight(padding_between);
+    }
 }

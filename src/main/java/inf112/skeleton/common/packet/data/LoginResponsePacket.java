@@ -27,19 +27,10 @@ public class LoginResponsePacket implements PacketData {
         return statusCode;
     }
 
-    public String getResponseMsg() {
-        return responseMsg;
-    }
 
 
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
-    }
 
 
-    public void setResponseMsg(String responseMsg) {
-        this.responseMsg = responseMsg;
-    }
 
     public static LoginResponsePacket parseJSON(JsonObject jsonObject) {
         return Tools.GSON.fromJson(jsonObject.get("data"), LoginResponsePacket.class);

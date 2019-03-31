@@ -12,23 +12,41 @@ public class Packet {
     int id;
     PacketData data;
 
+    /**
+     * Construct a packet with plain packet id
+     * @param id plain packet id
+     * @param data PacketData
+     */
     public Packet(int id, PacketData data){
 
         this.id = id;
         this.data = data;
     }
 
+    /**
+     * Construct a Packet with a ToServer enum instance
+     * @param id ToServer instance
+     * @param data PacketData
+     */
     public Packet(ToServer id, PacketData data){
 
         this.id = id.ordinal();
         this.data = data;
     }
-
+    /**
+     * Construct a Packet with a FromServer enum instance
+     * @param id FromServer instance
+     * @param data PacketData
+     */
     public Packet(FromServer id, PacketData data){
         this.id = id.ordinal();
         this.data = data;
     }
 
+    /**
+     * Sends the packet to the given channel
+     * @param channel
+     */
     public void sendPacket(Channel channel){
         channel.writeAndFlush(toJson() + "\r\n");
     }

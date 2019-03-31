@@ -31,18 +31,35 @@ public enum TileDefinition {
         this.name = name;
     }
 
+    /**
+     * Get tile id
+     * @return id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Check if tile is collidable
+     * @return true if collidable
+     */
     public boolean isCollidable() {
         return collidable;
     }
 
+    /**
+     * get the default direction of a tile
+     * will be used for conveyor belts and gyros to check rotation
+     * @return Direction the default facing direction
+     */
     public Directions getDefaultFace() {
         return defaultFace;
     }
 
+    /**
+     * Get the tile name
+     * @return tile name
+     */
     public String getName() {
         return name;
     }
@@ -57,6 +74,11 @@ public enum TileDefinition {
         }
     }
 
+    /**
+     * Get a TileDefinition by id
+     * @param id
+     * @return TileDefinition
+     */
     public static TileDefinition getTileById(int id) {
         return tileMap.get(id);
     }

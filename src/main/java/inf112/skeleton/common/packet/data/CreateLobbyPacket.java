@@ -17,17 +17,11 @@ public class CreateLobbyPacket implements PacketData {
         return lobbyName;
     }
 
-    public void setLobbyName(String lobbyName) {
-        this.lobbyName = lobbyName;
-    }
 
     public MapFile getMapFile() {
         return mapFile;
     }
 
-    public void setMapFile(MapFile mapFile) {
-        this.mapFile = mapFile;
-    }
 
     public static CreateLobbyPacket parseJSON(JsonObject jsonObject) {
         return Tools.GSON.fromJson(jsonObject.get("data"), CreateLobbyPacket.class);

@@ -112,6 +112,9 @@ public class IncomingPacketHandler {
                     case LOBBY_START:
                         requestUser.getLobby().startGameCountdown(requestUser);
                         break;
+                    case LOG_OUT:
+                        handler.logoutUser(requestUser);
+                        break;
                 }
                 break;
             default:

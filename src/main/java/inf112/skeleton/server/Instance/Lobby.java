@@ -58,6 +58,7 @@ public class Lobby {
             startedTimer = true;
             finished = false;
             gameStarted = true;
+            gwi.sendUpdatedLobbyListToAll();
             this.timeStarted = System.currentTimeMillis();
         }
     }

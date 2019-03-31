@@ -12,10 +12,13 @@ public class CardDeck {
 
 
     public CardDeck() {
-        deck = new LinkedList<Card>();
+        deck = new LinkedList<>();
         InitializeDeck();
     }
 
+    /**
+     * Create a full deck with priorities for cards
+     */
     private void InitializeDeck() {
         for (CardType cardtype: CardType.CardList.values()) {
             for (int i = 0; i < cardtype.amountOfCards; i++) {
@@ -25,17 +28,29 @@ public class CardDeck {
         Collections.shuffle(deck);
     }
 
+    /**
+     * Get the top card of the deck
+     * @return Card
+     */
     public Card dealCard() {
         if(!deck.isEmpty())
             return deck.removeFirst();
         return null;
     }
 
+    /**
+     * Add a card and shuffle the deck
+     * @param card
+     */
     public void reAddCard(Card card) {
         deck.add(card);
         reshuffle();
     }
 
+    /**
+     * Add multiple cards and shuffle
+     * @param cards
+     */
     public void reAddMultipleCards(LinkedList<Card> cards) {
         int size = cards.size();
         for(int i = 0; i < size; i++) {
@@ -44,22 +59,27 @@ public class CardDeck {
         reshuffle();
     }
 
+    /**
+     * shuffle the deck
+     */
     public void reshuffle() {
         Collections.shuffle(deck);
     }
 
+    /**
+     * Get deck size
+     * @return size of deck
+     */
     public int size() {
         return deck.size();
     }
 
+    /**
+     * is the deck empty
+     * @return true if empty
+     */
     public boolean isEmpty() {
         return deck.isEmpty();
-    }
-
-    public void printDeck() {
-        for (Card card : deck) {
-            System.out.println(card.toString());
-        }
     }
 
 }

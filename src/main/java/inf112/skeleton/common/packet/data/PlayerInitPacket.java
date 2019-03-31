@@ -41,25 +41,11 @@ public class PlayerInitPacket implements PacketData {
         return pos;
     }
 
-    public void setPos(Vector2 pos) {
-        this.pos = pos;
-    }
-
-    public Vector2 getMovingTo() {
-        return movingTo;
-    }
-
-    public void setMovingTo(Vector2 movingTo) {
-        this.movingTo = movingTo;
-    }
 
     public int getHealth() {
         return health;
     }
 
-    public void setHealth(int health) {
-        this.health = health;
-    }
 
     public int getSlot() {
         return slot;
@@ -69,9 +55,6 @@ public class PlayerInitPacket implements PacketData {
         return facing;
     }
 
-    public void setFacing(Directions facing) {
-        this.facing = facing;
-    }
 
     public static PlayerInitPacket parseJSON(JsonObject jsonObject) {
         return Tools.GSON.fromJson(jsonObject.get("data"), PlayerInitPacket.class);
