@@ -4,6 +4,7 @@ import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class CardDeck {
@@ -16,40 +17,17 @@ public class CardDeck {
     }
 
     private void InitializeDeck() {
-        //RotateRight
-        for(int i = 0; i < 18; i++) {
-            deck.add(new Card(80+i*20, CardType.ROTATERIGHT));
-        }
-        //RotateLeft
-        for(int i = 0; i < 18; i++) {
-            deck.add(new Card(70+i*20, CardType.ROTATELEFT));
-        }
-        //Rotate180
-        for(int i = 0; i < 6; i++) {
-            deck.add(new Card(10+i*10, CardType.ROTATE180));
-        }
-        //Forward1
-        for(int i = 0; i < 18; i++) {
-            deck.add(new Card(490+i*10, CardType.FORWARD1));
-        }
-        //Forward2
-        for(int i = 0; i < 12; i++) {
-            deck.add(new Card(670+i*10, CardType.FORWARD2));
-        }
-        //Forward3
-        for(int i = 0; i < 6; i++) {
-            deck.add(new Card(790+i*10, CardType.FORWARD3));
-        }
-        //Back1
-        for(int i = 0; i < 6; i++) {
-            deck.add(new Card(430+i*10, CardType.BACKWARD1));
+        for (CardType cardtype: CardType.CardList.values()) {
+            for (int i = 0; i < cardtype.amountOfCards; i++) {
+                deck.add(new Card(cardtype.basePriority+i*cardtype.priorityDiff, cardtype));
+            }
         }
         Collections.shuffle(deck);
     }
 
     public Card dealCard() {
         if(!deck.isEmpty())
-            return deck.remove();
+            return deck.removeFirst();
         return null;
     }
 
@@ -59,8 +37,9 @@ public class CardDeck {
     }
 
     public void reAddMultipleCards(LinkedList<Card> cards) {
-        for(int i = 0; i < cards.size(); i++) {
-            deck.add(cards.remove());
+        int size = cards.size();
+        for(int i = 0; i < size; i++) {
+            deck.add(cards.removeFirst());
         }
         reshuffle();
     }
@@ -82,4 +61,5 @@ public class CardDeck {
             System.out.println(card.toString());
         }
     }
+
 }

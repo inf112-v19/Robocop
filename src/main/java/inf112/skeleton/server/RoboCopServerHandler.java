@@ -1,11 +1,9 @@
 package inf112.skeleton.server;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import inf112.skeleton.common.packet.ChatMessagePacket;
-import inf112.skeleton.common.packet.OutgoingPacket;
+import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
-import inf112.skeleton.common.packet.PlayerRemovePacket;
+import inf112.skeleton.common.packet.data.PlayerRemovePacket;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.login.UserLogging;
 import inf112.skeleton.server.packet.IncomingPacketHandler;
@@ -25,7 +23,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
 
 
     private IncomingPacketHandler incomingPacketHandler = new IncomingPacketHandler();
-    GameWorldInstance game;
+    public GameWorldInstance game;
 
     public RoboCopServerHandler() {
         this.game = Server.game;
@@ -39,9 +37,9 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
         /**
-         * Adding the IncomingPacket channel to the collection of users who are not logged in.
+         * Adding the ToServer channel to the collection of users who are not logged in.
          */
-        System.out.println("receieved conntstion");
+        System.out.println("Received new connection");
         User user = new User(incoming);
         user.setLoggedIn(false); //Setting the is logged in boolean to false.
         if (!connections.contains(user)) {
@@ -55,11 +53,13 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
-        OutgoingPacket pktId = OutgoingPacket.REMOVE_PLAYER;
-        PlayerRemovePacket data = new PlayerRemovePacket(getEntityFromLoggedIn(incoming).getName());
+        FromServer pktId = FromServer.REMOVE_PLAYER;
+        PlayerRemovePacket data = new PlayerRemovePacket(getEntityFromLoggedIn(incoming).getUUID());
         Packet pkt = new Packet(pktId, data);
 
         String message = "[SERVER] - " + Utility.formatPlayerName(getEntityFromLoggedIn(incoming).getName()) + " has left the channel!";
+        getEntityFromLoggedIn(incoming).leaveLobby();
+
         UserLogging.logoff(getEntityFromLoggedIn(incoming)); //Save the user in a json file
         for (User entity : loggedInPlayers) { //looping through all the other users and telling them that this user has left. Also removing the user from the list.
             if (entity.getChannel() == incoming)
@@ -90,6 +90,10 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
         return null;
     }
 
+    public Collection<User> getLoggedInUsers (){
+        return loggedInPlayers;
+    }
+
     /**
      * Gets the user from the list of logged in users
      *
@@ -116,7 +120,9 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
             if (!everyone)
                 if (entity.getChannel() == channel)
                     continue;
-            entity.getChannel().writeAndFlush(message + "\r\n");
+            if (entity.getChannel() != null) {
+                entity.getChannel().writeAndFlush(message + "\r\n");
+            }
         }
     }
 
