@@ -281,7 +281,7 @@ public class Player {
             FromServer pktId = FromServer.PLAYER_UPDATE;
             UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), this.getDirection(), movingTiles, currentPos, movingTo);
             Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
-            RoboCopServerHandler.globalMessage(Tools.GSON.toJson(updatePacket), owner.getChannel(), true);
+            owner.getLobby().broadcastPacket(updatePacket);
 
         }
     }

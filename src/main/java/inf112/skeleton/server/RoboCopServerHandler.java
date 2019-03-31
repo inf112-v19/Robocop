@@ -106,7 +106,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
 
     /**
      * Send a message to everyone connected to the server.
-     *
+     * to be used to stuff like announcing server downtime
      * @param message
      * @param channel
      * @param everyone
