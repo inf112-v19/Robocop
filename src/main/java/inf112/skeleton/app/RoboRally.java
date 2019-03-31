@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf112.skeleton.app.Action.InputContainer;
+import inf112.skeleton.app.GUI.GraphicsLoader;
 import inf112.skeleton.app.Socket.GameSocketHandler;
 import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TiledMapLoader;
@@ -36,6 +37,7 @@ public class RoboRally extends ApplicationAdapter {
     public static RoboRally roboRally;
     public static String username = "";
     public static String clientInfo = "";
+    public static GraphicsLoader graphics;
 
     public static void setClientInfo(ClientInitPacket pkt) {
         clientInfo = pkt.getUUID();
@@ -52,6 +54,7 @@ public class RoboRally extends ApplicationAdapter {
 
     @Override
     public void create() {
+        graphics = new GraphicsLoader();
         batch = new SpriteBatch();
         gsm = new GameStateManager();
         roboRally = this;
