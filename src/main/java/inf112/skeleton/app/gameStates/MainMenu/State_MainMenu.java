@@ -3,18 +3,12 @@ package inf112.skeleton.app.gameStates.MainMenu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameState;
@@ -31,133 +25,133 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class State_MainMenu extends GameState {
-    private final Color color_primary   = new Color(0.6f,0.4f,0.2f,1);
-    public Stage stage;
-    private Table layout;
-
-    private Table h1, h2, main;
-    ImageTextButton.ImageTextButtonStyle h2_btn_style_focused, h2_btn_style_unfocused, h2_btn_style_frozen;
-
-    LinkedHashMap<String, MenuTab> tabs;
-    LinkedHashMap<String, ImageTextButton> tabButtons;
-
-    ImageTextButton currentTab;
-
+    public Stage            stage;
     public InputMultiplexer im;
+    private Table           h2,
+                            main;
 
-    public Queue<LobbyJoinResponsePacket> packets_LobbyJoin = new ConcurrentLinkedQueue<>();
-    public Queue<LobbiesListPacket> packets_LobbyList = new ConcurrentLinkedQueue<>();
-    public Queue<LobbyUpdatePacket> packets_LobbyUpdates = new ConcurrentLinkedQueue<>();
-    public Queue<Boolean> packets_GameStart = new ConcurrentLinkedQueue<>();
+    private LinkedHashMap<String, MenuTab>          tabs;
+    private LinkedHashMap<String, ImageTextButton>  tabButtons;
+    private ImageTextButton                         currentTab;
+
+    public Queue<LobbyJoinResponsePacket>   packets_LobbyJoin = new ConcurrentLinkedQueue<>();
+    public Queue<LobbiesListPacket>         packets_LobbyList = new ConcurrentLinkedQueue<>();
+    public Queue<LobbyUpdatePacket>         packets_LobbyUpdates = new ConcurrentLinkedQueue<>();
+    public Queue<Boolean>                   packets_GameStart = new ConcurrentLinkedQueue<>();
 
 
     private final int   h1_height           = 60,
                         h2_height           = 45,
                         main_height         = 615,
                         main_padding        = 13;
-    private boolean     isFrozen;
+    private boolean     isFrozen = false;
 
     public State_MainMenu(GameStateManager gameStateManager, Channel ch) {
         super(gameStateManager, ch);
-        im = new InputMultiplexer();
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
+        im = new InputMultiplexer();
 
-        isFrozen = false;
-
-        layout = new Table();
-        layout.setSize(stage.getWidth(), stage.getHeight());
-
+        // Data-structures for storing tabs and tab-buttons
         tabs = new LinkedHashMap<>();
         tabButtons = new LinkedHashMap<>();
 
-        // Add button styles
-        Drawable    d_btn_f = new TextureRegionDrawable(new TextureRegion(
-                        new Texture(Gdx.files.internal("graphics/ui/MainMenu/btn_rounded_focused.png")))),
-                    d_btn = new TextureRegionDrawable(new TextureRegion(
-                        new Texture(Gdx.files.internal("graphics/ui/MainMenu/btn_rounded_nonfocused.png")))),
-                    d_btn_frozen = new TextureRegionDrawable(new TextureRegion(
-                            new Texture(Gdx.files.internal("graphics/ui/MainMenu/btn_rounded_frozen.png"))));
+        /*
+         * Main header (Text: "RoboCop")
+         */
 
-        h2_btn_style_focused = new ImageTextButton.ImageTextButtonStyle(d_btn_f, d_btn_f, d_btn_f, new BitmapFont());
-        h2_btn_style_focused.fontColor = Color.BLACK;
-        h2_btn_style_unfocused = new ImageTextButton.ImageTextButtonStyle(d_btn, d_btn, d_btn, new BitmapFont());
-        h2_btn_style_unfocused.fontColor = Color.BLACK;
-        h2_btn_style_frozen = new ImageTextButton.ImageTextButtonStyle(d_btn_frozen, d_btn_frozen, d_btn_frozen, new BitmapFont());
-        h2_btn_style_frozen.fontColor = Color.BLACK;
-
-        // Add header 1 (Text: "RoboCop"):
-        h1 = new Table();
-        h1.setBackground(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/h1.png")))));
+        Table h1 = new Table().left();
+        h1.setBackground(RoboRally.graphics.mainMenu_h1);
         h1.setSize(stage.getWidth(), h1_height);
-        h1.left();
 
-        ImageTextButton logoutButton = new ImageTextButton("Logout", h2_btn_style_focused);
+
+        /*
+         * Second header (ImageTextButtons: Name of each tab (Contained in h2), "Logout")
+         */
+
+        Table h2_full = new Table();
+        h2_full.setSize(stage.getWidth(), h2_height);
+        h2_full.setBackground(RoboRally.graphics.mainMenu_h2);
+        h2_full.add().width(0).padLeft(5);
+
+        // Table of buttons representing each tab
+        h2 = new Table().left();
+        h2.setSize(stage.getWidth() - 113, h2_height);
+
+        // Logout button
+        ImageTextButton logoutButton = new ImageTextButton("Logout", RoboRally.graphics.btnStyle_rounded_focused);
         logoutButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 gsm.set(new State_Login(gsm, channel));
             }
         });
-        layout.add(h1).expand().height(h1_height).row();
 
-        // Add header 2 (Textbuttons: "Welcome", "Lobbies", "Logout"):
-        Table h2_cover = new Table();
-        h2_cover.setSize(stage.getWidth(), h2_height);
-        h2_cover.setBackground(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/h2.png")))));
+        h2_full.add(h2).size(stage.getWidth() - 113, h2_height);
+        h2_full.add(logoutButton).size(100, h2_height-2).row();
 
-        h2 = new Table();
-        h2.setSize(stage.getWidth() - 113, h2_height);
-        h2.left();
-        h2.add().width(0).padLeft(5);
 
-        h2_cover.add(h2).size(stage.getWidth() - 113, h2_height);
-        h2_cover.add(logoutButton).size(100, h2_height-2).row();
-        layout.add(h2_cover).size(stage.getWidth(), h2_height).row();
+        /*
+         * Main menu body: Tab-contents should be put here...
+         */
 
-        // Add bar with main content:
-        main = new Table();
-        main.setBackground(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/main.png")))));
+        main = new Table().left();
+        main.setBackground(RoboRally.graphics.mainMenu_body);
         main.setSize(stage.getWidth(), main_height);
-        main.left();
-        layout.add(main).expand().row();
 
-        // Add tabs
+
+        /*
+         * Put everything together.
+         */
+
+        // Add default tabs:
         addTab("Lobbies", new Tab_Lobbies(gsm, channel), false);
 
-        stage.addActor(layout);
+        // Screen display
+        Table display = new Table();
+        display.setSize(stage.getWidth(), stage.getHeight());
+        display.add(h1).expand().height(h1_height).row();
+        display.add(h2_full).size(stage.getWidth(), h2_height).row();
+        display.add(main).expand().row();
+
+        // Add display to stage and set input handler.
+        stage.addActor(display);
         Gdx.input.setInputProcessor(im);
         im.addProcessor(stage);
     }
 
-    public void tabButtonAction (ImageTextButton textButton) {
+    // What happens when a tab-button is clicked
+    private void tabButtonAction (ImageTextButton textButton) {
+        // If button is already focused, return.
         if (currentTab == textButton) {
             return;
         }
 
-        // Switch tab animations
+        // Set old tab style: unfocused.
         if (currentTab != null) {
-            currentTab.setStyle(h2_btn_style_unfocused);
+            currentTab.setStyle(RoboRally.graphics.btnStyle_rounded_unfocused);
         }
-        currentTab = textButton;
-        currentTab.setStyle(h2_btn_style_focused);
 
-        // Update display
+        // Update tab and set style: focused.
+        currentTab = textButton;
+        currentTab.setStyle(RoboRally.graphics.btnStyle_rounded_focused);
+
+        // Update menu body to display the tab
         main.clearChildren();
         main.add(tabs.get(currentTab.getText().toString()).display).pad(main_padding);
         main.row();
     }
 
 
-    public void addTab(String tabname, MenuTab tab, boolean goTo) {
-        ImageTextButton newTabButton = new ImageTextButton(tabname, h2_btn_style_unfocused);
+    public void addTab(String tabName, MenuTab tab, boolean goTo) {
+        // Add tab-button to second header.
+        ImageTextButton newTabButton = new ImageTextButton(tabName, RoboRally.graphics.btnStyle_rounded_unfocused);
         h2.add(newTabButton).height(h2_height-2).pad(1).width(100).padLeft(10);
 
-        tabButtons.put(tabname, newTabButton);
-        tabs.put(tabname, tab);
+        // Keep track of the new tab and tab-button.
+        tabButtons.put(tabName, newTabButton);
+        tabs.put(tabName, tab);
 
+        // Add event-listener to button (What happens when clicked)
         newTabButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -165,6 +159,7 @@ public class State_MainMenu extends GameState {
             }
         });
 
+        // Focus tab button and display tab.
         if (currentTab == null || goTo)
             tabButtonAction(newTabButton);
     }
@@ -198,17 +193,16 @@ public class State_MainMenu extends GameState {
 
         if (frozen) {
             for (ImageTextButton btn : tabButtons.values()) {
-                if (btn.getStyle() == h2_btn_style_unfocused) {
-                    btn.setStyle(h2_btn_style_frozen);
+                if (btn.getStyle() == RoboRally.graphics.btnStyle_rounded_unfocused) {
+                    btn.setStyle(RoboRally.graphics.btnStyle_rounded_frozen);
                     btn.setDisabled(true);
                 }
             }
-            return;
         }
         else {
             for (ImageTextButton btn : tabButtons.values()) {
-                if (btn.getStyle() == h2_btn_style_frozen) {
-                    btn.setStyle(h2_btn_style_unfocused);
+                if (btn.getStyle() == RoboRally.graphics.btnStyle_rounded_frozen) {
+                    btn.setStyle(RoboRally.graphics.btnStyle_rounded_unfocused);
                     btn.setDisabled(false);
                 }
             }
@@ -223,6 +217,7 @@ public class State_MainMenu extends GameState {
 
     @Override
     public void update(float dt) {
+        // TODO: Code cleanup
         // Handle join request response
         for (LobbyJoinResponsePacket packet : packets_LobbyJoin) {
             if (packet.isHandled()) {
@@ -240,8 +235,7 @@ public class State_MainMenu extends GameState {
                         2,
                         8,
                         packet.getMapFile().mapDifficulty,
-                        new TextureRegionDrawable(new TextureRegion(
-                                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Map_Preview.png"))))
+                        RoboRally.graphics.getDrawable(RoboRally.graphics.folder_MainMenu + "Lobbies/Map_Preview.png")
                 ), packet.getHost().equals(RoboRally.clientInfo));
 
 
@@ -281,8 +275,7 @@ public class State_MainMenu extends GameState {
                             2,
                             8,
                             lobbyInfo.getMapFile().mapDifficulty,
-                            new TextureRegionDrawable(new TextureRegion(
-                                    new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Map_Preview.png"))))
+                            RoboRally.graphics.getDrawable(RoboRally.graphics.folder_MainMenu + "Lobbies/Map_Preview.png")
                     ));
                 }
             }
@@ -305,7 +298,8 @@ public class State_MainMenu extends GameState {
 
     @Override
     public void render(SpriteBatch sb) {
-        Gdx.gl.glClearColor(color_primary.r,color_primary.g, color_primary.b, color_primary.a);
+        Color bgColor = RoboRally.graphics.color_primary;
+        Gdx.gl.glClearColor(bgColor.r,bgColor.g, bgColor.b, bgColor.a);
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
