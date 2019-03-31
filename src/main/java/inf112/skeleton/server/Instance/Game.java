@@ -24,7 +24,7 @@ public class Game {
     Lobby lobby;
     CardDeck deck = new CardDeck();
     ArrayList<Player> players = new ArrayList<>();
-    HashMap<User, Card> cardsForOneRound = new HashMap<>();
+    HashMap<Player, Card> cardsForOneRound = new HashMap<>();
     GameBoard gameBoard;
     boolean active = false;
 
@@ -34,7 +34,7 @@ public class Game {
     long timerCountdownSeconds = 0;
 
     GameStage gameStage = LOBBY;
-    int cardRequests = 0;
+    int turnsPlayed = 0;
     //TODO Handle received cards differently, requires changes to cardsForOneRound and cardRequests.
 
     public Game(Lobby lobby, MapFile mapFile) {
@@ -49,8 +49,6 @@ public class Game {
 
 
     public void update() {
-        //Count down the timer. The server will not handle any other events if this is not 0.
-        //TODO Use player.checkTimePassed instead.
         if (tickCountdown > 0) {
             tickCountdown--;
             //System.out.println("[Game serverside - update] Timer currently: " + tickCountdown);
@@ -62,7 +60,7 @@ public class Game {
                 case DEALING:   //Deal cards to players
                     Gdx.app.log("Game - update - DEALING", "Dealing cards to players.");
                     for (Player player : players) {
-                        player.sendCardHand(createCardHand(player));
+                        player.sendCardHandToClient(createCardHand(player));
                     }
                     deck = new CardDeck();//🦀🦀Let🦀🦀garbage🦀🦀collector🦀🦀collect🦀🦀garbage🦀🦀
                     setTimer(roundSelectTime);
@@ -76,8 +74,11 @@ public class Game {
                         timerStarted = 0;
                         gameStage = REQUEST;
                     }
-                    //Are we ready to go to MOVE-stage?
-                    if (cardsForOneRound.size() == players.size() && !players.isEmpty()) {
+
+                    if(allPlayersReady() && !players.isEmpty()) {
+                        for(Player player : players) {
+                            cardsForOneRound.put(player, player.getNextFromSelected());
+                        }
                         Gdx.app.log("Game - update - WAITING", "Moving to MOVING-stage.");
                         gameStage = MOVING;
                     }
@@ -87,7 +88,6 @@ public class Game {
                     CardRequestPacket cRPkt = new CardRequestPacket(5);
                     Packet pkt = new Packet(FromServer.CARD_REQUEST_PACKET.ordinal(), cRPkt);
                     lobby.broadcastPacket(pkt);
-                    cardRequests++;
                     Gdx.app.log("Game - update - REQUEST", "Moving to WAITING-stage.");
                     gameStage = WAITING;
                     break;
@@ -96,13 +96,12 @@ public class Game {
                     if (!cardsForOneRound.isEmpty()) {
                         useCard();
                     } else {
-                        if (cardRequests == 5) {
-                            Gdx.app.log("Game - update - MOVING", "Moving to DEALING-stage.");
-                            cardRequests = 0;
-                            gameStage = DEALING;
+                        if(allPlayersReady()) {
+                            for (Player player : players) {
+                                cardsForOneRound.put(player, player.getNextFromSelected());
+                            }
                         } else {
-                            Gdx.app.log("Game - update - MOVING", "Moving to REQUEST-stage.");
-                            gameStage = REQUEST;
+                            gameStage = DEALING;
                         }
                     }
                     break;
@@ -110,7 +109,6 @@ public class Game {
                 case VICTORY:   //Some pleb won the game. HAX! Obviously.
                     lobby.broadcastChatMessage("Winner winner \uD83E\uDD80 dinner.");
                     break;
-
             }
         }
 
@@ -121,32 +119,48 @@ public class Game {
 
     }
 
-    private void useCard() {
-        User user = findUserWithHighestPriorityCard();
-        Card card = cardsForOneRound.get(user);
-        handleMovement(user, card);
-        cardsForOneRound.remove(user);
-    }
-
-    public void handleMovement(User user, Card card) {
+    public void handleMovement(Player player, Card card) {
         if(card.getType().moveAmount <= 0) { // For rotation cards and backward1 (special case)
             setTimerTicks(10);
         } else {
             setTimerTicks(10 * card.getType().moveAmount); // For other cards.
         }
-        user.player.startMovement(user.player.getDirection(), card.getType().moveAmount);
-        user.player.rotate(card.getType());
+        player.startMovement(player.getDirection(), card.getType().moveAmount);
+        player.rotate(card.getType());
     }
 
+    /**
+     * Plays the highest priority card.
+     */
+    private void useCard() {
+        Player player = findUserWithHighestPriorityCard();
+        Card card = cardsForOneRound.get(player);
+        Gdx.app.log("Game - useCard", "Moving player " + player.toString() + " with card " + card.toString());
+        handleMovement(player, card);
+        cardsForOneRound.remove(player);
+    }
+
+    /**
+     * Set the amount of ticks (loops of update-method) that the server will skip.
+     * @param ticks
+     */
     private void setTimerTicks(int ticks) {
         this.tickCountdown = ticks;
     }
 
+    /**
+     * Set a timer in seconds for the server while in WAITING-stage.
+     * @param seconds
+     */
     private void setTimer(int seconds) {
         this.timerStarted = System.currentTimeMillis();
         this.timerCountdownSeconds = seconds * 1000;
     }
 
+    /**
+     * Check if server has waited for the set amount.
+     * @return
+     */
     private boolean checkTimer() {
         if (timerStarted == 0)
             return false;
@@ -156,13 +170,26 @@ public class Game {
     }
 
     /**
+     * Checks if all players on the server have a hand of selected cards stored.
+     * @return True if all ready, false otherwise.
+     */
+    private boolean allPlayersReady() {
+        for(Player player : players) {
+            if(!player.getReadyStatus()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Add a user and a card to the hashmap.
      *
-     * @param user key
+     * @param player key
      * @param card value
      */
-    public void addUserAndCard(User user, Card card) {
-        cardsForOneRound.put(user, card);
+    public void addPlayerAndCard(Player player, Card card) {
+        cardsForOneRound.put(player, card);
     }
 
     /**
@@ -170,16 +197,16 @@ public class Game {
      *
      * @return User with highest priority.
      */
-    private User findUserWithHighestPriorityCard() {
+    private Player findUserWithHighestPriorityCard() {
         Card max = null;
-        User user = null;
-        for (HashMap.Entry<User, Card> entry : cardsForOneRound.entrySet()) {
+        Player player = null;
+        for (HashMap.Entry<Player, Card> entry : cardsForOneRound.entrySet()) {
             if (max == null || max.getPriority() < entry.getValue().getPriority()) {
                 max = entry.getValue();
-                user = entry.getKey();
+                player = entry.getKey();
             }
         }
-        return user;
+        return player;
     }
 
     /**
@@ -202,7 +229,7 @@ public class Game {
      */
     public void dealFirstHand() {
         for (Player player : players) {
-            player.sendCardHand(createCardHand(player));
+            player.sendCardHandToClient(createCardHand(player));
         }
         setTimer(roundSelectTime);
         gameStage = WAITING;

@@ -44,6 +44,7 @@ public class Player {
     private long timeInit;
     private long timeMoved = 0;
     boolean shouldSendCards = true;
+    boolean readyForTurn = false;
 
     public Player(String name, Vector2 pos, int hp, int slot, Directions directions, User owner) {
         this.name = name;
@@ -64,13 +65,27 @@ public class Player {
         return this.direction;
     }
 
+    public int getCurrentHP() {
+        return this.currentHP;
+    }
+
+    public boolean getReadyStatus() {
+        return readyForTurn;
+    }
+
+    public void update() {
+        if (processMovement(System.currentTimeMillis())) {
+        }
+        if ((System.currentTimeMillis() - this.timeInit) >= this.delayMessage && shouldSendCards) {
+            this.timeInit = System.currentTimeMillis();
+            shouldSendCards = false;
+        }
+
+    }
+
     public void rotate(CardType cardType) {
         direction = values()[(direction.ordinal() + values().length + cardType.turnAmount) % values().length];
         sendUpdate();
-    }
-
-    public int getCurrentHP() {
-        return this.currentHP;
     }
 
 
@@ -95,54 +110,46 @@ public class Player {
     }
 
 
-    public void update() {
-        if (processMovement(System.currentTimeMillis())) {
-        }
-        if ((System.currentTimeMillis() - this.timeInit) >= this.delayMessage && shouldSendCards) {
-            this.timeInit = System.currentTimeMillis();
-            shouldSendCards = false;
-        }
-
-    }
-
     public void setSlot(int slot) {
         this.slot = slot;
     }
 
-    public void sendCard(Card card) {
-        FromServer packetId = FromServer.CARD_PACKET;
-        CardPacket data = new CardPacket(card);
-        Packet packet = new Packet(packetId, data);
-
-        System.out.println("[Player serverside - sendCard] Sending packet " + packet.toString());
-        owner.sendPacket(packet);
-
-    }
-
-    public void sendCardHand(Card[] hand) {
+    public void sendCardHandToClient(Card[] hand) {
         FromServer packetId = FromServer.CARD_HAND_PACKET;
         CardHandPacket data = new CardHandPacket(hand);
         Packet packet = new Packet(packetId, data);
 
+        cardsGiven.clear();
         for (int i = 0; i < hand.length; i++) {
             cardsGiven.add(hand[i]);
         }
 
-        System.out.println("[Player serverside - sendCardHand] Sending packet " + packet.toString());
+        System.out.println("[Player serverside - sendCardHandToClient] Sending packet " + packet.toString());
         owner.sendPacket(packet);
 
     }
 
     public void storeSelectedCards(Card[] hand) {
+        cardsSelected.clear(); //Just in case.
         for (int i = 0; i < hand.length; i++) {
             cardsSelected.add(hand[i]);
         }
-        System.out.println("[Player serverside - storeSelectedCards] Is selected hand subset of given hand?: " + isSelectedSubsetOfDealt());
+        if(!isSelectedSubsetOfDealt()) {    //Client have been naughty, overrule and give random hand (cards are dealt randomly in the first place).
+            System.out.println("Y U BULLYIN ME?");
+            cardsSelected.clear();
+            for (int i = 0; i < 5; i++) {
+                cardsSelected.add(cardsGiven.remove(0));
+            }
+        }
+        readyForTurn = true;
     }
 
-    public Card getNextCardFromSelected() {
-        if (cardsSelected.isEmpty())
+    public Card getNextFromSelected() {
+        if (cardsSelected.isEmpty()) {
             return null;
+        } else if (cardsSelected.size() == 1) {
+            readyForTurn = false;
+        }
         return cardsSelected.remove(0);
     }
 
@@ -150,47 +157,6 @@ public class Player {
     public boolean isSelectedSubsetOfDealt() {
         return cardsGiven.containsAll(cardsSelected);
     }
-
-    public void moveX(float amount) {
-        if (!canMove(amount, 0)) {
-            return;
-        }
-        if (!processMovement(System.currentTimeMillis())) {
-            this.movingTo.add(amount, 0);
-            this.timeMoved = System.currentTimeMillis();
-            if (amount > 0) {
-                direction = EAST;
-            } else {
-                direction = WEST;
-            }
-        }
-    }
-
-    public void moveY(float amount) {
-        if (!canMove(0, amount)) {
-            return;
-        }
-        if (!processMovement(System.currentTimeMillis())) {
-            this.movingTo.add(0, amount);
-            this.timeMoved = System.currentTimeMillis();
-
-            if (amount > 0) {
-                direction = NORTH;
-            } else {
-                direction = SOUTH;
-            }
-        }
-    }
-
-    private boolean canMove(float amountX, float amountY) {
-//        TileDefinition def = gameBoard.getTileDefinitionByCoordinate(0, (int) (currentPos.x + amountX), (int) (currentPos.y + amountY));
-//        System.out.println(def.getName());
-//        if (gameBoard.getWidth() < currentPos.x + amountX || currentPos.x + amountX < 0 ||
-//                gameBoard.getHeight() < currentPos.y + amountY || currentPos.y + amountY < 0 || !def.isCollidable())
-//            return false;
-        return true;
-    }
-
 
     public void sendInit() {
         System.out.println("called sendInit");
