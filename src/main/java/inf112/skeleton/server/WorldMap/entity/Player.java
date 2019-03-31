@@ -9,12 +9,9 @@ import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
-import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.Instance.Lobby;
-import inf112.skeleton.server.RoboCopServerHandler;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.user.User;
-import io.netty.channel.Channel;
 
 import java.util.ArrayList;
 
@@ -26,9 +23,22 @@ public class Player {
     Vector2 currentPos;
     Vector2 movingTo;
     User owner;
-    ArrayList<Card> cardsGiven;
-    ArrayList<Card> cardsSelected;
-    ArrayList<Card> burnt;
+
+    private final int COUNT_CARDS = 5;
+    private final int GIVEN_CARDS = 9;
+
+
+
+
+    public Card[] burnt;
+    public Card[] cardsSelected;
+    public Card[] cardsGiven;
+
+//    ArrayList<Card> cardsGiven;
+
+//    ArrayList<Card> cardsSelected;
+//    ArrayList<Card> burnt;
+
 
     int slot;
     int currentHP;
@@ -42,6 +52,7 @@ public class Player {
     private long timeMoved = 0;
     boolean shouldSendCards = true;
     boolean readyForTurn = false;
+    private int currentCard = 0;
 
     public Player(String name, Vector2 pos, int hp, int slot, Directions directions, User owner) {
         this.name = name;
@@ -54,9 +65,21 @@ public class Player {
         owner.setPlayer(this);
 
         this.timeInit = System.currentTimeMillis();
-        this.cardsGiven = new ArrayList<>();
-        this.cardsSelected = new ArrayList<>();
-        this.burnt = new ArrayList<>();
+        this.cardsGiven = new Card[GIVEN_CARDS];
+        this.cardsSelected = new Card[COUNT_CARDS];
+        this.burnt = new Card[COUNT_CARDS];
+    }
+    public Player(String name, Vector2 pos, int hp, int slot, Directions directions) {
+        this.name = name;
+        this.currentHP = hp;
+        this.currentPos = pos;
+        this.movingTo = new Vector2(currentPos.x, currentPos.y);
+        this.slot = slot;
+        this.direction = directions;
+        this.timeInit = System.currentTimeMillis();
+        this.cardsGiven = new Card[GIVEN_CARDS];
+        this.cardsSelected = new Card[COUNT_CARDS];
+        this.burnt = new Card[COUNT_CARDS];
     }
 
     public Directions getDirection() {
@@ -117,10 +140,11 @@ public class Player {
         CardHandPacket data = new CardHandPacket(hand);
         Packet packet = new Packet(packetId, data);
 
-        cardsGiven.clear();
-        for (int i = 0; i < hand.length; i++) {
-            cardsGiven.add(hand[i]);
+        for (int i = 0; i < cardsGiven.length; i++) {
+            cardsGiven[i] = null;
         }
+
+        System.arraycopy(hand, 0, cardsGiven, 0, hand.length);
 
         System.out.println("[Player serverside - sendCardHandToClient] Sending packet " + packet.toString());
         owner.sendPacket(packet);
@@ -128,10 +152,12 @@ public class Player {
     }
 
     public void storeSelectedCards(Card[] hand) {
-        cardsSelected.clear(); //Just in case.
-        for (int i = 0; i < hand.length; i++) {
-            cardsSelected.add(hand[i]);
+        for (int i = 0; i < cardsSelected.length; i++) {
+            cardsSelected[i] = null;
         }
+
+        System.arraycopy(hand, 0, cardsSelected, 0, hand.length);
+
         if (!isSelectedSubsetOfDealt()) {    //Client have been naughty, overrule and give random hand (cards are dealt randomly in the first place).
             System.out.println("[Player serverside - storeSelectedCards] - cards received from client is not a subset of cards dealt.");
             cardsSelected.clear();
@@ -139,39 +165,60 @@ public class Player {
                 cardsSelected.add(cardsGiven.remove(0));
             }
         }
+
         //Handle burnt cards, if any.
-        if (!burnt.isEmpty()) {
-            for (int i = 0; i < burnt.size(); i++) {
-                cardsSelected.add(i, burnt.get(i));
+        for (int i = 0; i < burnt.length; i++) {
+            if(burnt[i] != null){
+                cardsSelected[i] = burnt[i];
             }
         }
+
         //Trim selectedCards if too long.
-        if (cardsSelected.size() > 5) {
-            System.out.println("[Player serverside - storeSelectedCards] - trimmed away " + (cardsSelected.size() - 5) + " cards.");
-            for (int i = cardsSelected.size() - 1; i >= 5; i--) {
-                cardsSelected.remove(i);
-            }
-        }
+//        if (cardsSelected.size() > 5) {
+//            System.out.println("[Player serverside - storeSelectedCards] - trimmed away " + (cardsSelected.size() - 5) + " cards.");
+//            for (int i = cardsSelected.size() - 1; i >= 5; i--) {
+//                cardsSelected.remove(i);
+//            }
+//        }
         readyForTurn = true;
     }
 
     public void storeBurntCard(Card card) {
-        if (burnt.size() < 5) {
-            burnt.add(card);
+        for (int i = 0; i < burnt.length; i++) {
+            if(burnt[i] == null){
+                burnt[i] = card;
+            }
         }
     }
 
     public Card getNextFromSelected() {
-        if (cardsSelected.isEmpty()) {
+        if(currentCard == COUNT_CARDS-1) {
             return null;
-        } else if (cardsSelected.size() == 1) {
+        }
+        if(currentCard == COUNT_CARDS-2){
             readyForTurn = false;
         }
-        return cardsSelected.remove(0);
+        return  cardsSelected[currentCard++];
     }
 
-    private boolean isSelectedSubsetOfDealt() {
-        return cardsGiven.containsAll(cardsSelected);
+    public boolean isSelectedSubsetOfDealt() {
+        boolean[] usedCards = new boolean[cardsGiven.length];
+        for (Card card : cardsSelected) {
+            boolean cardFound = false;
+            for (int j = 0; j < cardsGiven.length; j++) {
+                if (card.equals(cardsGiven[j])) {
+                    if (!usedCards[j]) {
+                        usedCards[j] = true;
+                        cardFound = true;
+                        break;
+                    }
+                }
+            }
+            if (!cardFound) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void sendInit() {
@@ -182,7 +229,6 @@ public class Player {
                 new PlayerInitPacket(owner.getUUID(), name, currentPos, currentHP, slot, direction);
         Packet initPacket = new Packet(initPlayer.ordinal(), playerInitPacket);
         owner.sendPacket(initPacket);
-
     }
 
     public void initAll(Lobby lobby) {
@@ -194,7 +240,6 @@ public class Player {
     }
 
     public void sendUpdate() {
-        //TODO: send updated values to all connections
         FromServer pktId = FromServer.PLAYER_UPDATE;
         UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo);
         Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
