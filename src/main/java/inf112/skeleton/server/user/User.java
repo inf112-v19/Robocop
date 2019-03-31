@@ -184,7 +184,7 @@ public class User {
      * @param data Packet
      */
     public void sendPacket(Packet data) {
-        sendString(Tools.GSON.toJson(data));
+        sendString(data.toJson());
     }
 
     /**

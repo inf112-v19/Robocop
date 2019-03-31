@@ -31,3 +31,4 @@ hs_err_pid*
 
 data/users
 src/main/java/resources/data
+data/users/*

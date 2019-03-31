@@ -13,8 +13,6 @@ import inf112.skeleton.server.Instance.Lobby;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.user.User;
 
-import java.util.ArrayList;
-
 import static inf112.skeleton.common.specs.Directions.values;
 
 
@@ -26,8 +24,6 @@ public class Player {
 
     private final int COUNT_CARDS = 5;
     private final int GIVEN_CARDS = 9;
-
-
 
 
     public Card[] burnt;
@@ -69,6 +65,7 @@ public class Player {
         this.cardsSelected = new Card[COUNT_CARDS];
         this.burnt = new Card[COUNT_CARDS];
     }
+
     public Player(String name, Vector2 pos, int hp, int slot, Directions directions) {
         this.name = name;
         this.currentHP = hp;
@@ -156,19 +153,18 @@ public class Player {
             cardsSelected[i] = null;
         }
 
-        System.arraycopy(hand, 0, cardsSelected, 0, hand.length);
+        System.arraycopy(hand, 0, cardsSelected, 0, cardsSelected.length);
 
         if (!isSelectedSubsetOfDealt()) {    //Client have been naughty, overrule and give random hand (cards are dealt randomly in the first place).
             System.out.println("[Player serverside - storeSelectedCards] - cards received from client is not a subset of cards dealt.");
-            cardsSelected.clear();
             for (int i = 0; i < 5; i++) {
-                cardsSelected.add(cardsGiven.remove(0));
+                cardsSelected[i] = cardsGiven[i];
             }
         }
 
         //Handle burnt cards, if any.
         for (int i = 0; i < burnt.length; i++) {
-            if(burnt[i] != null){
+            if (burnt[i] != null) {
                 cardsSelected[i] = burnt[i];
             }
         }
@@ -180,25 +176,27 @@ public class Player {
 //                cardsSelected.remove(i);
 //            }
 //        }
+        currentCard = 0;
         readyForTurn = true;
     }
 
     public void storeBurntCard(Card card) {
         for (int i = 0; i < burnt.length; i++) {
-            if(burnt[i] == null){
+            if (burnt[i] == null) {
                 burnt[i] = card;
+                return;
             }
         }
     }
 
     public Card getNextFromSelected() {
-        if(currentCard == COUNT_CARDS-1) {
+        if (currentCard == cardsSelected.length) {
             return null;
         }
-        if(currentCard == COUNT_CARDS-2){
+        if (currentCard == COUNT_CARDS - 1) {
             readyForTurn = false;
         }
-        return  cardsSelected[currentCard++];
+        return cardsSelected[currentCard++];
     }
 
     public boolean isSelectedSubsetOfDealt() {
