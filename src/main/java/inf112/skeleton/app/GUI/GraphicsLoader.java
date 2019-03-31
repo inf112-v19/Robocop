@@ -35,10 +35,10 @@ public class GraphicsLoader {
 
     public Color    color_primary;
 
-    public ImageTextButton.ImageTextButtonStyle btnStyle_rounded_focused,
-                                                btnStyle_rounded_unfocused,
-                                                btnStyle_rounded_frozen,
-                                                btnStyle_players[];
+    public ImageTextButton.ImageTextButtonStyle btnStyle_rounded_focused;
+    public ImageTextButton.ImageTextButtonStyle btnStyle_rounded_unfocused;
+    public ImageTextButton.ImageTextButtonStyle btnStyle_rounded_frozen;
+    public ImageTextButton.ImageTextButtonStyle[] btnStyle_players;
 
     public GraphicsLoader() {
         /*

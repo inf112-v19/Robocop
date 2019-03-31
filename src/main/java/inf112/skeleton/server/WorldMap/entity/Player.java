@@ -171,7 +171,6 @@ public class Player {
         for (int i = 0; i < cardsSelected.length; i++) {
             cardsSelected[i] = null;
         }
-        System.out.printf("hand: %d, cardsleected: %d\r\n", hand.length, cardsSelected.length);
         System.arraycopy(hand, 0, cardsSelected, cardsSelected.length - hand.length, hand.length);
 
 

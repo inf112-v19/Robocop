@@ -166,9 +166,7 @@ public class Game {
     private boolean checkTimer() {
         if (timerStarted == 0)
             return true;
-        if (System.currentTimeMillis() >= timerStarted + timerCountdownSeconds)
-            return true;
-        return false;
+        return System.currentTimeMillis() >= timerStarted + timerCountdownSeconds;
     }
 
     /**

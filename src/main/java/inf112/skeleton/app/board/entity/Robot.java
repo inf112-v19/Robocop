@@ -104,8 +104,8 @@ public class Robot extends Entity {
             }
 
 
-            this.position[0] = (int) Math.round(this.position[0]);
-            this.position[1] = (int) Math.round(this.position[1]);
+            this.position[0] = Math.round(this.position[0]);
+            this.position[1] = Math.round(this.position[1]);
 
 
         }

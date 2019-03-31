@@ -60,9 +60,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
             cleanupLeavingUser(leavingUser);
             loggedInPlayers.remove(getEntityFromLoggedIn(incoming));
         }
-        if (connections.contains(getEntityFromConnections(incoming))) {
-            connections.remove(getEntityFromConnections(incoming));
-        }
+        connections.remove(getEntityFromConnections(incoming));
     }
 
     public void logoutUser(User requestUser) {

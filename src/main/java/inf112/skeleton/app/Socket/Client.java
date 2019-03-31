@@ -25,7 +25,7 @@ public class Client {
                 .handler(new GameSocketInitializer(game)); //handle all ToServer messages
 
         ChannelFuture f = bootstrap.connect("localhost", 58008).sync();
-        game.channel = f.channel(); // creating a connection with the server
+        RoboRally.channel = f.channel(); // creating a connection with the server
         Lwjgl3ApplicationConfiguration application = new Lwjgl3ApplicationConfiguration();
         application.setWindowedMode(RoboRally.width, RoboRally.height);
         application.setResizable(false);
@@ -35,7 +35,7 @@ public class Client {
 
         new Lwjgl3Application(game, application);
 
-        game.channel.closeFuture();
+        RoboRally.channel.closeFuture();
         group.shutdownGracefully();
         System.out.println("stopped");
         System.exit(1);

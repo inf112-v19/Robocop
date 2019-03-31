@@ -52,7 +52,7 @@ public class ScrollableTextbox extends Actor{
     public ScrollableTextbox(int limit, InputMultiplexer inputMultiplexer, Channel channel){
         super();
         this.channel = channel;
-        this.textbox = this;
+        textbox = this;
         lineLimit = limit;
         this.inputMultiplexer = inputMultiplexer;
 
