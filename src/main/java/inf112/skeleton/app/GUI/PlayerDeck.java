@@ -11,8 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import inf112.skeleton.app.RoboRally;
-import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.app.gameStates.GameStateManager;
+import inf112.skeleton.common.specs.Card;
 import io.netty.channel.Channel;
 
 import java.util.HashMap;
@@ -30,22 +30,23 @@ public class PlayerDeck {
     private Table chooseFrom, chooseTo;
     private LinkedList<ImageTextButton> chooseFromButtons, chooseToButtons, greyButtons;
     private HashMap<ImageTextButton, Card> pCards;
-    private Drawable greyCardDrawable = new Card(0,GREY).getDrawable();
+    private Drawable greyCardDrawable = new Card(0, GREY).getDrawable();
     private TextButton btn_chooseCards, btn_done;
 
     private int numberOfChosenButtons;
 
     private final int
-                NUM_CARDS_FROM = 9,
-                NUM_CARDS_TO = 5,
-                CARD_WIDTH = 110,
-                CARD_HEIGHT = (int)(CARD_WIDTH * 1.386);
+            NUM_CARDS_FROM = 9,
+            NUM_CARDS_TO = 5,
+            CARD_WIDTH = 110,
+            CARD_HEIGHT = (int) (CARD_WIDTH * 1.386);
 
     /**
      * Retrieve cards from player and setup displays, such that they may be viewed and chosen amongst.
+     *
      * @param gameStateManager to be able to get the current game-state
      * @param inputMultiplexer to allow cards to be chosen
-     * @param channel to communicate with the server
+     * @param channel          to communicate with the server
      */
     public PlayerDeck(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, Channel channel) {
         this.gsm = gameStateManager;
@@ -75,11 +76,12 @@ public class PlayerDeck {
 
     /**
      * Wait for player to be initialized by gameSocketHandler before returning its cards
+     *
      * @return Arraylist of cards
      */
-    private Card[] getCardsFromPlayer(){
+    private Card[] getCardsFromPlayer() {
         long msWaited = 100, totalWaited = 0;
-        while(true) {
+        while (true) {
             try {
                 return RoboRally.gameBoard.myPlayer.cards;
             } catch (NullPointerException npe) {
@@ -96,12 +98,12 @@ public class PlayerDeck {
 
     /**
      * Add buttons:
-     *     -> "Done": When clicked, all cards should disappear, the choice should be sent to the server and the next button should appear
-     *     -> "Choose cards": When clicked, all cards should reappear such that one may decide which cards to choose.
+     * -> "Done": When clicked, all cards should disappear, the choice should be sent to the server and the next button should appear
+     * -> "Choose cards": When clicked, all cards should reappear such that one may decide which cards to choose.
      */
     private void initializeButtons() {
         btn_chooseCards = RoboRally.graphics.generateTextButton("Choose cards");
-        btn_chooseCards.setPosition(stage.getViewport().getScreenWidth()-btn_chooseCards.getWidth(),0);
+        btn_chooseCards.setPosition(stage.getViewport().getScreenWidth() - btn_chooseCards.getWidth(), 0);
         btn_chooseCards.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -121,9 +123,7 @@ public class PlayerDeck {
                     RoboRally.gameBoard.myPlayer.selectedCards[i] = pCards.get(cardButton);
                 }
                 RoboRally.gameBoard.myPlayer.sendSelectedCardsToServer();
-                RoboRally.gameBoard.myPlayer.cards = null;
-                RoboRally.gameBoard.hud.removeDeck();
-                inputMultiplexer.removeProcessor(stage);
+                removeDeck();
             }
         });
     }
@@ -140,11 +140,11 @@ public class PlayerDeck {
         chooseFrom.setPosition(stage.getViewport().getScreenWidth() / 2 - chooseFrom.getWidth() / 2, 140);
         stage.addActor(chooseFrom);
 
-        for(Card card : getCardsFromPlayer()) {
+        for (Card card : getCardsFromPlayer()) {
             tmpDrawable = card.getDrawable();
 
             // Create new card-image button with priority in top-right corner.
-            tmpButton = new ImageTextButton(""+card.getPriority(), new ImageTextButton.ImageTextButtonStyle(
+            tmpButton = new ImageTextButton("" + card.getPriority(), new ImageTextButton.ImageTextButtonStyle(
                     tmpDrawable, tmpDrawable, tmpDrawable, RoboRally.graphics.default_font));
             tmpButton.getStyle().fontColor = Color.RED;
             tmpButton.top().padTop(11).padLeft(38);
@@ -180,8 +180,8 @@ public class PlayerDeck {
      */
     private void initializeToDeck() {
         chooseTo = new Table();     //Selected cards.
-        chooseTo.setSize(NUM_CARDS_TO *(CARD_WIDTH - 8 * 2), CARD_HEIGHT - 8 * 2);
-        chooseTo.setPosition(stage.getViewport().getScreenWidth()-chooseTo.getWidth()-7, 2);
+        chooseTo.setSize(NUM_CARDS_TO * (CARD_WIDTH - 8 * 2), CARD_HEIGHT - 8 * 2);
+        chooseTo.setPosition(stage.getViewport().getScreenWidth() - chooseTo.getWidth() - 7, 2);
         stage.addActor(chooseTo);
 
 
@@ -226,6 +226,7 @@ public class PlayerDeck {
 
     /**
      * Render the player-deck.
+     *
      * @param sb sprite-batch
      */
     public void render(Batch sb) {
@@ -234,11 +235,21 @@ public class PlayerDeck {
 
     /**
      * Update viewports of stages whenever the screen is resized.
-     * @param width of screen after resize
+     *
+     * @param width  of screen after resize
      * @param height of screen after resize
      */
     public void resize(int width, int height) {
         stage.getViewport().update(width, height);
         altStage.getViewport().update(width, height);
+    }
+
+    /**
+     * Remove deck and cleanup
+     */
+    public void removeDeck() {
+        RoboRally.gameBoard.myPlayer.cards = null;
+        RoboRally.gameBoard.hud.removeDeck();
+        inputMultiplexer.removeProcessor(stage);
     }
 }

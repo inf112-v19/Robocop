@@ -79,6 +79,14 @@ public class HUD {
     }
 
     /**
+     * Get the Player Deck
+     * @return PlayerDeck
+     */
+    public PlayerDeck getPlayerDeck(){
+        return playerDeck;
+    }
+
+    /**
      * Dispose of data-structures used by HUD
      */
     public void dispose() {
@@ -130,7 +138,7 @@ public class HUD {
      */
     private void setupGameChatAndPushWelcome() {
         ScrollableTextbox gameChat = new ScrollableTextbox(100, channel);
-        gameChat.push(new ChatMessagePacket("Welcome to RoboRally. Hope you enjoy this game -RoboCop"));
+        gameChat.push(new ChatMessagePacket("Welcome to RoboCop. You have 30 seconds to choose cards"));
         gameChat.push(new ChatMessagePacket("[INFO]: Available commands: "));
         gameChat.push(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
         gameChat.push(new ChatMessagePacket("[INFO]:     \"!players\""));

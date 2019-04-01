@@ -2,9 +2,13 @@ package inf112.skeleton.server.Instance;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import inf112.skeleton.common.packet.FromServer;
+import inf112.skeleton.common.packet.Packet;
+import inf112.skeleton.common.packet.data.StateChangePacket;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.MapFile;
+import inf112.skeleton.common.specs.StateChange;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.WorldMap.entity.Player;
@@ -191,6 +195,13 @@ public class Game {
     private void forcePlayersReady() {
         for (Player player : players) {
             if (!player.getReadyStatus()) {
+                player.getOwner().sendPacket(
+                        new Packet(
+                                FromServer.STATE_CHANGED,
+                                new StateChangePacket(StateChange.FORCE_CARDS
+                                )
+                        )
+                );
                 player.forceSelect();
                 player.getOwner().sendServerMessage("You did not select cards in time, selecting automatically.");
             }

@@ -33,7 +33,8 @@ public class Tab_Lobbies extends MenuTab {
     LinkedHashMap<String, ImageTextButton> lobbyButtons;
     LinkedHashMap<String, Table> lobbyViews;
 
-    ImageTextButton.ImageTextButtonStyle lobbyButtonStyleFocused, lobbyButtonStyleUnfocused;
+    ImageTextButton.ImageTextButtonStyle lobbyButtonStyleFocused;
+    ImageTextButton.ImageTextButtonStyle lobbyButtonStyleUnfocused;
     ImageTextButton currentLobby;
 
     public Table lobbiesHeader;
@@ -66,6 +67,23 @@ public class Tab_Lobbies extends MenuTab {
 
         lobbyButtons = new LinkedHashMap<>();
         lobbyViews = new LinkedHashMap<>();
+
+        // Set style of lobby buttons
+        lobbyView_bg = new TextureRegionDrawable(new TextureRegion(
+                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/LobbiesView_bg.png"))));
+
+        Drawable tmp;
+
+        tmp = new TextureRegionDrawable(new TextureRegion(
+                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/LobbyButtonFocused.png"))));
+        lobbyButtonStyleFocused = new ImageTextButton.ImageTextButtonStyle(tmp, tmp, tmp, font);
+        lobbyButtonStyleFocused.fontColor = Color.BLACK;
+
+        tmp = new TextureRegionDrawable(new TextureRegion(
+                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/LobbyButtonUnfocused.png"))));
+        lobbyButtonStyleUnfocused = new ImageTextButton.ImageTextButtonStyle(tmp, tmp, tmp, font);
+        lobbyButtonStyleUnfocused.fontColor = Color.BLACK;
+
 
         // Add Lobbies table (Left side of screen)
         lobbies = new Table().top();

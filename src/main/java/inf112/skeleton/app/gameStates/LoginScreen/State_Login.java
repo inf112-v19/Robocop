@@ -121,6 +121,7 @@ public class State_Login extends GameState {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Clicked register button...");
+                enterLobby();
             }
         });
         loginDetails.add(tmp).colspan(2).center().padTop(2).width(300).row();
