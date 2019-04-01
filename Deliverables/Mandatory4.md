@@ -37,3 +37,5 @@ Which is a challange to adapt to work we are not used to. Communication is summe
 * Multiplayer over lan or internet
     * We did this from the start
     
+## notes:
+some users commits arent linked to their github name, and graphics do not show up under contributions on github statistics.
