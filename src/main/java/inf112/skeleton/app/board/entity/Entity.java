@@ -9,12 +9,10 @@ public abstract class Entity {
 
     protected Vector2 pos;
     protected EntityType type;
-    protected Directions facing;
 
     public Entity(float x, float y, EntityType type) {
         this.pos = new Vector2(x, y);
         this.type = type;
-        this.facing = Directions.NORTH;
     }
 
     /**
@@ -29,14 +27,6 @@ public abstract class Entity {
      */
     public abstract void render(SpriteBatch batch);
 
-    /**
-     * Get the current position of the entity.
-     *
-     * @return current position
-     */
-    public Vector2 getPos() {
-        return pos;
-    }
 
     /**
      * Get the current X coordinate of the enitity.
@@ -56,14 +46,6 @@ public abstract class Entity {
         return pos.y;
     }
 
-    /**
-     * Get the entities EntityType
-     *
-     * @return EntityType
-     */
-    public EntityType getType() {
-        return type;
-    }
 
     /**
      * Get the Sprite width.

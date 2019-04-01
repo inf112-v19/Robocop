@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import inf112.skeleton.app.Action.InputContainer;
@@ -25,12 +23,15 @@ public class State_Playing extends GameState {
     private CameraHandler cameraHandler;
     private static GameBoard gameBoard;
     private HUD hud;
-    private Channel channel;
-    public boolean displayHUD = true;
+    private boolean displayHUD = true;
 
+    /**
+     * Initialize the display seen while playing the game.
+     * @param gsm game-state manager, lets you switch between and manage game-states more easily
+     * @param channel lets you communicate with server
+     */
     public State_Playing(GameStateManager gsm, Channel channel) {
         super(gsm, channel);
-        this.channel = channel;
         viewport = new FillViewport(width, height, camera);
         camera.setToOrtho(false, width, height);
         camera.update();
@@ -41,15 +42,12 @@ public class State_Playing extends GameState {
 
         gameBoard = RoboRally.gameBoard;
         hud = new HUD(gsm, inputMultiplexer, channel);
-    }
-
-    @Override
-    protected void handleInput() {
-        cameraHandler.handle();
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override
     public void update(float dt) {
+        cameraHandler.handle();
         camera.update();
         gameBoard.update();
 
@@ -72,11 +70,6 @@ public class State_Playing extends GameState {
     public void dispose() {
         hud.dispose();
         gameBoard.dispose();
-    }
-
-    @Override
-    public void focus() {
-        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override

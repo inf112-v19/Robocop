@@ -1,7 +1,6 @@
 package inf112.skeleton.app.gameStates.Playing;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import inf112.skeleton.app.Action.InputContainer;
 
@@ -27,16 +26,28 @@ public class CameraHandler {
                         K_SHIFT_LEFT    = 59;
 
 
+    /**
+     * Initialize camera handler
+     * @param camera of game
+     * @param inputContainer storage of input-states (key-pressed, etc.)
+     */
     public CameraHandler(OrthographicCamera camera, InputContainer inputContainer) {
         this.camera = camera;
         this.inputContainer = inputContainer;
     }
 
-    // Helper functions (should probably not be here)
+    /**
+     * Check whether a key is pressed
+     * @param key specific key to check
+     * @return true if key pressed
+     */
     private Boolean isPressed(int key) {
         return this.inputContainer.keys[key];
     }
 
+    /**
+     * Call subfunctions to handle input
+     */
     public void handle() {
         handleKeys();
         handleMouseMovement();
@@ -45,22 +56,27 @@ public class CameraHandler {
     }
 
 
+    /**
+     * Whenever a key is pressed, handle what happens
+     */
     private void handleKeys() {
-        int speedMultiplier;
-
-        // Misc future keys
-
+        int speedMultiplier = isPressed(K_SHIFT_LEFT) ? 3 : 1;
 
         // Misc camera functions
-        speedMultiplier = isPressed(K_SHIFT_LEFT) ? 3 : 1;
-        if (isPressed(K_PLUS)) {        // ZOOM IN
+
+        // Zoom in (plus-key)
+        if (isPressed(K_PLUS)) {
             camera.zoom = max(camera.zoom - zoomAmount, zoomMin);
         }
-        if (isPressed(K_MINUS)) {       // ZOOM OUT
+
+        // Zoom out (minus key)
+        if (isPressed(K_MINUS)) {
             camera.zoom = min(camera.zoom + zoomAmount, zoomMax);
         }
 
         // Camera movement
+
+        // Move camera based on keys (up, down, left, right) pressed
         if (isPressed(K_UP)) {
             camera.translate(0, baseCameraMovementSpeed * speedMultiplier);
         }
@@ -75,15 +91,20 @@ public class CameraHandler {
         }
     }
 
+    /**
+     * Zoom camera
+     */
     private void handleScroll() {
         int scrollMultiplier = inputContainer.scrollAmount;
         if (scrollMultiplier != 0) {
             inputContainer.scrollAmount = 0;
             camera.zoom = min(max(camera.zoom + scrollAmount * scrollMultiplier, zoomMin), zoomMax);
-            System.out.println(camera.zoom);
         }
     }
 
+    /**
+     * Whenever the mouse is clicked while dragged across the screen, the camera should move.
+     */
     private void handleMouseMovement() {
         if (Gdx.input.isTouched()) {
             camera.translate((-Gdx.input.getDeltaX()) * camera.zoom, (Gdx.input.getDeltaY()) * camera.zoom);

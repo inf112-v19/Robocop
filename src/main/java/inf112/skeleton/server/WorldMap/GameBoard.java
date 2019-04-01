@@ -1,44 +1,30 @@
 package inf112.skeleton.server.WorldMap;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.specs.TileDefinition;
-import inf112.skeleton.server.WorldMap.entity.Entity;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.BlackHole;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.Laser;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 public abstract class GameBoard {
 
-    protected ArrayList<Entity> entities;
     public ArrayList<TileEntity> tileEntities;
 
     public GameBoard() {
-        entities = new ArrayList<>();
         tileEntities = new ArrayList<>();
-
     }
 
-    public void addEntity(Entity e) {
-        entities.add(e);
-    }
-
-    public void render(OrthographicCamera camera, SpriteBatch batch) {
-        for (Entity entity : entities) {
-            entity.render(batch);
-
-        }
-    }
-
-    public void addTileEntity(TiledMapTile tile, int x, int y) {
+    /**
+     * Register TileEntity to the board
+     * @param tile
+     * @param x
+     * @param y
+     */
+    void addTileEntity(TiledMapTile tile, int x, int y) {
         TileEntity newTile;
         switch (TileDefinition.getTileById(tile.getId())) {
             case LASER:
@@ -54,74 +40,40 @@ public abstract class GameBoard {
                 return;
         }
         tileEntities.add(newTile);
-        System.out.println("Found object: " + TileDefinition.getTileById(tile.getId()).getName());
     }
 
+    /**
+     * Clock based events owned by the board.
+     */
     public void update() {
-        for (Entity entity : entities) {
-            entity.update(this);
-
-        }
 
         for (TileEntity obj : tileEntities) {
             obj.update();
         }
     }
 
-    public TileEntity getTileEntityAtPosition(Vector2 pos){
+    /**
+     * Get a tile entity if it exists at a specified position
+     * @param pos
+     * @return TileEntity if found, null if not found
+     */
+    public TileEntity getTileEntityAtPosition(Vector2 pos) {
         for (TileEntity tileEntity : tileEntities) {
-            if(tileEntity.detectCollision(pos)){
+            if (tileEntity.detectCollision(pos)) {
                 return tileEntity;
             }
         }
         return null;
     }
 
-    public void moveEntity(Entity e, Directions dir) throws NoSuchElementException {
-        if (entities.contains(e)) {
-            switch (dir) {
-                case NORTH:
-                    e.moveY(1);
-                    break;
-                case SOUTH:
-                    e.moveY(-1);
-                    break;
-                case WEST:
-                    e.moveX(-1);
-                    break;
-                case EAST:
-                    e.moveX(1);
-                    break;
-            }
-        } else {
-            throw new NoSuchElementException("Entity does not exist on this gameboard");
-        }
-    }
-
-    public abstract void dispose();
-
     /**
-     * Gets a tile by pixel position within the board, at a specified layer.
-     *
-     * @param layer
-     * @param x
-     * @param y
-     * @return
+     * Check if a tile at a coordinate is walkable
+     * @param coord
+     * @return true if walkable
      */
-    public TileDefinition getTileDefinitionByLocation(int layer, float x, float y) {
-        return this.getTileDefinitionByCoordinate(
-                layer,
-                (int) (x / TileDefinition.TILE_SIZE),
-                (int) (y / TileDefinition.TILE_SIZE)
-        );
-    }
-
-    public boolean isTileWalkable (Vector2 coord) {
-        TileDefinition tile = getTileDefinitionByCoordinate(0, (int)coord.x, (int)coord.y);
-        if(tile!=null) {
-
-
-            System.out.println(tile.getName() + "("+coord.x+", "+coord.y+")");
+    public boolean isTileWalkable(Vector2 coord) {
+        TileDefinition tile = getTileDefinitionByCoordinate(0, (int) coord.x, (int) coord.y);
+        if (tile != null) {
             return tile.isCollidable();
         }
         return true;
@@ -133,21 +85,45 @@ public abstract class GameBoard {
      * @param layer
      * @param col
      * @param row
-     * @return
+     * @return TileDefinition of given tileCoords
      */
     public abstract TileDefinition getTileDefinitionByCoordinate(int layer, int col, int row);
 
-
+    /**
+     * Get TiledMapTileLayer Cell at a given coordinate
+     * @param layer
+     * @param col
+     * @param row
+     * @return Cell if found, null if not found
+     */
     public abstract TiledMapTileLayer.Cell getCellByCoordinate(int layer, int col, int row);
 
+    /**
+     * Gets the rotation of a tile,
+     * useful for checking which way a belt might push a player
+     * @param layer
+     * @param col
+     * @param row
+     * @return rotation
+     */
     public abstract int getTileRotationByCoordinate(int layer, int col, int row);
 
 
+    /**
+     * Get the board width
+     * @return width
+     */
     public abstract int getWidth();
 
+    /**
+     * Get the board height
+     * @return height
+     */
     public abstract int getHeight();
 
+    /**
+     * Get the count of board layers
+     * @return layer count
+     */
     public abstract int getLayers();
-
-
 }

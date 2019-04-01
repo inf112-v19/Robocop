@@ -13,33 +13,63 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class GameWorldInstance implements ApplicationListener {
 
-    public GameBoard gameBoard;
     ConcurrentHashMap<String, Lobby> lobbies = new ConcurrentHashMap<>();
 
     private int frame = 0;
     private final int TPS = 16;
 
-
+    /**
+     * Check if a lobby exists
+     * @param name
+     * @return true if it exists
+     */
     public boolean doesLobbyExist(String name) {
         return lobbies.containsKey(name);
     }
 
+    /**
+     * Get lobby by name
+     * @param name
+     * @return Lobby
+     */
     public Lobby getLobby(String name) {
         return lobbies.get(name);
     }
 
+    /**
+     * add a new lobby
+     * @param lobby
+     */
     public void addLobby(Lobby lobby){
         lobbies.put(lobby.getName(), lobby);
+        sendUpdatedLobbyListToAll();
     }
 
+    public void sendUpdatedLobbyListToAll(){
+        for (User user :
+                RoboCopServerHandler.loggedInPlayers) {
+            if (!user.isInLobby()){
+                user.getLobbyList(this);
+            }
+        }
+    }
+
+    /**
+     * Get all the lobbies
+     * @return all lobbies
+     */
     public ConcurrentHashMap<String, Lobby> getLobbies() {
         return lobbies;
     }
 
+    /**
+     * Remove a lobby
+     * @param name
+     */
     public void removeLobby(String name) {
         lobbies.remove(name);
+        sendUpdatedLobbyListToAll();
     }
-
 
     @Override
     public void create() {
@@ -64,16 +94,14 @@ public class GameWorldInstance implements ApplicationListener {
         }
     }
 
+    /**
+     * What should be done every tick
+     */
     public void tick() {
-//        for (User user : RoboCopServerHandler.loggedInPlayers) {
-//            user.player.update(gameBoard);
-//        }
-
         for (Lobby lobby :
                 lobbies.values()) {
             lobby.update();
         }
-
     }
 
     @Override

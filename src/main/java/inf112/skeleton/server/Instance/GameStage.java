@@ -4,7 +4,7 @@ public enum GameStage {
     LOBBY,
     DEALING,
     WAITING,
-    REQUEST,
+    GET_CARDS,
     MOVING,
     VICTORY,
 }

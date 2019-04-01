@@ -43,19 +43,6 @@ public class TiledMapLoader extends GameBoard {
 
     }
 
-    @Override
-    public TileDefinition getTileDefinitionByCoordinate(int layer, int col, int row) {
-        TiledMapTileLayer.Cell cell = ((TiledMapTileLayer) tiledMap.getLayers().get(layer)).getCell(col, row);
-        if (cell != null) {
-
-            TiledMapTile tile = cell.getTile();
-            if (tile != null) {
-                int id = tile.getId();
-                return TileDefinition.getTileById(id);
-            }
-        }
-        return null;
-    }
 
     @Override
     public int getWidth() {
@@ -66,9 +53,6 @@ public class TiledMapLoader extends GameBoard {
     public int getHeight() {
         return ((TiledMapTileLayer) tiledMap.getLayers().get(0)).getHeight();
     }
-
-    @Override
-    public int getLayers() {
-        return tiledMap.getLayers().getCount();
-    }
 }
+
+

@@ -18,12 +18,6 @@ public class CardHandPacket implements PacketData {
         return hand;
     }
 
-    public void setHand(Card[] hand) {
-        this.hand = new int[hand.length];
-        for(int i = 0; i < hand.length; i++) {
-            this.hand[i] = hand[i].getPriority();
-        }
-    }
 
     public static CardHandPacket parseJSON(JsonObject jsonObject) {
         return Tools.GSON.fromJson(jsonObject.get("data"), CardHandPacket.class);

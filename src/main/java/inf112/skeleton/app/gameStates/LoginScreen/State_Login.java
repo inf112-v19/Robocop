@@ -4,9 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -23,31 +21,40 @@ import io.netty.channel.Channel;
 import static inf112.skeleton.common.status.LoginResponseStatus.NO_RESPONSE_YET;
 
 public class State_Login extends GameState {
-    private final Color color_primary   = new Color(0.6f,0.4f,0.2f,1);
-    private String username, password;
-    private TextField usernameField;
     Stage stage;
-    TextField messageToUser;
+
+    private TextField usernameField, passwordField, messageToUser;
+
     public LoginResponseStatus loginStatus;
-    long loginRequestTime, loginRequestNextStop;
-    private Channel channel;
+    private long loginRequestTime, loginRequestNextStop;
 
     public State_Login(GameStateManager gsm, Channel channel) {
         super(gsm, channel);
-        this.channel = channel;
 
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
-        Skin skin = new Skin(Gdx.files.internal("graphics/ui/uiskin.json"));
         Table loginDetails = new Table();
+        Skin skin = RoboRally.graphics.default_skin;
+
+        /*
+         * RoboCop logo
+         */
+
+        loginDetails.add(new Image(RoboRally.graphics.logo)).size(500,190).padBottom(30).colspan(2).row();
 
         // Add a field to display error messages to user...
         TextField.TextFieldStyle txtStyle = new TextField.TextFieldStyle();
         txtStyle.font = skin.getFont("default-font");
         txtStyle.fontColor = Color.RED;
+
         messageToUser = new TextField("", txtStyle);
         messageToUser.setDisabled(true);
         messageToUser.setAlignment(Align.center);
         loginDetails.add(messageToUser).size(600, 30).colspan(2).row();
+
+
+        /*
+         * Username fields
+         */
 
         TextField tmp;
 
@@ -59,13 +66,12 @@ public class State_Login extends GameState {
         // Add input-field for typing username.
         usernameField = new TextField("", skin);
         usernameField.setMessageText("Username");
-        usernameField.setTextFieldListener(new TextField.TextFieldListener() {
-            @Override
-            public void keyTyped(TextField textField, char c) {
-                username = textField.getText();
-            }
-        });
         loginDetails.add(usernameField).left().row();
+
+
+        /*
+         * Password fields
+         */
 
         // Add "password" text-box.
         tmp = new TextField("Password", skin);
@@ -73,23 +79,25 @@ public class State_Login extends GameState {
         loginDetails.add(tmp).right();
 
         // Add input-field for typing password.
-        tmp = new TextField("", skin);
-        tmp.setMessageText("********");
-        tmp.setPasswordMode(true);
-        tmp.setPasswordCharacter('*');
-        tmp.setTextFieldListener(new TextField.TextFieldListener() {
+        passwordField = new TextField("", skin);
+        passwordField.setMessageText("********");
+        passwordField.setPasswordMode(true);
+        passwordField.setPasswordCharacter('*');
+        passwordField.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char c) {
                 // 10 = Keys.ENTER (Libgdx uses a different keyboard system)
                 if ((int)c == 10)
                     enterLobby();
-                else
-                    password = textField.getText();
             }
         });
-        loginDetails.add(tmp).left().row();
+        loginDetails.add(passwordField).left().row();
 
-        // Add login button.
+
+        /*
+         * Login button
+         */
+
         tmp = new TextField("Login ", skin);
         tmp.setDisabled(true);
         tmp.setAlignment(Align.center);
@@ -101,6 +109,11 @@ public class State_Login extends GameState {
         });
         loginDetails.add(tmp).colspan(2).center().padTop(5).size(300, 40).row();
 
+
+        /*
+         * Register button
+         */
+
         tmp = new TextField("Register", skin);
         tmp.setDisabled(true);
         tmp.setAlignment(Align.center);
@@ -108,106 +121,120 @@ public class State_Login extends GameState {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Clicked register button...");
+                enterLobby();
             }
         });
         loginDetails.add(tmp).colspan(2).center().padTop(2).width(300).row();
 
 
-        loginDetails.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, Align.center);
+        loginDetails.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f + 100, Align.center);
 
         stage.addActor(loginDetails);
         Gdx.input.setInputProcessor(stage);
+        stage.setKeyboardFocus(usernameField);
+    }
 
-        enterLobby();
+    private String getUsername() {
+        return usernameField.getText();
+    }
+
+    private String getPassword() {
+        return passwordField.getText();
+    }
+
+    private void notifyUser(Color color, String text) {
+        messageToUser.getStyle().fontColor = color;
+        messageToUser.setText(text);
+    }
+
+    private void notifyUser(String text) {
+        notifyUser(Color.YELLOW, text);
     }
 
     // Send login request to server and change game-state if login successful
-    protected void enterLobby() {
-        // If nothing typed, focus username field and return without contacting server.
-        if (username == null || password == null) {
+    private void enterLobby() {
+        String  username = getUsername(),
+                password = getPassword();
+
+        // If username is too short, notify user
+        if (username.length() < 3) {
             stage.setKeyboardFocus(usernameField);
-            loginStatus = null;
+            notifyUser(Color.RED, "Username must have at least 3 characters...");
             return;
         }
 
-        // Create login request packet
-        String packetData = Tools.GSON.toJson(new Packet(0, new LoginPacket(username, password)));
-        System.out.println("sending: " + packetData);
+        // If password is too short, notify user
+        if (password.length() < 5) {
+            stage.setKeyboardFocus(passwordField);
+            notifyUser(Color.RED, "Password must have at least 5 characters...");
+            return;
+        }
 
         // Send login request and wait for a response (Will be handled in update)
-        loginStatus = NO_RESPONSE_YET;
-        channel.writeAndFlush(packetData+"\r\n");
+        channel.writeAndFlush(Tools.GSON.toJson(new Packet(0, new LoginPacket(username, password)))+"\r\n");
 
+        loginStatus = NO_RESPONSE_YET;
         loginRequestTime = System.currentTimeMillis();
         loginRequestNextStop = 0;
-        messageToUser.getStyle().fontColor = Color.YELLOW;
+
+        // Disable input while waiting for login response
         Gdx.input.setInputProcessor(null);
         stage.setKeyboardFocus(null);
-        return;
-    }
-
-
-
-
-    @Override
-    protected void handleInput() {
-
     }
 
     @Override
     public void update(float dt) {
-        if (loginStatus != null) {
-            // Change game-state if successful login.
-            switch(loginStatus) {
-                case NO_RESPONSE_YET:
-                    if (Gdx.input.isTouched()) {
-                        messageToUser.setText("");
-                        break;
-                    }
+        if (loginStatus == null)
+            return;
 
-                    long currentTime = System.currentTimeMillis();
-                    if (currentTime >= loginRequestTime + loginRequestNextStop * 1000) {
-                        messageToUser.setText("Logging in... (waited " + loginRequestNextStop + " seconds)");
-                        loginRequestNextStop++;
-                    }
-                    return;
-                case LOGIN_SUCCESS:
-                    RoboRally.username = username;
-                    gsm.set(new State_MainMenu(gsm, channel));
-                    return;
-                case ALREADY_LOGGEDIN:
-                    messageToUser.getStyle().fontColor = Color.RED;
-                    messageToUser.setText("User already logged in");
+        switch(loginStatus) {
+            case NO_RESPONSE_YET:
+                // If user has clicked anywhere, remove message to user and cancel login-request (After switch-case).
+                if (Gdx.input.isTouched()) {
+                    notifyUser("");
+                    break;
+                }
 
-                    break;
-                case WRONG_LOGINDETAILS:
-                    messageToUser.getStyle().fontColor = Color.RED;
-                    messageToUser.setText("Wrong username or password");
-                    break;
-                default:
-                    messageToUser.getStyle().fontColor = Color.YELLOW;
-                    messageToUser.setText("Cannot log in yet, this function has not yet been implemented.");
-                    break;
-            }
-            Gdx.input.setInputProcessor(stage);
-            stage.setKeyboardFocus(messageToUser);
-            loginStatus = null;
+                // Update message to user every second while waiting for login response from server
+                if (System.currentTimeMillis() >= loginRequestTime + loginRequestNextStop * 1000) {
+                    messageToUser.setText("Logging in... (waited " + loginRequestNextStop + " seconds)");
+                    loginRequestNextStop++;
+                }
+                return;
+
+            case LOGIN_SUCCESS:
+                RoboRally.username = getUsername();
+                gsm.set(new State_MainMenu(gsm, channel));
+                return;
+
+            case ALREADY_LOGGEDIN:
+                notifyUser(Color.RED, "User already logged in");
+                break;
+
+            case WRONG_LOGINDETAILS:
+                notifyUser(Color.RED, "Wrong username or password");
+                break;
+
+            default:
+                notifyUser("Unhandled login-status: " + loginStatus.name());
+                break;
         }
+
+        // Enable input.
+        Gdx.input.setInputProcessor(stage);
+        stage.setKeyboardFocus(messageToUser);
+        loginStatus = null;
     }
 
     @Override
     public void render(SpriteBatch sb) {
-        Gdx.gl.glClearColor(color_primary.r,color_primary.g, color_primary.b, color_primary.a);
+        Color bgColor = RoboRally.graphics.color_primary;
+        Gdx.gl.glClearColor(bgColor.r,bgColor.g, bgColor.b, bgColor.a);
         stage.draw();
     }
 
     @Override
     public void dispose() {
-
-    }
-
-    @Override
-    public void focus() {
 
     }
 

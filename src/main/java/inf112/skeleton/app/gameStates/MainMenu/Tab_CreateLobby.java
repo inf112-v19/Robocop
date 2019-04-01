@@ -1,9 +1,9 @@
 package inf112.skeleton.app.gameStates.MainMenu;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.ToServer;
@@ -13,23 +13,33 @@ import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
 
 public class Tab_CreateLobby extends MenuTab {
-    TextField lobbyName;
-    SelectBox<String> selectBox;
-    MapFile[] maps;
+    private TextField lobbyName;
+    private SelectBox<String> selectBox;
+    private MapFile[] maps;
 
 
+    /**
+     * Initialize new tab, containing an input-field for lobby name, a drop-down box of maps to choose from
+     * and a button which sends a lobby-create packet to server when clicked.
+     * @param gameStateManager manages game-states
+     * @param ch used to communicate with server.
+     */
     public Tab_CreateLobby(GameStateManager gameStateManager, Channel ch) {
         super(gameStateManager, ch);
 
-        Skin skin = new Skin(Gdx.files.internal("graphics/ui/uiskin.json"));
         TextField tmp;
 
+        /*
+         * Fields to specify lobby name
+         */
 
-        tmp = new TextField("Lobby name:", skin);
+        // Label: "Lobby name:"
+        tmp = new TextField("Lobby name:", RoboRally.graphics.default_skin);
         tmp.setDisabled(true);
         display.add(tmp).size(200, 40);
 
-        lobbyName = new TextField("", skin);
+        // Input-field
+        lobbyName = new TextField("", RoboRally.graphics.default_skin);
         display.add(lobbyName).size(500, 40).row();
 
         lobbyName.setTextFieldListener(new TextField.TextFieldListener() {
@@ -42,35 +52,52 @@ public class Tab_CreateLobby extends MenuTab {
             }
         });
 
-        tmp = new TextField("Choose map: ", skin);
+
+        /*
+         * Drop-down box to specify which map one wants to play.
+         */
+
+        // Label: "Choose map:"
+        tmp = new TextField("Choose map: ", RoboRally.graphics.default_skin);
         tmp.setDisabled(true);
         display.add(tmp).size(200, 40);
 
-        selectBox = new SelectBox<>(skin);
-
+        // Get name of all available maps.
         maps = MapFile.values();
         String[] mapNames = new String[maps.length];
         for (int i = 0 ; i < maps.length ; i++) {
             mapNames[i] = maps[i].name;
         }
 
+        // Create drop-down box with all map-names as options.
+        selectBox = new SelectBox<>(RoboRally.graphics.default_skin);
         selectBox.setItems(mapNames);
         selectBox.setSize(500, 300);
         display.add(selectBox).size(500, 40).row();
 
-        TextButton tmp2 = new TextButton("Create new lobby", skin);
+
+        /*
+         * Button: "Create new lobby"
+         */
+
+        TextButton tmp2 = new TextButton("Create new lobby", RoboRally.graphics.default_skin);
         tmp2.addListener(new ChangeListener() {
              @Override
              public void changed(ChangeEvent changeEvent, Actor actor) {
                  lobby_create();
              }
          });
-
         display.add(tmp2).size(400, 50).padTop(5).colspan(2);
 
+
+        // Set initial key-board focus to lobby-name input field.
         ((State_MainMenu)gsm.peek()).stage.setKeyboardFocus(lobbyName);
     }
 
+    /**
+     * Send a lobby-creation request to the server and return to the lobby menu.
+     * If the request was successful, the player should be put into the newly created lobby
+     */
     public void lobby_create() {
         String selected = selectBox.getSelected();
         for (MapFile map : maps) {

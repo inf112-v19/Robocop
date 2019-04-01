@@ -23,7 +23,7 @@ public class Server {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-
+                    // Start lobgdx with mockGraphics, to allow us to use all libgdx features on the server.
                     MockGraphics mockGraphics = new MockGraphics();
                     Gdx.graphics = mockGraphics;
                     Gdx.gl = mock(GL20.class);
@@ -35,9 +35,12 @@ public class Server {
                 }
             }
         });
+
+        // Set up event groups
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
+            // Start socket
             ServerBootstrap bootstrap = new ServerBootstrap().group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class).childHandler(new RoboCopServerInitializer());
             System.out.println("Binding to port " + port + "...");

@@ -12,10 +12,10 @@ public enum TileDefinition {
     TBRACKETFLIPPED(7, true, Directions.NORTH, "T-BracketFlipped"),
     RIGHTTURN(8, true, Directions.EAST, "RightTurn"),
     LEFTTURN(9, true, Directions.WEST, "LeftTurn"),
-    LASERSOURCE(11, true, Directions.NORTH, "Laser-Source"),
-    LASER(12, true, Directions.NORTH, "Laser"),
-    LASERCROSS(13, true, Directions.NORTH, "LaserCross"),
-    BLACK_HOLE(14, true, Directions.NORTH, "BlackHole");
+    LASERSOURCE(18, true, Directions.NORTH, "Laser-Source"),
+    LASER(19, true, Directions.NORTH, "Laser"),
+    LASERCROSS(20, true, Directions.NORTH, "LaserCross"),
+    BLACK_HOLE(21, true, Directions.NORTH, "BlackHole");
 
 
     public static final int TILE_SIZE = 64;
@@ -31,18 +31,35 @@ public enum TileDefinition {
         this.name = name;
     }
 
+    /**
+     * Get tile id
+     * @return id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Check if tile is collidable
+     * @return true if collidable
+     */
     public boolean isCollidable() {
         return collidable;
     }
 
+    /**
+     * get the default direction of a tile
+     * will be used for conveyor belts and gyros to check rotation
+     * @return Direction the default facing direction
+     */
     public Directions getDefaultFace() {
         return defaultFace;
     }
 
+    /**
+     * Get the tile name
+     * @return tile name
+     */
     public String getName() {
         return name;
     }
@@ -57,6 +74,11 @@ public enum TileDefinition {
         }
     }
 
+    /**
+     * Get a TileDefinition by id
+     * @param id
+     * @return TileDefinition
+     */
     public static TileDefinition getTileById(int id) {
         return tileMap.get(id);
     }

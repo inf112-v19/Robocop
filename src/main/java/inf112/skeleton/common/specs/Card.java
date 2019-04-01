@@ -37,7 +37,7 @@ public class Card {
             drawables = new HashMap<>();
             for (CardType move : CardType.values())
                 drawables.put(move, new TextureRegionDrawable(new TextureRegion(
-                        new Texture(Gdx.files.internal("graphics/ui/cards/" + move.name() + ".png")))));
+                        new Texture(Gdx.files.internal("graphics/ui/properCards/" + move.name() + ".png")))));
         }
         return drawables.get(type);
     }
@@ -49,9 +49,6 @@ public class Card {
         if(b == this) {
             return true;
         }
-        if(((Card) b).priority == this.priority && ((Card) b).type == this.type) {
-            return true;
-        }
-        return false;
+        return ((Card) b).priority == this.priority && ((Card) b).type == this.type;
     }
 }

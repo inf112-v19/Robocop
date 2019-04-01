@@ -15,9 +15,6 @@ public class JoinLobbyPacket implements PacketData {
         return lobbyName;
     }
 
-    public void setLobbyName(String lobbyName) {
-        this.lobbyName = lobbyName;
-    }
 
     public static JoinLobbyPacket parseJSON(JsonObject jsonObject) {
         return Tools.GSON.fromJson(jsonObject.get("data"), JoinLobbyPacket.class);

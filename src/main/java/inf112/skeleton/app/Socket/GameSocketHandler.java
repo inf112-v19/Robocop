@@ -9,8 +9,7 @@ import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
-import inf112.skeleton.app.gameStates.Playing.State_Playing;
-import inf112.skeleton.common.packet.*;
+import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.data.*;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
@@ -22,7 +21,6 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
 
     public GameSocketHandler(RoboRally game) {
         this.game = game;
-        game.setSocketHandler(this);
     }
 
 
@@ -39,7 +37,6 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 }
                 break;
             case INIT_CLIENT:
-//                RoboRally.gameBoard.setupPlayer(PlayerInitPacket.parseJSON(jsonObject));
                 RoboRally.setClientInfo(ClientInitPacket.parseJSON(jsonObject));
                 break;
             case INIT_MAP:
@@ -50,7 +47,6 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 break;
             case INIT_LOCALPLAYER:
                 RoboRally.gameBoard.setupPlayer(PlayerInitPacket.parseJSON(jsonObject));
-//                RoboRally.setClientInfo(ClientInitPacket.parseJSON(jsonObject));
                 break;
             case CHATMESSAGE:
                 if (ScrollableTextbox.textbox != null) {
@@ -73,10 +69,6 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 CardHandPacket cardHandPacket = CardHandPacket.parseJSON(jsonObject);
                 RoboRally.gameBoard.receiveCardHand(cardHandPacket);
                 break;
-            case CARD_REQUEST_PACKET:
-                Gdx.app.log("GameSocketHandler - handleIncomingPacket", "I just received a CRP :)");
-                RoboRally.gameBoard.myPlayer.sendSelectedCardsToServer();
-                break;
             case REMOVE_PLAYER:
                 PlayerRemovePacket playerRemovePacket = PlayerRemovePacket.parseJSON(jsonObject);
                 RoboRally.gameBoard.removePlayer(playerRemovePacket);
@@ -85,29 +77,34 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 LobbyJoinResponsePacket lobbyJoinResponsePacket = LobbyJoinResponsePacket.parseJSON(jsonObject);
 
                 if (RoboRally.roboRally.gsm.peek() instanceof State_MainMenu) {
-                    ((State_MainMenu)RoboRally.roboRally.gsm.peek()).packets_LobbyJoin.add(lobbyJoinResponsePacket);
+                    ((State_MainMenu) RoboRally.roboRally.gsm.peek()).packets_LobbyJoin.add(lobbyJoinResponsePacket);
                 }
                 break;
             case LIST_LOBBIES:
                 LobbiesListPacket lobbiesListPacket = LobbiesListPacket.parseJSON(jsonObject);
 
                 if (RoboRally.roboRally.gsm.peek() instanceof State_MainMenu) {
-                    ((State_MainMenu)RoboRally.roboRally.gsm.peek()).packets_LobbyList.add(lobbiesListPacket);
+                    ((State_MainMenu) RoboRally.roboRally.gsm.peek()).packets_LobbyList.add(lobbiesListPacket);
                 }
                 break;
             case STATE_CHANGED:
                 StateChangePacket stateChangePacket = StateChangePacket.parseJSON(jsonObject);
 
-                switch(stateChangePacket.getState()) {
+                switch (stateChangePacket.getState()) {
                     case PLAYER_KICKED:
                         if (RoboRally.roboRally.gsm.peek() instanceof State_MainMenu) {
-                            ((State_MainMenu)RoboRally.roboRally.gsm.peek()).leaveLobby();
-                            ((State_MainMenu)RoboRally.roboRally.gsm.peek()).setFreeze(false);
+                            ((State_MainMenu) RoboRally.roboRally.gsm.peek()).leaveLobby();
+                            ((State_MainMenu) RoboRally.roboRally.gsm.peek()).setFreeze(false);
                         }
                         break;
                     case GAME_START:
                         if (RoboRally.roboRally.gsm.peek() instanceof State_MainMenu) {
-                            ((State_MainMenu)RoboRally.roboRally.gsm.peek()).packets_GameStart.add(Boolean.TRUE);
+                            ((State_MainMenu) RoboRally.roboRally.gsm.peek()).packets_GameStart.add(Boolean.TRUE);
+                        }
+                        break;
+                    case FORCE_CARDS:
+                        if (RoboRally.gameBoard.hud.hasDeck()) {
+                            RoboRally.gameBoard.hud.getPlayerDeck().removeDeck();
                         }
                         break;
                 }
@@ -116,7 +113,7 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 LobbyUpdatePacket lobbyUpdatePacket = LobbyUpdatePacket.parseJSON(jsonObject);
 
                 if (RoboRally.roboRally.gsm.peek() instanceof State_MainMenu) {
-                    ((State_MainMenu)RoboRally.roboRally.gsm.peek()).packets_LobbyUpdates.add(lobbyUpdatePacket);
+                    ((State_MainMenu) RoboRally.roboRally.gsm.peek()).packets_LobbyUpdates.add(lobbyUpdatePacket);
                 }
 
                 break;

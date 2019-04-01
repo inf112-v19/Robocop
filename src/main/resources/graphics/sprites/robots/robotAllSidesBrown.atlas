@@ -1,6 +1,6 @@
-robotAllSides.png
+robotAllSidesBrown.png
 format: RGBA8888
-filter: Nearest,Nearest
+filter: Linear,Linear
 repeat: none
 robotAllSides_South
   rotate: false

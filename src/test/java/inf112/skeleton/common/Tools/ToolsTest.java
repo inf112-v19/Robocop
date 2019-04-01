@@ -14,7 +14,7 @@ public class ToolsTest {
         CardDeck deck = new CardDeck();
         for(int i = 0; i < deck.size(); i++) {
             Card a = deck.dealCard();
-            int deconstructed = Tools.CARD_RECONSTRUCTOR.deconstructCard(a);
+            int deconstructed = a.getPriority();
             Card b = Tools.CARD_RECONSTRUCTOR.reconstructCard(deconstructed);
             Assert.assertEquals(a, b);
         }

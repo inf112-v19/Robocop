@@ -1,6 +1,6 @@
-package inf112.skeleton.server.util;
+package inf112.skeleton.common.utility;
 
-public class Utility {
+public class StringUtilities {
     /**
      * Uppercase first letter of a string
      * @param string
@@ -28,7 +28,7 @@ public class Utility {
     }
 
     /**
-     * check if a string is an int.
+     * Check if a string is an int.
      * @param string
      * @return true if string is an int, false if not.
      */

@@ -12,20 +12,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
-import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.ToServer;
 import inf112.skeleton.common.packet.data.DataRequestPacket;
 import inf112.skeleton.common.packet.data.JoinLobbyPacket;
-import inf112.skeleton.common.packet.data.PacketData;
 import inf112.skeleton.common.specs.DataRequest;
-import inf112.skeleton.common.specs.MapDifficulty;
-import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Tab_Lobbies extends MenuTab {
@@ -37,7 +33,8 @@ public class Tab_Lobbies extends MenuTab {
     LinkedHashMap<String, ImageTextButton> lobbyButtons;
     LinkedHashMap<String, Table> lobbyViews;
 
-    ImageTextButton.ImageTextButtonStyle lobbyButtonStyleFocused, lobbyButtonStyleUnfocused;
+    ImageTextButton.ImageTextButtonStyle lobbyButtonStyleFocused;
+    ImageTextButton.ImageTextButtonStyle lobbyButtonStyleUnfocused;
     ImageTextButton currentLobby;
 
     public Table lobbiesHeader;
@@ -58,6 +55,11 @@ public class Tab_Lobbies extends MenuTab {
                         mp_height = 150,
                         mp_posX = 360;
 
+    /**
+     * Initialize new tab with a list of lobbies to enter and a lobby-preview.
+     * @param gameStateManager
+     * @param ch
+     */
     public Tab_Lobbies(GameStateManager gameStateManager, Channel ch) {
         super(gameStateManager, ch);
         font = new BitmapFont();
@@ -84,33 +86,26 @@ public class Tab_Lobbies extends MenuTab {
 
 
         // Add Lobbies table (Left side of screen)
-        lobbies = new Table();
+        lobbies = new Table().top();
         lobbies.setSize(lb_width, height);
-        lobbies.setBackground(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Lobbies_bg.png")))));
-        lobbies.top();
+        lobbies.setBackground(RoboRally.graphics.lobbies_bg);
 
         // Lobbies header (Textbox: "Lobbies"):
-        lobbiesHeader = new Table();
-        lobbiesHeader.setBackground(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Lobbies_header.png")))));
+        lobbiesHeader = new Table().right();
+        lobbiesHeader.setBackground(RoboRally.graphics.lobbies_header);
         lobbiesHeader.setSize(lb_width, lb_headerHeight);
-        lobbiesHeader.right();
 
-        ImageButton lobbyUpdate = new ImageButton(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/updateButtonFocused.png")))));
-
+        // Update-button: When clicked, a request is sent to the server to get the lobbies list.
+        ImageButton lobbyUpdate = new ImageButton(RoboRally.graphics.btn_update);
         lobbyUpdate.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Packet packet = new Packet(ToServer.REQUEST_DATA, new DataRequestPacket(DataRequest.LOBBY_LIST));
-                channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+                new Packet(ToServer.REQUEST_DATA, new DataRequestPacket(DataRequest.LOBBY_LIST)).sendPacket(channel);
             }
         });
 
-        ImageButton lobbyCreate = new ImageButton(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/plusButtonFocused.png")))));
-
+        // Add-button: When clicked, a new tab is created, allowing the player to create a new lobby.
+        ImageButton lobbyCreate = new ImageButton(RoboRally.graphics.btn_add);
         lobbyCreate.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -122,22 +117,19 @@ public class Tab_Lobbies extends MenuTab {
 
         lobbiesHeader.add(lobbyUpdate).size(40,40).right().padRight(10);
         lobbiesHeader.add(lobbyCreate).size(40,40).right().padRight(10);
-        lobbies.add(lobbiesHeader);
-        lobbies.row();
-        lobbies.add(new Image(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Lobbies_horizontalLine.png"))))))
-                .size(lb_width-4, 1).padTop(1);
-        lobbies.row();
+        lobbies.add(lobbiesHeader).row();
+        lobbies.add(new Image(RoboRally.graphics.lobbies_horizontal_line)).size(lb_width-4, 1).padTop(1).row();
 
         display.add(lobbies).size(lb_width, height);
 
-
-
         // Request a list of all lobbies
-        Packet packet = new Packet(ToServer.REQUEST_DATA, new DataRequestPacket(DataRequest.LOBBY_LIST));
-        ch.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+        new Packet(ToServer.REQUEST_DATA, new DataRequestPacket(DataRequest.LOBBY_LIST)).sendPacket(channel);
     }
 
+    /**
+     * Add a lobby-button to the lobbies-list and create a new lobby-preview.
+     * @param mapInfo containing information about the lobby/map.
+     */
     public void addLobby(final MapInfo mapInfo) {
         // Create button which may be used to choose this map
         ImageTextButton btn_lobbyTab = new ImageTextButton(mapInfo.lobbyName, lobbyButtonStyleUnfocused);
@@ -215,5 +207,14 @@ public class Tab_Lobbies extends MenuTab {
         map.add(btn_join).center().colspan(2).row();
 
         lobbyViews.put(mapInfo.lobbyName, map);
+    }
+
+    /**
+     * Remove current lobby preview.
+     */
+    public void removeDetails() {
+        currentLobby = null;
+        display.clearChildren();
+        display.add(lobbies).padRight(padding_between);
     }
 }

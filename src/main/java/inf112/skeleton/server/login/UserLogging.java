@@ -9,7 +9,6 @@ import inf112.skeleton.common.packet.data.LoginPacket;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.user.FriendsList;
 import inf112.skeleton.server.user.User;
-import inf112.skeleton.server.user.UserPrivilege;
 import io.netty.channel.Channel;
 
 import java.io.*;
@@ -19,24 +18,26 @@ import java.util.UUID;
 
 public class UserLogging {
 
+    /**
+     * Login user, register it if it doesnt already exist.
+     * @param login
+     * @param channel
+     * @return logged in user
+     */
     public static User login(LoginPacket login, Channel channel) {
         String username = login.getUsername();
         String password = login.getPassword();
         File file = Gdx.files.internal("data/users/" + username.toLowerCase() + ".json").file();
         System.out.println("loading file");
-//        path.toFile();
         String jsonName = "";
         ArrayList<String> friendslist = new ArrayList<>();
         String jsonPassword = "";
         String uuid = UUID.randomUUID().toString();
-        UserPrivilege jsonRights = UserPrivilege.PLAYER;
         System.out.println(file.toString());
         System.out.println(file.getPath());
         if (!file.exists()) {
             User user = new User(uuid, username.toLowerCase(), password, channel);
-            user.setRights(UserPrivilege.PLAYER);
             user.setFriendsList(new FriendsList());
-            user.setLoggedIn(true);
             return user;
         }
 
@@ -53,10 +54,6 @@ public class UserLogging {
             if (reader.has("password")) {
                 jsonPassword = reader.get("password").getAsString();
             }
-            if (reader.has("UserPrivilege")) {
-                String jsonRightsName = reader.get("UserPrivilege").getAsString();
-                jsonRights = UserPrivilege.getFromName(jsonRightsName);
-            }
             if (reader.has("Friendslist")) {
                 String jsonFriendslist = reader.get("Friendslist").getAsString();
                 friendslist = Tools.GSON.fromJson(jsonFriendslist, ArrayList.class);
@@ -65,9 +62,7 @@ public class UserLogging {
                 return null;
             }
             User user = new User(uuid, jsonName, jsonPassword, channel);
-            user.setLoggedIn(true);
             user.setFriendsList(new FriendsList(friendslist));
-            user.setRights(jsonRights);
             return user;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -77,7 +72,11 @@ public class UserLogging {
         return null;
     }
 
-    public static void logoff(User user) {
+    /**
+     * logout user and save all important values
+     * @param user to be logged out
+     */
+    public static void logout(User user) {
         if (user == null || user.getName() == null || user.getName().equalsIgnoreCase("null"))
             return;
 
@@ -85,8 +84,6 @@ public class UserLogging {
 
         file.getParentFile().setWritable(true);
 
-        // Attempt to make the player save directory if it doesn't
-        // exist.
         if (!file.getParentFile().exists()) {
             try {
                 file.getParentFile().mkdirs();
@@ -101,7 +98,6 @@ public class UserLogging {
             object.addProperty("uuid", user.getUUID());
             object.addProperty("username", user.getName().toLowerCase());
             object.addProperty("password", user.getPassword());
-            object.addProperty("UserPrivilege", user.getRights().getPrefix());
             object.addProperty("Friendslist", Tools.GSON.toJson(user.getFriendsList().getList()));
             writer.write(builder.toJson(object));
         } catch (IOException e) {

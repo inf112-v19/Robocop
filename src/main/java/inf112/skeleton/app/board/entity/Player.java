@@ -22,37 +22,37 @@ public class Player {
     int initalHp;
     Directions initalDirection;
     public Card[] cards;
-    public ArrayList<Card> selectedCards;
+    public Card[] selectedCards;
     int slot;
 
     /**
      * Player has its own class, which owns a robot, to avoid rendring on socket thread.
      *
-     * @param uuid Unique id of owner
+     * @param uuid       Unique id of owner
      * @param name
      * @param pos
      * @param hp
      * @param slot
      * @param directions
      */
-    public Player(String uuid,String name, Vector2 pos, int hp, int slot, Directions directions) {
+    public Player(String uuid, String name, Vector2 pos, int hp, int slot, Directions directions) {
         this.uuid = uuid;
         this.name = name;
         this.initalHp = hp;
         this.slot = slot;
         this.initialPos = pos;
         this.initalDirection = directions;
-        this.selectedCards = new ArrayList<>(5);
+        this.selectedCards = new Card[5];
     }
 
     /**
      * If robot is not yet created for player it should create it.
-     *
+     * <p>
      * TODO: move packets related to player actions here.
      */
     public void update() {
         if (robot == null) {
-            this.robot = new Robot(initialPos.x, initialPos.y,slot, this);
+            this.robot = new Robot(initialPos.x, initialPos.y, slot, this);
             RoboRally.gameBoard.addEntity(robot);
         }
         if (!RoboRally.gameBoard.hud.hasDeck()) {
@@ -84,67 +84,66 @@ public class Player {
      * @param packet An array of cards.
      */
     public void receiveCardHandPacket(CardHandPacket packet) {
-        int[] foo = packet.getHand();
+        int[] packetCardHand = packet.getHand();
         if (cards == null) {
-            cards = new Card[initalHp];
+            cards = new Card[9];
         }
-        if (foo.length != cards.length) {
+        if (packetCardHand.length != cards.length) {
             return;
         }
-        for (int i = 0; i < foo.length; i++) {
-            cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(foo[i]);
+        for (int i = 0; i < packetCardHand.length; i++) {
+            cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packetCardHand[i]);
         }
+        selectedCards = new Card[5];
     }
 
     /**
-     * Creates a packet containing move instructions from the selected cards.
-     *
-     * @return True if packet could be constructed and has been sent, false otherwise.
+     * Send one card to server where it will be used as a burnt card.
+     * Call this when players hitpoints are below 5.
      */
-    public boolean sendNextSelectedCard() {
-        if (selectedCards.isEmpty()) {
-            Gdx.app.log("Player clientside - sendNextSelectedCard", "Returning false");
-            return false;
+    public void sendBurntCardToServer() {
+        for (int i = 0; i < selectedCards.length; i++) {
+            if (selectedCards[i] != null) {
+                CardPacket data = new CardPacket(selectedCards[i]);
+                selectedCards[i] = null;
+                Packet packet = new Packet(ToServer.CARD_PACKET.ordinal(), data);
+                packet.sendPacket(RoboRally.channel);
+                Gdx.app.log("Player clientside - sendBurntCardToServer", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
+                return;
+            }
         }
-        CardPacket data = new CardPacket(selectedCards.remove(0));
-        Gdx.app.log("Player clientside - sendNextSelectedCard", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
-        Packet packet = new Packet(ToServer.CARD_PACKET.ordinal(), data);
-        Gdx.app.log("Player clientside - sendNextSelectedCard", "Constructed packet: " + Tools.GSON.toJson(packet));
-        RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r \n");
-        Gdx.app.log("Player clientside - sendNextSelectedCard", "Returning true");
-        return true;
+        Gdx.app.log("Player clientside - sendBurntCardToServer", "No cards selected");
+
     }
 
     public void sendSelectedCardsToServer() {
-        if(selectedCards.isEmpty() || selectedCards == null) {
-            Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards is empty or null.");
-            return;
-        }
+        Card[] hand;
+        hand = new Card[selectedCards.length];
 
-        Card[] hand = new Card[selectedCards.size()];
-        for (int i = 0; i < hand.length; i++) {
-            hand[i] = selectedCards.remove(0);
-        }
+        System.arraycopy(selectedCards, 0, hand, 0, hand.length);
 
-        //TODO Pick cards automatically if the user does not.
         CardHandPacket data = new CardHandPacket(hand);
         Packet packet = new Packet(ToServer.CARD_HAND_PACKET.ordinal(), data);
-        RoboRally.channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+        packet.sendPacket(RoboRally.channel);
+
+        selectedCards = new Card[5];
+
         Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards sent to server.");
     }
 
 
     /**
      * Accept packet related to any changes to this player, checks if its needed then applies changes.
-     * <p>
-     * TODO: check if data needs changing
      *
-     * @param update
+     * @param update UpdatePlayerPacket
      */
     public void updateRobot(UpdatePlayerPacket update) {
         robot.updateMovement(update);
     }
 
+    public String getUUID() {
+        return uuid;
+    }
 
     public Robot getRobot() {
         return this.robot;

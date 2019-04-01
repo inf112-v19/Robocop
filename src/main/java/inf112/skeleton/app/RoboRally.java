@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf112.skeleton.app.Action.InputContainer;
+import inf112.skeleton.app.GUI.GraphicsLoader;
 import inf112.skeleton.app.Socket.GameSocketHandler;
 import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TiledMapLoader;
@@ -29,13 +30,12 @@ public class RoboRally extends ApplicationAdapter {
 
     private SpriteBatch batch;
     public GameStateManager gsm;
-    public Class currentState;
-    private GameSocketHandler socketHandler = null;
     public static GameBoard gameBoard;
     private MapFile board;
     public static RoboRally roboRally;
     public static String username = "";
     public static String clientInfo = "";
+    public static GraphicsLoader graphics;
 
     public static void setClientInfo(ClientInitPacket pkt) {
         clientInfo = pkt.getUUID();
@@ -46,12 +46,9 @@ public class RoboRally extends ApplicationAdapter {
     }
 
 
-    public void setSocketHandler(GameSocketHandler socketHandler) {
-        this.socketHandler = socketHandler;
-    }
-
     @Override
     public void create() {
+        graphics = new GraphicsLoader();
         batch = new SpriteBatch();
         gsm = new GameStateManager();
         roboRally = this;
@@ -65,14 +62,13 @@ public class RoboRally extends ApplicationAdapter {
                     j <<= 1;
                     Gdx.app.log("RoboRally clientside - create", "Channel not yet set. (waited " + (i / 10.0f) + " seconds)");
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
         }
         if (i > 0)
             Gdx.app.log("RoboRally clientside - create", "Channel set. Initializing main menu...");
 
         gsm.push(new State_Login(gsm, channel));
-//        gameBoard = new TiledMapLoader();
 
         Gdx.gl.glClearColor(1, 1, 1, 1);
     }
@@ -85,17 +81,16 @@ public class RoboRally extends ApplicationAdapter {
 
     @Override
     public void render() {
-        if(gameBoard == null){
-            if(this.board!=null){
+        if (gameBoard == null) {
+            if (this.board != null) {
                 gameBoard = new TiledMapLoader(board);
             }
         }
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        //Tmp, for testing
-        if(Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
-            Gdx.app.log("RoboRally clientside - render", "Sending next card");
-            RoboRally.gameBoard.myPlayer.sendNextSelectedCard();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.PAGE_DOWN)) {
+            Gdx.app.log("RoboRally clientside - render", "Sending burnt card");
+            RoboRally.gameBoard.myPlayer.sendBurntCardToServer();
         }
 
         gsm.update(0);
@@ -104,10 +99,8 @@ public class RoboRally extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
-        //Save updated dimensions for new stages.
         RoboRally.width = width;
         RoboRally.height = height;
-        //Change dimensions for existing stages.
         gsm.resize(width, height);
     }
 
