@@ -29,33 +29,21 @@ public class UpdatePlayerPacket implements PacketData {
         return direction;
     }
 
-    public void setDirection(Directions direction) {
-        this.direction = direction;
-    }
 
     public int getMovingTiles() {
         return movingTiles;
     }
 
-    public void setMovingTiles(int movingTiles) {
-        this.movingTiles = movingTiles;
-    }
 
     public Vector2 getFromTile() {
         return fromTile;
     }
 
-    public void setFromTile(Vector2 fromTile) {
-        this.fromTile = fromTile;
-    }
 
     public Vector2 getToTile() {
         return toTile;
     }
 
-    public void setToTile(Vector2 toTile) {
-        this.toTile = toTile;
-    }
 
     public static UpdatePlayerPacket parseJSON(JsonObject jsonObject) {
         return Tools.GSON.fromJson(jsonObject.get("data"), UpdatePlayerPacket.class);

@@ -56,6 +56,9 @@ public class User {
     public void joinLobby(GameWorldInstance game, String lobbyname) {
         if (game.doesLobbyExist(lobbyname)) {
             Lobby toJoin = game.getLobby(lobbyname);
+            if(toJoin.isGameStarted()){
+                return;
+            }
             if (toJoin.hasSlot()) {
                 toJoin.addUser(this);
                 return;

@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import io.netty.channel.Channel;
@@ -43,7 +44,7 @@ public class Status {
     private TextButton.TextButtonStyle style_Lives, style_Damage;
     private TextField.TextFieldStyle txtStyle;
 
-    private HashMap<String, SingleStatus> statusUpdater;
+    HashMap<String, SingleStatus> statusUpdater;
     private Table statusbar;
 
     public static int height = 30;
@@ -83,27 +84,30 @@ public class Status {
 
     /**
      * Add a new status-line for a robot.
-     * @param roboName name of player
+     * @param player player
      */
-    public void add(String roboName) {
+    public void add(Player player) {
+        if (player.getRobot() == null)
+            return;
+
         TextButton btn_lives, btn_damage;
         TextField txt_roboName;
 
         btn_lives = new TextButton("3", style_Lives);
-        btn_damage = new TextButton("0", style_Damage);
-        txt_roboName = new TextField(roboName, txtStyle);
+        btn_damage = new TextButton(player.getRobot().getHealth() + "", style_Damage);
+        txt_roboName = new TextField(player.name, txtStyle);
 
-        statusbar.add(txt_roboName).size(100,height).right();
-        statusbar.add(btn_lives).size(height,height);
-        statusbar.add(btn_damage).size(height,height);
+        statusbar.add(txt_roboName).size(100, height).right();
+        statusbar.add(btn_lives).size(height, height);
+        statusbar.add(btn_damage).size(height, height);
         statusbar.row();
 
-        statusUpdater.put(roboName, new SingleStatus(btn_lives, btn_damage));
+        statusUpdater.put(player.getUUID(), new SingleStatus(btn_lives, btn_damage));
 
-        statusbar.setSize(100 + 2 * height,height * statusUpdater.size());
+        statusbar.setSize(100 + 2 * height, height * statusUpdater.size());
         statusbar.setPosition(
-                Gdx.graphics.getWidth()-statusbar.getWidth(),
-                Gdx.graphics.getHeight()-statusbar.getHeight()-25);
+                Gdx.graphics.getWidth() - statusbar.getWidth(),
+                Gdx.graphics.getHeight() - statusbar.getHeight() - 25);
     }
 
     /**

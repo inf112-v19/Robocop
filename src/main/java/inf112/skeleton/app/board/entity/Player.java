@@ -141,6 +141,9 @@ public class Player {
         robot.updateMovement(update);
     }
 
+    public String getUUID() {
+        return uuid;
+    }
 
     public Robot getRobot() {
         return this.robot;

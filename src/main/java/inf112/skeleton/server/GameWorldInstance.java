@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class GameWorldInstance implements ApplicationListener {
 
-    public GameBoard gameBoard;
     ConcurrentHashMap<String, Lobby> lobbies = new ConcurrentHashMap<>();
 
     private int frame = 0;
@@ -43,6 +42,16 @@ public class GameWorldInstance implements ApplicationListener {
      */
     public void addLobby(Lobby lobby){
         lobbies.put(lobby.getName(), lobby);
+        sendUpdatedLobbyListToAll();
+    }
+
+    public void sendUpdatedLobbyListToAll(){
+        for (User user :
+                RoboCopServerHandler.loggedInPlayers) {
+            if (!user.isInLobby()){
+                user.getLobbyList(this);
+            }
+        }
     }
 
     /**
@@ -54,11 +63,12 @@ public class GameWorldInstance implements ApplicationListener {
     }
 
     /**
-     * Remove a lobbu
+     * Remove a lobby
      * @param name
      */
     public void removeLobby(String name) {
         lobbies.remove(name);
+        sendUpdatedLobbyListToAll();
     }
 
     @Override

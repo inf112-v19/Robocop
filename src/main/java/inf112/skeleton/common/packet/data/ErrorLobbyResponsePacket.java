@@ -5,7 +5,7 @@ import inf112.skeleton.common.specs.LobbyError;
 import inf112.skeleton.common.utility.Tools;
 
 public class ErrorLobbyResponsePacket implements PacketData{
-    LobbyError error;
+    private LobbyError error;
 
     public ErrorLobbyResponsePacket(LobbyError error) {
         this.error = error;

@@ -9,19 +9,20 @@ public class Pair<K, V> {
         this.value = value;
     }
 
+    /**
+     * Get the first value in the pair
+     * @return first value of the pair
+     */
     public K getKey() {
         return key;
     }
 
-    public void setKey(K key) {
-        this.key = key;
-    }
-
+    /**
+     * Get the second value of the pair
+     * @return second value of the pair
+     */
     public V getValue() {
         return value;
     }
 
-    public void setValue(V value) {
-        this.value = value;
-    }
 }

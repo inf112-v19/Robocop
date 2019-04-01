@@ -14,9 +14,6 @@ public class ChatMessagePacket implements PacketData {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     public static ChatMessagePacket parseJSON(JsonObject jsonObject) {
         return Tools.GSON.fromJson(jsonObject.get("data"), ChatMessagePacket.class);

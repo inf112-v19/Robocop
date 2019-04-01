@@ -22,7 +22,6 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
 
     public GameSocketHandler(RoboRally game) {
         this.game = game;
-        game.setSocketHandler(this);
     }
 
 
@@ -39,7 +38,6 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 }
                 break;
             case INIT_CLIENT:
-//                RoboRally.gameBoard.setupPlayer(PlayerInitPacket.parseJSON(jsonObject));
                 RoboRally.setClientInfo(ClientInitPacket.parseJSON(jsonObject));
                 break;
             case INIT_MAP:
@@ -50,7 +48,6 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 break;
             case INIT_LOCALPLAYER:
                 RoboRally.gameBoard.setupPlayer(PlayerInitPacket.parseJSON(jsonObject));
-//                RoboRally.setClientInfo(ClientInitPacket.parseJSON(jsonObject));
                 break;
             case CHATMESSAGE:
                 if (ScrollableTextbox.textbox != null) {
@@ -72,10 +69,6 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
             case CARD_HAND_PACKET:
                 CardHandPacket cardHandPacket = CardHandPacket.parseJSON(jsonObject);
                 RoboRally.gameBoard.receiveCardHand(cardHandPacket);
-                break;
-            case CARD_REQUEST_PACKET:
-                Gdx.app.log("GameSocketHandler - handleIncomingPacket", "I just received a CRP :)");
-                RoboRally.gameBoard.myPlayer.sendSelectedCardsToServer();
                 break;
             case REMOVE_PLAYER:
                 PlayerRemovePacket playerRemovePacket = PlayerRemovePacket.parseJSON(jsonObject);

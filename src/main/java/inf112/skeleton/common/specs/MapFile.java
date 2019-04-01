@@ -3,7 +3,8 @@ package inf112.skeleton.common.specs;
 import java.util.HashMap;
 
 public enum MapFile {
-    CROSS("board/Cross.tmx", "Cross", MapDifficulty.Easy, "A cross...");
+    CROSS("board/Cross.tmx", "Cross", MapDifficulty.Easy, "A cross..."),
+    GEAR_BOX("board/Gear_Box.tmx", "Gear Box", MapDifficulty.Intermediate, "A gearbox...");
     public String filename;
     public String name;
     public MapDifficulty mapDifficulty;

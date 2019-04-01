@@ -50,27 +50,43 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
-        FromServer pktId = FromServer.REMOVE_PLAYER;
-        PlayerRemovePacket data = new PlayerRemovePacket(getEntityFromLoggedIn(incoming).getUUID());
-        Packet pkt = new Packet(pktId, data);
-        User leavingUser = getEntityFromLoggedIn(incoming);
-        String message = "[SERVER] - " + StringUtilities.formatPlayerName(leavingUser.getName()) + " has left the channel!";
 
-        if (leavingUser.isInLobby()) {
-            leavingUser.getLobby().broadcastChatMessage(message);
-            leavingUser.getLobby().broadcastPacket(pkt);
-            leavingUser.leaveLobby();
-        }
-
-        UserLogging.logout(leavingUser); //Save the user in a json file
 
         /**
          * Removing the user from the collections
          */
-        if (loggedInPlayers.contains(getEntityFromLoggedIn(incoming)))
+        if (loggedInPlayers.contains(getEntityFromLoggedIn(incoming))) {
+            User leavingUser = getEntityFromLoggedIn(incoming);
+            cleanupLeavingUser(leavingUser);
             loggedInPlayers.remove(getEntityFromLoggedIn(incoming));
-        if (connections.contains(getEntityFromConnections(incoming)))
-            connections.remove(getEntityFromConnections(incoming));
+        }
+        connections.remove(getEntityFromConnections(incoming));
+    }
+
+    public void logoutUser(User requestUser) {
+
+
+        if (loggedInPlayers.contains(requestUser)) {
+            cleanupLeavingUser(requestUser);
+            loggedInPlayers.remove(requestUser);
+            connections.add(requestUser);
+        }
+
+    }
+
+    private void cleanupLeavingUser(User requestUser) {
+        FromServer pktId = FromServer.REMOVE_PLAYER;
+        PlayerRemovePacket data = new PlayerRemovePacket(requestUser.getUUID());
+        Packet pkt = new Packet(pktId, data);
+        String message = "[SERVER] - " + StringUtilities.formatPlayerName(requestUser.getName()) + " has left the channel!";
+
+        if (requestUser.isInLobby()) {
+            requestUser.getLobby().broadcastChatMessage(message);
+            requestUser.getLobby().broadcastPacket(pkt);
+            requestUser.leaveLobby();
+        }
+
+        UserLogging.logout(requestUser); //Save the user in a json file
     }
 
     /**
@@ -107,6 +123,7 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     /**
      * Send a message to everyone connected to the server.
      * to be used to stuff like announcing server downtime
+     *
      * @param message
      * @param channel
      * @param everyone
@@ -142,5 +159,6 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
             System.err.printf("Malformed packet: %s/r/n", arg1);
         }
     }
+
 
 }

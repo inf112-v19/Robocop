@@ -17,11 +17,9 @@ public class GameSocketInitializer extends ChannelInitializer<SocketChannel> {
     }
 
     @Override
-    protected void initChannel(SocketChannel arg0) throws Exception {
-        //how we want to organize our communication described here
+    protected void initChannel(SocketChannel arg0) {
         ChannelPipeline pipeline = arg0.pipeline();
 
-        //no more than 8192 frames
         pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
         pipeline.addLast("decoder", new StringDecoder());
         pipeline.addLast("encoder", new StringEncoder());

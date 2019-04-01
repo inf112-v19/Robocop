@@ -30,8 +30,6 @@ public class RoboRally extends ApplicationAdapter {
 
     private SpriteBatch batch;
     public GameStateManager gsm;
-    public Class currentState;
-    private GameSocketHandler socketHandler = null;
     public static GameBoard gameBoard;
     private MapFile board;
     public static RoboRally roboRally;
@@ -47,10 +45,6 @@ public class RoboRally extends ApplicationAdapter {
         this.board = mapPacket.getMap();
     }
 
-
-    public void setSocketHandler(GameSocketHandler socketHandler) {
-        this.socketHandler = socketHandler;
-    }
 
     @Override
     public void create() {
@@ -68,14 +62,13 @@ public class RoboRally extends ApplicationAdapter {
                     j <<= 1;
                     Gdx.app.log("RoboRally clientside - create", "Channel not yet set. (waited " + (i / 10.0f) + " seconds)");
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
         }
         if (i > 0)
             Gdx.app.log("RoboRally clientside - create", "Channel set. Initializing main menu...");
 
         gsm.push(new State_Login(gsm, channel));
-//        gameBoard = new TiledMapLoader();
 
         Gdx.gl.glClearColor(1, 1, 1, 1);
     }
@@ -88,15 +81,14 @@ public class RoboRally extends ApplicationAdapter {
 
     @Override
     public void render() {
-        if(gameBoard == null){
-            if(this.board!=null){
+        if (gameBoard == null) {
+            if (this.board != null) {
                 gameBoard = new TiledMapLoader(board);
             }
         }
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        //Tmp, for testing
-        if(Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.PAGE_DOWN)) {
             Gdx.app.log("RoboRally clientside - render", "Sending burnt card");
             RoboRally.gameBoard.myPlayer.sendBurntCardToServer();
         }
@@ -107,10 +99,8 @@ public class RoboRally extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
-        //Save updated dimensions for new stages.
         RoboRally.width = width;
         RoboRally.height = height;
-        //Change dimensions for existing stages.
         gsm.resize(width, height);
     }
 

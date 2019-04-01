@@ -17,64 +17,29 @@ public class Client {
 
     public static void main(String[] args) throws InterruptedException {
         game = new RoboRally();
-        if (System.getProperty("os.name").startsWith("Mac")) {
 
-            group = new NioEventLoopGroup();
-            Bootstrap bootstrap = new Bootstrap()
-                    .group(group)
-                    .channel(NioSocketChannel.class) //use new io sockets
-                    .handler(new GameSocketInitializer(game)); //handle all ToServer messages
+        group = new NioEventLoopGroup();
+        Bootstrap bootstrap = new Bootstrap()
+                .group(group)
+                .channel(NioSocketChannel.class) //use new io sockets
+                .handler(new GameSocketInitializer(game)); //handle all ToServer messages
 
-            ChannelFuture f = bootstrap.connect("localhost", 58008).sync();
-            game.channel = f.channel(); // creating a connection with the server
-            Lwjgl3ApplicationConfiguration application = new Lwjgl3ApplicationConfiguration();
-            application.setWindowedMode(RoboRally.width, RoboRally.height);
-            application.setWindowSizeLimits(1024, 576, 7680, 4320);
-            application.setTitle(RoboRally.TITLE);
+        ChannelFuture f = bootstrap.connect("localhost", 58008).sync();
+        RoboRally.channel = f.channel(); // creating a connection with the server
+        Lwjgl3ApplicationConfiguration application = new Lwjgl3ApplicationConfiguration();
+        application.setWindowedMode(RoboRally.width, RoboRally.height);
+        application.setResizable(false);
+        application.setTitle(RoboRally.TITLE);
 
-            game.nioWorkerGroup = group;
+        game.nioWorkerGroup = group;
 
-            new Lwjgl3Application(game, application);
+        new Lwjgl3Application(game, application);
 
-            game.channel.closeFuture();
-            group.shutdownGracefully();
-            System.out.println("stopped");
-            System.exit(1);
-        } else {
-            try {
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        try {
+        RoboRally.channel.closeFuture();
+        group.shutdownGracefully();
+        System.out.println("stopped");
+        System.exit(1);
 
-                            Lwjgl3ApplicationConfiguration application = new Lwjgl3ApplicationConfiguration();
-                            application.setWindowedMode(RoboRally.width, RoboRally.height);
-                            application.setTitle(RoboRally.TITLE);
-                            game.nioWorkerGroup = group;
-
-
-                            new Lwjgl3Application(game, application);
-
-
-                            game.channel.closeFuture();
-                            group.shutdownGracefully();
-                            System.out.println("stopped");
-                            System.exit(1);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                group = new NioEventLoopGroup();
-                Bootstrap bootstrap = new Bootstrap()
-                        .group(group)
-                        .channel(NioSocketChannel.class) //use new io sockets
-                        .handler(new GameSocketInitializer(game)); //handle all ToServer messages
-
-                ChannelFuture f = bootstrap.connect("localhost", 58008).sync();
-                game.channel = f.channel(); // creating a connection with the server
-            } finally {
-            }
-        }
     }
 
 }

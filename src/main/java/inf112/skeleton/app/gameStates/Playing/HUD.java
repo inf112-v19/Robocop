@@ -9,10 +9,13 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.GUI.PlayerDeck;
 import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.common.packet.data.ChatMessagePacket;
 import io.netty.channel.Channel;
+
+import java.util.Collection;
 
 public class HUD {
     private BitmapFont font;
@@ -36,7 +39,7 @@ public class HUD {
         this.inputMultiplexer = inputMultiplexer;
         this.channel = channel;
 
-        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()));
+        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         inputMultiplexer.addProcessor(stage);
 
         font = new BitmapFont();
@@ -45,7 +48,7 @@ public class HUD {
 
         setupGameChatAndPushWelcome();
 
-        // Status-bar, no use yet.
+        // Status-bar
         status = new Status(gsm,inputMultiplexer,channel);
 
         RoboRally.gameBoard.hud = this;
@@ -89,13 +92,23 @@ public class HUD {
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(stage.getCamera().combined);
         stage.draw();
+        if (status != null) {
+            if (RoboRally.gameBoard.getPlayers().size() + 1 != status.statusUpdater.size()) {
+                status.statusUpdater.clear();
+                status.add(RoboRally.gameBoard.myPlayer);
+                for (Player player : (Collection<Player>) RoboRally.gameBoard.getPlayers().values()) {
+                    status.add(player);
+                }
+            }
+
+        }
         status.render(sb);
-        if(playerDeck != null) {
+        if (playerDeck != null) {
             playerDeck.render(sb);
         }
 
         sb.begin();
-        font.draw(sb , "fps: " + Gdx.graphics.getFramesPerSecond(),stage.getWidth()-60, stage.getHeight()-10);
+        font.draw(sb, "fps: " + Gdx.graphics.getFramesPerSecond(), stage.getWidth() - 60, stage.getHeight() - 10);
         sb.end();
     }
 

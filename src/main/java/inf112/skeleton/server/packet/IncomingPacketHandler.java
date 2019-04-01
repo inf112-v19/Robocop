@@ -30,13 +30,13 @@ public class IncomingPacketHandler {
                 LoginPacket loginpkt = LoginPacket.parseJSON(jsonObject);
                 User loggingIn = UserLogging.login(loginpkt, incoming);
                 if (loggingIn != null) {
-                    if (!handler.loggedInPlayers.contains(loggingIn)) {
+                    if (!RoboCopServerHandler.loggedInPlayers.contains(loggingIn)) {
                         if (handler.alreadyLoggedIn(loggingIn.getName())) {
-                            AlreadyLoggedIn(incoming, handler, loggingIn.getName());
+                            AlreadyLoggedIn(incoming, loggingIn.getName());
                             return;
                         }
 
-                        handler.loggedInPlayers.add(loggingIn);
+                        RoboCopServerHandler.loggedInPlayers.add(loggingIn);
                         FromServer response = FromServer.LOGINRESPONSE;
                         LoginResponseStatus status = LoginResponseStatus.LOGIN_SUCCESS;
                         LoginResponsePacket loginResponsePacket =
@@ -45,9 +45,9 @@ public class IncomingPacketHandler {
                         loggingIn.sendPacket(responsePacket);
                         loggingIn.initClient();
 
-                        handler.connections.remove(loggingIn);
+                        RoboCopServerHandler.connections.remove(loggingIn);
                     } else {
-                        AlreadyLoggedIn(incoming, handler, loggingIn.getName());
+                        AlreadyLoggedIn(incoming, loggingIn.getName());
                     }
                 } else {
                     FromServer response = FromServer.LOGINRESPONSE;
@@ -112,6 +112,9 @@ public class IncomingPacketHandler {
                     case LOBBY_START:
                         requestUser.getLobby().startGameCountdown(requestUser);
                         break;
+                    case LOG_OUT:
+                        handler.logoutUser(requestUser);
+                        break;
                 }
                 break;
             default:
@@ -132,7 +135,7 @@ public class IncomingPacketHandler {
 
         switch (command[0]) {
             case "players":
-                messagingUser.sendServerMessage("There is currently " + handler.loggedInPlayers.size() + " player(s) online.");
+                messagingUser.sendServerMessage("There is currently " + RoboCopServerHandler.loggedInPlayers.size() + " player(s) online.");
                 break;
             case "move":
                 if (command.length > 2) {
@@ -186,18 +189,16 @@ public class IncomingPacketHandler {
     /**
      * User failed auth because a user with the same name is already loggid in, send a message to the new connection to
      * inform them.
-     *
-     * @param incoming
-     * @param handler
+     *  @param incoming
      * @param name
      */
-    private void AlreadyLoggedIn(Channel incoming, RoboCopServerHandler handler, String name) {
+    private void AlreadyLoggedIn(Channel incoming, String name) {
         FromServer response = FromServer.LOGINRESPONSE;
         LoginResponseStatus status = LoginResponseStatus.ALREADY_LOGGEDIN;
         LoginResponsePacket loginResponsePacket =
                 new LoginResponsePacket(status.ordinal(), name, "User already logged in");
         Packet responsePacket = new Packet(response.ordinal(), loginResponsePacket);
-        incoming.writeAndFlush(Tools.GSON.toJson(responsePacket) + "\r\n");
+        responsePacket.sendPacket(incoming);
     }
 
 }

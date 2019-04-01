@@ -17,7 +17,6 @@ public class Lobby {
     private String name;
     private MapFile map;
     private User host;
-    private boolean finished = false;
     private long timeStarted;
     private long timeDelay = 1000;
     private boolean startedTimer = false;
@@ -56,8 +55,8 @@ public class Lobby {
     public void startGameCountdown(User user) {
         if (user == host) {
             startedTimer = true;
-            finished = false;
             gameStarted = true;
+            gwi.sendUpdatedLobbyListToAll();
             this.timeStarted = System.currentTimeMillis();
         }
     }
@@ -67,7 +66,6 @@ public class Lobby {
      */
     private void startGame() {
         startedTimer = false;
-        finished = false;
         startStage = 0;
         FromServer id = FromServer.STATE_CHANGED;
         StateChangePacket stateChangePacket = new StateChangePacket(StateChange.GAME_START);
@@ -81,7 +79,6 @@ public class Lobby {
      */
     private void startingGame() {
         startedTimer = true;
-        finished = false;
         this.timeStarted = System.currentTimeMillis();
         switch (startStage) {
             case 0:

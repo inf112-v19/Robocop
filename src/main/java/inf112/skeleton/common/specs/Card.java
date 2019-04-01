@@ -49,9 +49,6 @@ public class Card {
         if(b == this) {
             return true;
         }
-        if(((Card) b).priority == this.priority && ((Card) b).type == this.type) {
-            return true;
-        }
-        return false;
+        return ((Card) b).priority == this.priority && ((Card) b).type == this.type;
     }
 }

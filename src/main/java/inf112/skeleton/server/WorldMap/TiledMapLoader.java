@@ -40,13 +40,7 @@ public class TiledMapLoader extends GameBoard {
         super.update();
     }
 
-    /**
-     * Actions to be executed when stopping
-     */
-    @Override
-    public void dispose() {
-        tiledMap.dispose();
-    }
+
 
     /**
      * Gets a tile at a specified coordinate on the game board.

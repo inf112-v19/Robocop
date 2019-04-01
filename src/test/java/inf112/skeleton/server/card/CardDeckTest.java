@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.Random;
 
 public class CardDeckTest {
-    Random random = new Random();
     CardDeck deck = new CardDeck();
 
 

@@ -5,7 +5,6 @@ public enum GameStage {
     DEALING,
     WAITING,
     GET_CARDS,
-    REQUEST,
     MOVING,
     VICTORY,
 }

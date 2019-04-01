@@ -3,7 +3,6 @@ package inf112.skeleton.app.board.entity;
 public enum EntityType {
 
 
-    PLAYER("player", 64, 64),
     ROBOT("robot", 64, 64);
 
     private String id;
