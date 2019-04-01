@@ -19,9 +19,11 @@ public class GraphicsLoader {
                     folder_Buttons = folder_ui + "Buttons/",
                     folder_MainMenu = folder_ui + "MainMenu/",
                     folder_Lobby = folder_MainMenu + "Lobby/",
-                    folder_Lobbies = folder_MainMenu + "Lobbies/";
+                    folder_Lobbies = folder_MainMenu + "Lobbies/",
+                    folder_ChatBox = folder_ui + "ChatBox/";
 
-    public Skin     default_skin;
+    public Skin     default_skin,
+                    chatBox_skin;
 
     public BitmapFont   default_font,
                         default_markup_font,
@@ -45,7 +47,8 @@ public class GraphicsLoader {
                     lobbies_header,
                     lobbies_horizontal_line,
                     btn_update,
-                    btn_add;
+                    btn_add,
+                    pixel_black;
 
     public Color    color_primary;
 
@@ -66,6 +69,8 @@ public class GraphicsLoader {
          */
         default_skin = getSkin(folder_ui + "uiskin.json");
         default_font = default_skin.getFont("default-font");
+
+        chatBox_skin = getSkin(folder_ChatBox + "uiskin.json");
 
         default_markup_font = getSkin(folder_ui + "uiskin.json").getFont("default-font");
         default_markup_font.getData().markupEnabled = true;
@@ -106,6 +111,7 @@ public class GraphicsLoader {
 
         btn_update = getDrawable(folder_Lobbies + "updateButtonFocused.png");
         btn_add = getDrawable(folder_Lobbies + "plusButtonFocused.png");
+        pixel_black = getDrawable(folder_ChatBox + "pixel_black.png");
 
 
         /*
