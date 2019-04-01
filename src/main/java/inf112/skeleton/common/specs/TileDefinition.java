@@ -12,10 +12,10 @@ public enum TileDefinition {
     TBRACKETFLIPPED(7, true, Directions.NORTH, "T-BracketFlipped"),
     RIGHTTURN(8, true, Directions.EAST, "RightTurn"),
     LEFTTURN(9, true, Directions.WEST, "LeftTurn"),
-    LASERSOURCE(11, true, Directions.NORTH, "Laser-Source"),
-    LASER(12, true, Directions.NORTH, "Laser"),
-    LASERCROSS(13, true, Directions.NORTH, "LaserCross"),
-    BLACK_HOLE(14, true, Directions.NORTH, "BlackHole");
+    LASERSOURCE(18, true, Directions.NORTH, "Laser-Source"),
+    LASER(19, true, Directions.NORTH, "Laser"),
+    LASERCROSS(20, true, Directions.NORTH, "LaserCross"),
+    BLACK_HOLE(21, true, Directions.NORTH, "BlackHole");
 
 
     public static final int TILE_SIZE = 64;
