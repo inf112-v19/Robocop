@@ -1,72 +1,54 @@
 package inf112.skeleton.app.GUI;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.data.ChatMessagePacket;
 import inf112.skeleton.common.packet.ToServer;
 import inf112.skeleton.common.packet.Packet;
-import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
 
-/*
- * Circular message-box.
- */
-public class ScrollableTextbox extends Actor{
-    InputMultiplexer inputMultiplexer;
-    Label[] lines;
-    int     lineAmount = 0,
-            lineLimit,
-            displayFrom = 0,
-            numFields = 5;
 
-    Stage stage;
-    public Table display;
+public class ScrollableTextbox extends Table{
+    private Label[] lines;
+    private int     lineAmount = 0,
+                    lineLimit,
+                    displayFrom = 0,
+                    tableWidth = 600,
+                    tableHeight = 140;
 
-    ImageButton button_up;
-    ImageButton button_down;
+    private ImageButton button_up,
+                        button_down;
 
-    Label.LabelStyle txtStyle;
-    TextField inputField;
-    Actor emptyField;
-    Channel channel;
+    private TextField inputField;
+    private Actor emptyField;
+    private Channel channel;
 
-    public int  tableWidth = 600,
-                tableHeight = 140;
     public static ScrollableTextbox textbox = null;
 
-
-    public ScrollableTextbox(int limit, InputMultiplexer inputMultiplexer, Channel channel){
+    /**
+     * Initializes scrollable textbox
+     * @param limit number of messages to store
+     * @param channel to communicate with server
+     */
+    public ScrollableTextbox(int limit, Channel channel){
         super();
+        lineLimit = limit;
         this.channel = channel;
         this.textbox = this;
-        lineLimit = limit;
-        this.inputMultiplexer = inputMultiplexer;
 
-        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-        inputMultiplexer.addProcessor(stage);
+        setSize(tableWidth, tableHeight);
+        background(RoboRally.graphics.chatBox_bg);
 
         init_inputField();
         init_scrollButtons();
         emptyField = new Actor();
 
         // Set default style of label and enable multicolor text.
-        txtStyle = new Label.LabelStyle();
-        txtStyle.font = new BitmapFont();
-        txtStyle.font.getData().markupEnabled = true;
+        Label.LabelStyle txtStyle = new Label.LabelStyle();
+        txtStyle.font = RoboRally.graphics.default_markup_font;
         txtStyle.fontColor = Color.YELLOW;
 
         lines = new Label[limit];
@@ -74,54 +56,37 @@ public class ScrollableTextbox extends Actor{
             lines[i] = new Label("", txtStyle);
         }
 
-        display = new Table();
-        display.setDebug(false);
-        display.setSize(tableWidth, tableHeight);
-        display.background(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/chatStyleOpac.png")))));
-        stage.addActor(display);
         updateDisplay();
     }
 
+    /**
+     * Initialize input-field of text-box.
+     */
     private void init_inputField() {
-        inputField = new TextField("", new Skin(Gdx.files.internal("graphics/ui/uiskin.json")));
+        inputField = new TextField("", RoboRally.graphics.default_skin);
         inputField.setMessageText(RoboRally.username + ": ");
+
+        // Send message to server if enter key typed.
         inputField.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
                 if ((key == '\r' || key == '\n')) {
                     String inputText = inputField.getText();
                     if (!inputText.equals("")) {
-//                        push(inputText);
-                        Packet packet = new Packet(ToServer.CHAT_MESSAGE.ordinal(), new ChatMessagePacket(inputText));
-                        channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
-
+                        new Packet(ToServer.CHAT_MESSAGE.ordinal(), new ChatMessagePacket(inputText)).sendPacket(channel);
                     }
                     inputField.setText("");
-                    stage.setKeyboardFocus(null);
-                    Gdx.input.setInputProcessor(inputMultiplexer);
                 }
-            }
-        });
-
-        stage.getRoot().addCaptureListener(new InputListener() {
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if (event.getTarget() == inputField) {
-                    Gdx.input.setInputProcessor(stage);
-                } else {
-                    Gdx.input.setInputProcessor(inputMultiplexer);
-                    stage.setKeyboardFocus(null);
-                }
-                return false;
             }
         });
     }
 
+    /**
+     * Add buttons to text-box, which may be used in order to view older/newer messages.
+     */
     private void init_scrollButtons() {
-        button_up = new ImageButton(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/triangleBlack.png")))));
-        button_down = new ImageButton(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/triangleBlackRot.png")))));
+        button_up = new ImageButton(RoboRally.graphics.btn_up);
+        button_down = new ImageButton(RoboRally.graphics.btn_down);
 
         button_up.addListener(
                 new ChangeListener() {
@@ -141,8 +106,11 @@ public class ScrollableTextbox extends Actor{
         );
     }
 
-
-    public void scrollDisplay(int scrollAmount) {
+    /**
+     * View older/newer messages.
+     * @param scrollAmount number of messages to scroll past.
+     */
+    private void scrollDisplay(int scrollAmount) {
         if (scrollAmount < 0) {
             scrollAmount = -((-scrollAmount) % lineLimit);
         }
@@ -151,43 +119,40 @@ public class ScrollableTextbox extends Actor{
         updateDisplay();
     }
 
-
+    /**
+     * Add a new message to the scrollable text-box.
+     * @param chatMsg package containing the new message
+     */
     public void push(ChatMessagePacket chatMsg) {
         lines[++lineAmount % lineLimit].setText(chatMsg.getMessage());
         if (lineAmount % lineLimit == (displayFrom + 1) % lineLimit)
             scrollDisplay(1);
     }
 
+    /**
+     * Remove all messages from the visible part of the text-box and draw the messages which should be here now.
+     */
+    private void updateDisplay() {
+        int numFields = 5,
+            arrowButtonSize = (tableHeight - 10) / numFields;
 
-    public void updateDisplay() {
-        int arrowButtonSize = (tableHeight - 10) / numFields;
+        clearChildren();
 
-        display.clearChildren();
+        // Add first message to be displayed, in addition to the up-button.
+        add(lines[(displayFrom - numFields + 2 + lineLimit) % lineLimit]).width(tableWidth - arrowButtonSize - 20).padLeft(10).padBottom(1).padTop(3).uniform();
+        add(button_up).width(arrowButtonSize).height(arrowButtonSize).padRight(4);
+        row();
 
-        // Add empty cells to the table.
-        display.add(lines[(displayFrom - numFields + 2 + lineLimit) % lineLimit]).width(tableWidth - arrowButtonSize - 20).padLeft(10).padBottom(1).padTop(3).uniform();
-        display.add(button_up).width(arrowButtonSize).height(arrowButtonSize).padRight(4);
-        display.row();
+        // Add all but the last message to be displayed.
         for (int i = numFields - 3; i >= 0; i--) {
-            display.add(lines[(displayFrom - i + lineLimit) % lineLimit]).width(tableWidth - arrowButtonSize - 20).padLeft(10).padBottom(1).uniform();
-            display.add(emptyField);
-            display.row();
+            add(lines[(displayFrom - i + lineLimit) % lineLimit]).width(tableWidth - arrowButtonSize - 20).padLeft(10).padBottom(1).uniform();
+            add(emptyField);
+            row();
         }
 
-        display.add(inputField).width(tableWidth - arrowButtonSize - 30).height(arrowButtonSize - 4).padLeft(5).padBottom(4).uniform();
-        display.add(button_down).width(arrowButtonSize).height(arrowButtonSize).padRight(4);
-        display.row();
-    }
-
-    public void render(Batch sb) {
-        stage.draw();
-    }
-
-    public void setPosition(int x, int y) {
-        display.setPosition(x, y);
-    }
-
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height);
+        // Add the final message to be displayed, in addition to the down-button.
+        add(inputField).width(tableWidth - arrowButtonSize - 30).height(arrowButtonSize - 4).padLeft(5).padBottom(4).uniform();
+        add(button_down).width(arrowButtonSize).height(arrowButtonSize).padRight(4);
+        row();
     }
 }

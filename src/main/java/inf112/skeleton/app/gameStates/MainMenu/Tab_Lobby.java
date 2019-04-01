@@ -61,14 +61,10 @@ public class Tab_Lobby extends MenuTab{
         players_display.setSize(pl_width, pl_tabHeight * 8);
         players_display.setBackground(RoboRally.graphics.lobby_playerList_bg);
 
-        ScrollableTextbox chat = new ScrollableTextbox(5,((State_MainMenu)gsm.peek()).im, channel);
-        chat.tableWidth = pl_width;
-        chat.updateDisplay();
-
         Table leftHalf_display = new Table();
         leftHalf_display.setSize(pl_width, height);
         leftHalf_display.add(players_display).row();
-        leftHalf_display.add(chat.display).width(pl_width);
+        leftHalf_display.add(new ScrollableTextbox(5, channel)).width(pl_width);
 
 
         /*

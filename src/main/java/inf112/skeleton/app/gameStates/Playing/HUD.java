@@ -91,31 +91,32 @@ public class HUD {
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(stage.getCamera().combined);
         stage.draw();
-        gameChat.render(sb);
         status.render(sb);
         if(playerDeck != null) {
             playerDeck.render(sb);
         }
 
+        //gameChat.draw(null, 1);
         sb.begin();
         font.draw(sb , "fps: " + Gdx.graphics.getFramesPerSecond(),stage.getWidth()-60, stage.getHeight()-10);
+        //gameChat.draw(sb, 1);
         sb.end();
     }
 
     public void resize(int width, int height) {
         // TODO: Fix bug where event-listener click-box won't move along with button.
         stage.getViewport().update(width,height);
-        gameChat.resize(width, height);
         if(playerDeck != null) {
             playerDeck.resize(width, height);
         }
     }
 
     private void setupGameChatAndPushWelcome() {
-        gameChat = new ScrollableTextbox(100,inputMultiplexer, channel);
+        gameChat = new ScrollableTextbox(100, channel);
         gameChat.push(new ChatMessagePacket("Welcome to RoboRally. Hope you enjoy this game -RoboCop"));
         gameChat.push(new ChatMessagePacket("[INFO]: Available commands: "));
         gameChat.push(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
         gameChat.push(new ChatMessagePacket("[INFO]:     \"!players\""));
+        stage.addActor(gameChat);
     }
 }

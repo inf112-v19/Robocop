@@ -3,7 +3,6 @@ package inf112.skeleton.app.GUI;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
@@ -23,8 +22,6 @@ import java.util.concurrent.TimeUnit;
 import static inf112.skeleton.common.specs.CardType.GREY;
 
 public class PlayerDeck {
-    private BitmapFont font;
-
     private GameStateManager gsm;
     private InputMultiplexer inputMultiplexer;
     private Channel channel;
@@ -44,27 +41,66 @@ public class PlayerDeck {
                 CARD_WIDTH = 110,
                 CARD_HEIGHT = (int)(CARD_WIDTH * 1.386);
 
-    public PlayerDeck(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, final Channel channel) {
+    /**
+     * Retrieve cards from player and setup displays, such that they may be viewed and chosen amongst.
+     * @param gameStateManager to be able to get the current game-state
+     * @param inputMultiplexer to allow cards to be chosen
+     * @param channel to communicate with the server
+     */
+    public PlayerDeck(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, Channel channel) {
         this.gsm = gameStateManager;
         this.inputMultiplexer = inputMultiplexer;
         this.channel = channel;
+
         numberOfChosenButtons = 0;
 
         stage = new Stage();
         altStage = new Stage();
-
-        font = new BitmapFont();
-        font.setColor(Color.RED);
 
         chooseFromButtons = new LinkedList<>();
         chooseToButtons = new LinkedList<>();
         greyButtons = new LinkedList<>();
         pCards = new HashMap<>();
 
-        // Create buttons to let the user collapse the player-deck
-        ButtonGenerator bg = new ButtonGenerator();
 
-        btn_chooseCards = bg.generate("Choose cards");
+        initializeButtons();
+        initializeFromDeck();
+        initializeToDeck();
+
+        inputMultiplexer.addProcessor(stage);
+
+        updateDisplays();
+        swapStages();
+    }
+
+    /**
+     * Wait for player to be initialized by gameSocketHandler before returning its cards
+     * @return Arraylist of cards
+     */
+    private Card[] getCardsFromPlayer(){
+        long msWaited = 100, totalWaited = 0;
+        while(true) {
+            try {
+                return RoboRally.gameBoard.myPlayer.cards;
+            } catch (NullPointerException npe) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(msWaited);
+                    totalWaited += msWaited;
+                    msWaited <<= 1;
+                    System.out.println("PlayerDeck <getCardsFromPlayer>: Waiting until player initialized... (waited " + (totalWaited / 1000f) + " seconds)");
+                } catch (InterruptedException ie) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Add buttons:
+     *     -> "Done": When clicked, all cards should disappear, the choice should be sent to the server and the next button should appear
+     *     -> "Choose cards": When clicked, all cards should reappear such that one may decide which cards to choose.
+     */
+    private void initializeButtons() {
+        btn_chooseCards = GraphicsLoader.buttonGenerator.generate("Choose cards");
         btn_chooseCards.setPosition(stage.getViewport().getScreenWidth()-btn_chooseCards.getWidth(),0);
         btn_chooseCards.addListener(new ChangeListener() {
             @Override
@@ -72,9 +108,9 @@ public class PlayerDeck {
                 swapStages();
             }
         });
+        altStage.addActor(btn_chooseCards);
 
-        // Create button that lets the player lock in their selected cards.
-        btn_done = bg.generate("Done");
+        btn_done = GraphicsLoader.buttonGenerator.generate("Done");
         btn_done.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -90,33 +126,30 @@ public class PlayerDeck {
                 inputMultiplexer.removeProcessor(stage);
             }
         });
+    }
 
-        // Wait until a the player is initialized by the GameSocketHandler
-        long msWaited = 100, totalWaited = 0;
-        Card[] cards;
-        while(true) {
-            try {
-                cards = RoboRally.gameBoard.myPlayer.cards;
-                break;
-            } catch (NullPointerException npe) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(msWaited);
-                    totalWaited += msWaited;
-                    msWaited <<= 1;
-                    System.out.println("PlayerDeck <init>: Waiting until player initialized... (waited " + (totalWaited / 1000f) + " seconds)");
-                } catch (InterruptedException ie) {
-                }
-            }
-        }
-
+    /**
+     * Initialize the deck of cards which one may chose from.
+     */
+    private void initializeFromDeck() {
         ImageTextButton tmpButton;
+        Drawable tmpDrawable;
 
-        // Initialize the deck of cards which may be chosen.
-        for(Card card : cards) {
+        chooseFrom = new Table();   //Card pool.
+        chooseFrom.setSize(NUM_CARDS_FROM * CARD_WIDTH, CARD_HEIGHT + btn_done.getHeight());
+        chooseFrom.setPosition(stage.getViewport().getScreenWidth() / 2 - chooseFrom.getWidth() / 2, 140);
+        stage.addActor(chooseFrom);
+
+        for(Card card : getCardsFromPlayer()) {
+            tmpDrawable = card.getDrawable();
+
+            // Create new card-image button with priority in top-right corner.
             tmpButton = new ImageTextButton(""+card.getPriority(), new ImageTextButton.ImageTextButtonStyle(
-                    card.getDrawable(), card.getDrawable(), card.getDrawable(), new BitmapFont()));
+                    tmpDrawable, tmpDrawable, tmpDrawable, RoboRally.graphics.default_font));
             tmpButton.getStyle().fontColor = Color.RED;
             tmpButton.top().padTop(11).padLeft(38);
+
+            // If a card is clicked, move it from one deck to the other.
             tmpButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -140,34 +173,30 @@ public class PlayerDeck {
             chooseFromButtons.add(tmpButton);
             pCards.put(tmpButton, card);
         }
+    }
 
-        // Initialize the deck of cards which is already chosen.
-        for (int i = 0; i < NUM_CARDS_TO; i++) {
-            ImageTextButton.ImageTextButtonStyle btnStyle = new ImageTextButton.ImageTextButtonStyle(greyCardDrawable,greyCardDrawable,greyCardDrawable,new BitmapFont());
-            btnStyle.fontColor = Color.RED;
-            chooseToButtons.add(new ImageTextButton("", btnStyle));
-        }
-
-
-        // Set up the tables for the displayable cards.
-        chooseFrom = new Table();   //Card pool.
-        chooseFrom.setSize(NUM_CARDS_FROM * CARD_WIDTH, CARD_HEIGHT + btn_done.getHeight());
-        chooseFrom.setPosition(stage.getViewport().getScreenWidth() / 2 - chooseFrom.getWidth() / 2, 140);
-
+    /**
+     * Initialize the deck of cards which contains cards already chosen
+     */
+    private void initializeToDeck() {
         chooseTo = new Table();     //Selected cards.
         chooseTo.setSize(NUM_CARDS_TO *(CARD_WIDTH - 8 * 2), CARD_HEIGHT - 8 * 2);
         chooseTo.setPosition(stage.getViewport().getScreenWidth()-chooseTo.getWidth()-7, 2);
-
-        stage.addActor(chooseFrom);
         stage.addActor(chooseTo);
-        altStage.addActor(btn_chooseCards);
 
-        inputMultiplexer.addProcessor(stage);
 
-        updateDisplays();
-        swapStages();
+        // Grey cards
+        for (int i = 0; i < NUM_CARDS_TO; i++) {
+            ImageTextButton.ImageTextButtonStyle btnStyle = new ImageTextButton.ImageTextButtonStyle(
+                    greyCardDrawable, greyCardDrawable, greyCardDrawable, RoboRally.graphics.default_font);
+            btnStyle.fontColor = Color.RED;
+            chooseToButtons.add(new ImageTextButton("", btnStyle));
+        }
     }
 
+    /**
+     * Swap stages (Hide/Show cards)
+     */
     private void swapStages() {
         Stage tmpStage = stage;
         stage = altStage;
@@ -177,6 +206,9 @@ public class PlayerDeck {
         inputMultiplexer.addProcessor(stage);
     }
 
+    /**
+     * Update which cards are displayed in which deck.
+     */
     private void updateDisplays() {
         chooseFrom.clearChildren();
         chooseTo.clearChildren();
@@ -192,12 +224,21 @@ public class PlayerDeck {
         chooseTo.row();
     }
 
-
+    /**
+     * Render the player-deck.
+     * @param sb sprite-batch
+     */
     public void render(Batch sb) {
         stage.draw();
     }
+
+    /**
+     * Update viewports of stages whenever the screen is resized.
+     * @param width of screen after resize
+     * @param height of screen after resize
+     */
     public void resize(int width, int height) {
         stage.getViewport().update(width, height);
         altStage.getViewport().update(width, height);
-    };
+    }
 }

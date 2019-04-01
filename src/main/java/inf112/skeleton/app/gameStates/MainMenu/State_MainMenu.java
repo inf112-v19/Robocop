@@ -209,12 +209,6 @@ public class State_MainMenu extends GameState {
         }
     }
 
-
-    @Override
-    protected void handleInput() {
-
-    }
-
     @Override
     public void update(float dt) {
         // TODO: Code cleanup
@@ -306,11 +300,6 @@ public class State_MainMenu extends GameState {
 
     @Override
     public void dispose() {
-
-    }
-
-    @Override
-    public void focus() {
 
     }
 

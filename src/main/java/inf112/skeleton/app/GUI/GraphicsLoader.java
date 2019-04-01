@@ -22,16 +22,21 @@ public class GraphicsLoader {
     public Skin     default_skin;
 
     public BitmapFont   default_font,
-                        default_font_1p6;
+                        default_markup_font,
+                        default_font_1p6,
+                        default_font_3p0;
 
     public Drawable logo,
+                    btn_up,
+                    btn_down,
                     btn_rounded_focused,
                     btn_rounded_unfocused,
                     btn_rounded_frozen,
                     mainMenu_h1,
                     mainMenu_h2,
                     mainMenu_body,
-                    lobby_playerList_bg;
+                    lobby_playerList_bg,
+                    chatBox_bg;
 
     public Color    color_primary;
 
@@ -40,6 +45,8 @@ public class GraphicsLoader {
                                                 btnStyle_rounded_frozen,
                                                 btnStyle_players[];
 
+    public static ButtonGenerator buttonGenerator;
+
     public GraphicsLoader() {
         /*
          * Skins and fonts
@@ -47,14 +54,22 @@ public class GraphicsLoader {
         default_skin = getSkin(folder_ui + "uiskin.json");
         default_font = default_skin.getFont("default-font");
 
+        default_markup_font = getSkin(folder_ui + "uiskin.json").getFont("default-font");
+        default_markup_font.getData().markupEnabled = true;
+
         default_font_1p6 = getSkin(folder_ui + "uiskin.json").getFont("default-font");
         default_font_1p6.getData().setScale(1.6f);
+
+        default_font_3p0 = getSkin(folder_ui + "uiskin.json").getFont("default-font");
+        default_font_3p0.getData().setScale(3f);
 
 
         /*
          * Drawables
          */
         logo = getDrawable(folder_ui + "robocop_logo_500W.png");
+        btn_up = getDrawable(folder_ui + "triangleBlack.png");
+        btn_down = getDrawable(folder_ui + "triangleBlackRot.png");
 
         btn_rounded_focused = getDrawable(folder_Buttons + "btn_rounded_focused.png");
         btn_rounded_unfocused = getDrawable(folder_Buttons + "btn_rounded_unfocused.png");
@@ -65,6 +80,8 @@ public class GraphicsLoader {
         mainMenu_body = getDrawable(folder_MainMenu + "main.png");
 
         lobby_playerList_bg = getDrawable(folder_Lobby + "player_bg.png");
+
+        chatBox_bg = getDrawable(folder_ui + "chatStyleOpac.png");
 
 
         /*
@@ -85,6 +102,8 @@ public class GraphicsLoader {
         for (int i = 0; i < playerColors.length; i++) {
             btnStyle_players[i] = styleFromDrawable(getDrawable(folder_Lobby + "player_" + playerColors[i] + ".png"), default_font_1p6, Color.BLACK);
         }
+
+        buttonGenerator = new ButtonGenerator();
     }
 
     public Skin getSkin(String link) {

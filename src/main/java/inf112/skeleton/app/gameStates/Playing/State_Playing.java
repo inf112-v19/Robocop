@@ -39,15 +39,12 @@ public class State_Playing extends GameState {
 
         gameBoard = RoboRally.gameBoard;
         hud = new HUD(gsm, inputMultiplexer, channel);
-    }
-
-    @Override
-    protected void handleInput() {
-        cameraHandler.handle();
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override
     public void update(float dt) {
+        cameraHandler.handle();
         camera.update();
         gameBoard.update();
 
@@ -70,11 +67,6 @@ public class State_Playing extends GameState {
     public void dispose() {
         hud.dispose();
         gameBoard.dispose();
-    }
-
-    @Override
-    public void focus() {
-        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override

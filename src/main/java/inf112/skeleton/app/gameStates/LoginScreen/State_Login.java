@@ -181,12 +181,6 @@ public class State_Login extends GameState {
         stage.setKeyboardFocus(null);
     }
 
-
-    @Override
-    protected void handleInput() {
-
-    }
-
     @Override
     public void update(float dt) {
         if (loginStatus == null)
@@ -240,11 +234,6 @@ public class State_Login extends GameState {
 
     @Override
     public void dispose() {
-
-    }
-
-    @Override
-    public void focus() {
 
     }
 
