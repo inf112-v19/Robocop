@@ -18,7 +18,8 @@ public class GraphicsLoader {
                     folder_ui   = folder_main + "ui/",
                     folder_Buttons = folder_ui + "Buttons/",
                     folder_MainMenu = folder_ui + "MainMenu/",
-                    folder_Lobby = folder_MainMenu + "Lobby/";
+                    folder_Lobby = folder_MainMenu + "Lobby/",
+                    folder_Lobbies = folder_MainMenu + "Lobbies/";
 
     public Skin     default_skin;
 
@@ -38,13 +39,22 @@ public class GraphicsLoader {
                     mainMenu_h2,
                     mainMenu_body,
                     lobby_playerList_bg,
-                    chatBox_bg;
+                    chatBox_bg,
+                    lobbies_view_bg,
+                    lobbies_bg,
+                    lobbies_header,
+                    lobbies_horizontal_line,
+                    btn_update,
+                    btn_add;
 
     public Color    color_primary;
 
     public ImageTextButton.ImageTextButtonStyle btnStyle_rounded_focused;
     public ImageTextButton.ImageTextButtonStyle btnStyle_rounded_unfocused;
     public ImageTextButton.ImageTextButtonStyle btnStyle_rounded_frozen;
+    public ImageTextButton.ImageTextButtonStyle btnStyle_lobbies_entry_focused;
+    public ImageTextButton.ImageTextButtonStyle btnStyle_lobbies_entry_unfocused;
+
     public ImageTextButton.ImageTextButtonStyle[] btnStyle_players;
 
     /**
@@ -89,6 +99,14 @@ public class GraphicsLoader {
 
         chatBox_bg = getDrawable(folder_ui + "chatStyleOpac.png");
 
+        lobbies_view_bg = getDrawable(folder_Lobbies + "LobbiesView_bg.png");
+        lobbies_bg = getDrawable(folder_Lobbies + "Lobbies_bg.png");
+        lobbies_header = getDrawable(folder_Lobbies + "Lobbies_header.png");
+        lobbies_horizontal_line = getDrawable(folder_Lobbies + "Lobbies_horizontalLine.png");
+
+        btn_update = getDrawable(folder_Lobbies + "updateButtonFocused.png");
+        btn_add = getDrawable(folder_Lobbies + "plusButtonFocused.png");
+
 
         /*
          * Colors
@@ -108,6 +126,9 @@ public class GraphicsLoader {
         for (int i = 0; i < playerColors.length; i++) {
             btnStyle_players[i] = styleFromDrawable(getDrawable(folder_Lobby + "player_" + playerColors[i] + ".png"), default_font_1p6, Color.BLACK);
         }
+
+        btnStyle_lobbies_entry_focused = styleFromDrawable(getDrawable(folder_Lobbies + "LobbyButtonFocused.png"), default_font, Color.BLACK);
+        btnStyle_lobbies_entry_unfocused = styleFromDrawable(getDrawable(folder_Lobbies + "LobbyButtonUnfocused.png"), default_font, Color.BLACK);
     }
 
     /**

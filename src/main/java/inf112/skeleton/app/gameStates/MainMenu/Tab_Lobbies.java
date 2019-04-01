@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.ToServer;
@@ -59,7 +60,6 @@ public class Tab_Lobbies extends MenuTab {
      * @param ch
      */
     public Tab_Lobbies(GameStateManager gameStateManager, Channel ch) {
-        // TODO: Code cleanup and load drawables from graphics loader.
         super(gameStateManager, ch);
         font = new BitmapFont();
         font.getData().setScale(1.5f);
@@ -67,51 +67,27 @@ public class Tab_Lobbies extends MenuTab {
         lobbyButtons = new LinkedHashMap<>();
         lobbyViews = new LinkedHashMap<>();
 
-        // Set style of lobby buttons
-        lobbyView_bg = new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/LobbiesView_bg.png"))));
-
-        Drawable tmp;
-
-        tmp = new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/LobbyButtonFocused.png"))));
-        lobbyButtonStyleFocused = new ImageTextButton.ImageTextButtonStyle(tmp, tmp, tmp, font);
-        lobbyButtonStyleFocused.fontColor = Color.BLACK;
-
-        tmp = new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/LobbyButtonUnfocused.png"))));
-        lobbyButtonStyleUnfocused = new ImageTextButton.ImageTextButtonStyle(tmp, tmp, tmp, font);
-        lobbyButtonStyleUnfocused.fontColor = Color.BLACK;
-
-
         // Add Lobbies table (Left side of screen)
-        lobbies = new Table();
+        lobbies = new Table().top();
         lobbies.setSize(lb_width, height);
-        lobbies.setBackground(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Lobbies_bg.png")))));
-        lobbies.top();
+        lobbies.setBackground(RoboRally.graphics.lobbies_bg);
 
         // Lobbies header (Textbox: "Lobbies"):
-        lobbiesHeader = new Table();
-        lobbiesHeader.setBackground(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Lobbies_header.png")))));
+        lobbiesHeader = new Table().right();
+        lobbiesHeader.setBackground(RoboRally.graphics.lobbies_header);
         lobbiesHeader.setSize(lb_width, lb_headerHeight);
-        lobbiesHeader.right();
 
-        ImageButton lobbyUpdate = new ImageButton(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/updateButtonFocused.png")))));
-
+        // Update-button: When clicked, a request is sent to the server to get the lobbies list.
+        ImageButton lobbyUpdate = new ImageButton(RoboRally.graphics.btn_update);
         lobbyUpdate.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Packet packet = new Packet(ToServer.REQUEST_DATA, new DataRequestPacket(DataRequest.LOBBY_LIST));
-                channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+                new Packet(ToServer.REQUEST_DATA, new DataRequestPacket(DataRequest.LOBBY_LIST)).sendPacket(channel);
             }
         });
 
-        ImageButton lobbyCreate = new ImageButton(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/plusButtonFocused.png")))));
-
+        // Add-button: When clicked, a new tab is created, allowing the player to create a new lobby.
+        ImageButton lobbyCreate = new ImageButton(RoboRally.graphics.btn_add);
         lobbyCreate.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -123,20 +99,13 @@ public class Tab_Lobbies extends MenuTab {
 
         lobbiesHeader.add(lobbyUpdate).size(40,40).right().padRight(10);
         lobbiesHeader.add(lobbyCreate).size(40,40).right().padRight(10);
-        lobbies.add(lobbiesHeader);
-        lobbies.row();
-        lobbies.add(new Image(new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/Lobbies_horizontalLine.png"))))))
-                .size(lb_width-4, 1).padTop(1);
-        lobbies.row();
+        lobbies.add(lobbiesHeader).row();
+        lobbies.add(new Image(RoboRally.graphics.lobbies_horizontal_line)).size(lb_width-4, 1).padTop(1).row();
 
         display.add(lobbies).size(lb_width, height);
 
-
-
         // Request a list of all lobbies
-        Packet packet = new Packet(ToServer.REQUEST_DATA, new DataRequestPacket(DataRequest.LOBBY_LIST));
-        ch.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+        new Packet(ToServer.REQUEST_DATA, new DataRequestPacket(DataRequest.LOBBY_LIST)).sendPacket(channel);
     }
 
     /**
