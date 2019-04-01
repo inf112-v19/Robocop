@@ -35,6 +35,13 @@ public class Tab_Lobby extends MenuTab{
                         mp_width        = 250,
                         mp_height       = 150;
 
+    /**
+     * Initialize lobby system containing preview of map, player list and buttons to start game or leave lobby
+     * @param gameStateManager to manage game-states
+     * @param ch to communicate with server
+     * @param mapinfo to display preview of map
+     * @param isHost whether the player was the one who created the lobby
+     */
     public Tab_Lobby(GameStateManager gameStateManager, Channel ch, MapInfo mapinfo, boolean isHost) {
         super(gameStateManager, ch);
         this.isHost = isHost;
@@ -122,6 +129,11 @@ public class Tab_Lobby extends MenuTab{
         display.add(rightHalf_display).width(mp_width);
     }
 
+    /**
+     * Add a player to the lobby
+     * @param index player-array position
+     * @param name of player
+     */
     public void addPlayer(int index, String name) {
         playerButtons[index] = new ImageTextButton(name, RoboRally.graphics.btnStyle_players[index]);
         playerNames[index] = name;
@@ -137,6 +149,10 @@ public class Tab_Lobby extends MenuTab{
         }
     }
 
+    /**
+     * Update player list in lobby
+     * @param packet containing players in lobby
+     */
     public void update(LobbyUpdatePacket packet) {
         playerNames = new String[8];
         playerButtons = new ImageTextButton[8];

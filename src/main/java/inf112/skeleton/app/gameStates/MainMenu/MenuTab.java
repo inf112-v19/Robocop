@@ -13,6 +13,11 @@ public class MenuTab {
     protected final int width           = 1054,
                         height          = 589;
 
+    /**
+     * Setup common configuration for all menu-tabs.
+     * @param gsm
+     * @param channel
+     */
     public MenuTab(GameStateManager gsm, Channel channel) {
         this.gsm = gsm;
         this.channel = channel;

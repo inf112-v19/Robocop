@@ -18,6 +18,12 @@ public class Tab_CreateLobby extends MenuTab {
     private MapFile[] maps;
 
 
+    /**
+     * Initialize new tab, containing an input-field for lobby name, a drop-down box of maps to choose from
+     * and a button which sends a lobby-create packet to server when clicked.
+     * @param gameStateManager manages game-states
+     * @param ch used to communicate with server.
+     */
     public Tab_CreateLobby(GameStateManager gameStateManager, Channel ch) {
         super(gameStateManager, ch);
 
@@ -88,10 +94,11 @@ public class Tab_CreateLobby extends MenuTab {
         ((State_MainMenu)gsm.peek()).stage.setKeyboardFocus(lobbyName);
     }
 
+    /**
+     * Send a lobby-creation request to the server and return to the lobby menu.
+     * If the request was successful, the player should be put into the newly created lobby
+     */
     public void lobby_create() {
-        // Send a lobby-creation request to the server and return to the lobby menu.
-        // If the request was successful, the player should be put into the newly created lobby
-
         String selected = selectBox.getSelected();
         for (MapFile map : maps) {
             if (map.name == selected) {

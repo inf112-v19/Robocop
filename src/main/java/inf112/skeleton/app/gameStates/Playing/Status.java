@@ -23,14 +23,6 @@ class SingleStatus{
         this.lives = lives;
         this.damage = damage;
     }
-
-    public void updateLives(int l) {
-        lives.setText(""+l);
-    }
-
-    public void updateDamage(int d) {
-        damage.setText(""+d);
-    }
 }
 
 
@@ -111,37 +103,10 @@ public class Status {
     }
 
     /**
-     * Finds the robot to update and update life-display
-     * @param roboName name of player
-     * @param lives number of updated lives
-     */
-    public void updateLives(String roboName, int lives) {
-        statusUpdater.get(roboName).updateLives(lives);
-    }
-
-    /**
-     * Finds the robot to update and update damage-display
-     * @param roboName name of player
-     * @param damage number of updated lives
-     */
-    public void updateDamage(String roboName, int damage) {
-        statusUpdater.get(roboName).updateDamage(damage);
-    }
-
-    /**
      * Draw status-bar to screen.
      * @param sb sprite-batch, not used.
      */
     public void render(Batch sb) {
         stage.draw();
-    }
-
-    /**
-     * Sets the position of the status bar on screen
-     * @param x coordinate
-     * @param y coordinate
-     */
-    public void setPosition(int x, int y) {
-        statusbar.setPosition(x, y);
     }
 }

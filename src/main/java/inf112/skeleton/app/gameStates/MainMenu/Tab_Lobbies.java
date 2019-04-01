@@ -13,19 +13,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import inf112.skeleton.app.gameStates.GameStateManager;
-import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.ToServer;
 import inf112.skeleton.common.packet.data.DataRequestPacket;
 import inf112.skeleton.common.packet.data.JoinLobbyPacket;
-import inf112.skeleton.common.packet.data.PacketData;
 import inf112.skeleton.common.specs.DataRequest;
-import inf112.skeleton.common.specs.MapDifficulty;
-import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Tab_Lobbies extends MenuTab {
@@ -58,7 +53,13 @@ public class Tab_Lobbies extends MenuTab {
                         mp_height = 150,
                         mp_posX = 360;
 
+    /**
+     * Initialize new tab with a list of lobbies to enter and a lobby-preview.
+     * @param gameStateManager
+     * @param ch
+     */
     public Tab_Lobbies(GameStateManager gameStateManager, Channel ch) {
+        // TODO: Code cleanup and load drawables from graphics loader.
         super(gameStateManager, ch);
         font = new BitmapFont();
         font.getData().setScale(1.5f);
@@ -138,6 +139,10 @@ public class Tab_Lobbies extends MenuTab {
         ch.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
     }
 
+    /**
+     * Add a lobby-button to the lobbies-list and create a new lobby-preview.
+     * @param mapInfo containing information about the lobby/map.
+     */
     public void addLobby(final MapInfo mapInfo) {
         // Create button which may be used to choose this map
         ImageTextButton btn_lobbyTab = new ImageTextButton(mapInfo.lobbyName, lobbyButtonStyleUnfocused);
@@ -217,6 +222,9 @@ public class Tab_Lobbies extends MenuTab {
         lobbyViews.put(mapInfo.lobbyName, map);
     }
 
+    /**
+     * Remove current lobby preview.
+     */
     public void removeDetails() {
         currentLobby = null;
         display.clearChildren();

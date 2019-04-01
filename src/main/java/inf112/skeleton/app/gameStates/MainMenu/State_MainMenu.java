@@ -50,6 +50,11 @@ public class State_MainMenu extends GameState {
                         main_padding        = 13;
     private boolean     isFrozen = false;
 
+    /**
+     * Initialize main menu
+     * @param gameStateManager handles game-states
+     * @param ch channel to communicate with server
+     */
     public State_MainMenu(GameStateManager gameStateManager, Channel ch) {
         super(gameStateManager, ch);
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
@@ -126,7 +131,10 @@ public class State_MainMenu extends GameState {
         im.addProcessor(stage);
     }
 
-    // What happens when a tab-button is clicked
+    /**
+     * What happens when a tab-button is clicked
+     * @param textButton which tab-button was clicked
+     */
     private void tabButtonAction (ImageTextButton textButton) {
         // If button is already focused, return.
         if (currentTab == textButton) {
@@ -148,7 +156,12 @@ public class State_MainMenu extends GameState {
         main.row();
     }
 
-
+    /**
+     * Add a new tab to the menu
+     * @param tabName what's displayed on the tab-button
+     * @param tab what to show when tab-button clicked
+     * @param goTo whether to force enter this tab
+     */
     public void addTab(String tabName, MenuTab tab, boolean goTo) {
         // Add tab-button to second header.
         ImageTextButton newTabButton = new ImageTextButton(tabName, RoboRally.graphics.btnStyle_rounded_unfocused);
@@ -171,6 +184,9 @@ public class State_MainMenu extends GameState {
             tabButtonAction(newTabButton);
     }
 
+    /**
+     * Removes the current tab from the menu.
+     */
     public void removeCurrentTab() {
         String removeName = currentTab.getText().toString();
         tabButtons.remove(removeName);
@@ -187,12 +203,19 @@ public class State_MainMenu extends GameState {
         tabButtonAction(lastButton);
     }
 
+    /**
+     * Remove tab-button from menu (Will always be the current tab.
+     */
     public void leaveLobby() {
         if (tabButtons.size() > 1) {
             removeCurrentTab();
         }
     }
 
+    /**
+     * Disable/enable the functionality to switch between menu tabs and changes tab-button appearances.
+     * @param frozen whether to disable or enable switch-functionality.
+     */
     public void setFreeze(boolean frozen) {
         if (frozen == isFrozen)
             return;
