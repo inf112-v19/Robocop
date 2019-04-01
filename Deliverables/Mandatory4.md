@@ -12,17 +12,17 @@ Which is a challange to adapt to work we are not used to. Communication is summe
 * Things to improve upon: 
     * Everyone needs to get more familar with drawing artistic sprites.
     * Creating packets is something everyone should know.
-    * 
+    * Everyone needs to understand the gui drawing of the client
 * 
 ```$xslt
- 13th of match:
+ 13th of march:
  alle til stede, me planla fleire farger robotter, og jobba med interaksjon i klienten
  19th of march:
  alle var til stede untatt madelen, gikk over nye roboter, starta lobby i klient.
  20th of march:
- alle untatt maren og madelen, videre arbeid paa lobby, startet designing av kort
+ alle untatt maren og madelen, videre arbeid på lobby, startet designing av kort
  27th of march:
- alle untatt madelen, par programmering paa server side lobby, og jobb med runder i spillet.
+ alle untatt madelen, par programmering på server side lobby, og jobb med runder i spillet.
  
  
 ```
@@ -36,3 +36,4 @@ Which is a challange to adapt to work we are not used to. Communication is summe
     * Started this because lasers were on the board we chose as a starting point.
 * Multiplayer over lan or internet
     * We did this from the start
+    
