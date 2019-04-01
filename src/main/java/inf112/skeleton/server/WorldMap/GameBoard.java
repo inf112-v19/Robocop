@@ -26,6 +26,7 @@ public abstract class GameBoard {
      */
     void addTileEntity(TiledMapTile tile, int x, int y) {
         TileEntity newTile;
+        System.out.println(tile.getId());
         switch (TileDefinition.getTileById(tile.getId())) {
             case LASER:
             case LASERSOURCE:

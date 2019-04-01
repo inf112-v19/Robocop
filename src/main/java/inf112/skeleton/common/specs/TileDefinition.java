@@ -15,7 +15,16 @@ public enum TileDefinition {
     LASERSOURCE(18, true, Directions.NORTH, "Laser-Source"),
     LASER(19, true, Directions.NORTH, "Laser"),
     LASERCROSS(20, true, Directions.NORTH, "LaserCross"),
-    BLACK_HOLE(21, true, Directions.NORTH, "BlackHole");
+    BLACK_HOLE(21, true, Directions.NORTH, "BlackHole"),
+    WALL(22, true, Directions.WEST, "Wall"),
+    LWALL(23, true, Directions.WEST, "L-Wall"),
+    DLASERSOURCE(24, true, Directions.NORTH, "Double-Laser-Source"),
+    DLASER(25, true, Directions.NORTH, "Double-Laser"),
+    DLASERCROSS(26, true, Directions.NORTH, "Double-LaserCross"),
+    DLASERSINGLECROSS(27, true, Directions.NORTH, "Double-Laser-Single-Cross"),
+    WRENCH(28, true, Directions.NORTH, "Wrench"),
+    DWRENCH(29, true, Directions.NORTH, "Double-Wrench");
+
 
 
     public static final int TILE_SIZE = 64;
