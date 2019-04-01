@@ -23,7 +23,8 @@ Which is a challange to adapt to work we are not used to. Communication is summe
  alle untatt maren og madelen, videre arbeid på lobby, startet designing av kort
  27th of march:
  alle untatt madelen, par programmering på server side lobby, og jobb med runder i spillet.
- 
+ 31th of march:
+ alle var til stede, koderensk for levering. gjennomgang og fjerning av ubrukt kode, alle bidro på samme pc
  
 ```
 * As our designer is in the hospital, we have winged the design, for programing pair programing worked fine, with a partner who know how it all worked, made it all comforting to attack any problem.
