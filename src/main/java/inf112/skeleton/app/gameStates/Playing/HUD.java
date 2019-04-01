@@ -12,12 +12,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.GUI.PlayerDeck;
 import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.GUI.ButtonGenerator;
 import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
 import inf112.skeleton.common.packet.data.ChatMessagePacket;
 import io.netty.channel.Channel;
+
+import java.util.Collection;
 
 public class HUD {
     private BitmapFont font;
@@ -31,13 +34,14 @@ public class HUD {
     private Channel channel;
 
     private Status status;
+
     public HUD(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, final Channel channel) {
         this.gsm = gameStateManager;
 
         this.inputMultiplexer = inputMultiplexer;
         this.channel = channel;
 
-        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()));
+        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         inputMultiplexer.addProcessor(stage);
 
         font = new BitmapFont();
@@ -62,9 +66,7 @@ public class HUD {
 
         // stage.addActor(to_mainMenu);
 
-        status = new Status(gsm,inputMultiplexer,channel);
-        status.add("Person1");
-        status.add("Person2");
+        status = new Status(gsm, inputMultiplexer, channel);
 
         //status.setPosition(400,300);
         RoboRally.gameBoard.hud = this;
@@ -92,27 +94,37 @@ public class HUD {
         sb.setProjectionMatrix(stage.getCamera().combined);
         stage.draw();
         gameChat.render(sb);
+        if (status != null) {
+            if (RoboRally.gameBoard.getPlayers().size() + 1 != status.statusUpdater.size()) {
+                status.statusUpdater.clear();
+                status.add(RoboRally.gameBoard.myPlayer);
+                for (Player player : (Collection<Player>) RoboRally.gameBoard.getPlayers().values()) {
+                    status.add(player);
+                }
+            }
+
+        }
         status.render(sb);
-        if(playerDeck != null) {
+        if (playerDeck != null) {
             playerDeck.render(sb);
         }
 
         sb.begin();
-        font.draw(sb , "fps: " + Gdx.graphics.getFramesPerSecond(),stage.getWidth()-60, stage.getHeight()-10);
+        font.draw(sb, "fps: " + Gdx.graphics.getFramesPerSecond(), stage.getWidth() - 60, stage.getHeight() - 10);
         sb.end();
     }
 
     public void resize(int width, int height) {
         // TODO: Fix bug where event-listener click-box won't move along with button.
-        stage.getViewport().update(width,height);
+        stage.getViewport().update(width, height);
         gameChat.resize(width, height);
-        if(playerDeck != null) {
+        if (playerDeck != null) {
             playerDeck.resize(width, height);
         }
     }
 
     private void setupGameChatAndPushWelcome() {
-        gameChat = new ScrollableTextbox(100,inputMultiplexer, channel);
+        gameChat = new ScrollableTextbox(100, inputMultiplexer, channel);
         gameChat.push(new ChatMessagePacket("Welcome to RoboRally. Hope you enjoy this game -RoboCop"));
         gameChat.push(new ChatMessagePacket("[INFO]: Available commands: "));
         gameChat.push(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));

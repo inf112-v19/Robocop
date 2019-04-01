@@ -51,6 +51,7 @@ public class Game {
 
                 case DEALING:   //Deal cards to players
                     Gdx.app.log("Game - update - DEALING", "Dealing cards to players.");
+                    lobby.broadcastChatMessage("You have 30 seconds to choose cards or cards will be automatically chosen");
                     for (Player player : players) {
                         player.sendCardHandToClient(createCardHand(player));
                     }
@@ -65,6 +66,7 @@ public class Game {
                     if (checkTimer()) {
                         Gdx.app.log("Game - update - WAITING", "Moving to REQUEST-stage.");
                         timerStarted = 0;
+                        lobby.broadcastChatMessage("30 Seconds is up, cards locked in.");
                         if (!allPlayersReady() && !players.isEmpty()) {
                             forcePlayersReady();
                         }

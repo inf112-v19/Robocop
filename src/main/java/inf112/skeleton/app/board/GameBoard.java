@@ -119,5 +119,8 @@ public abstract class GameBoard {
         }
         return this.players.get(uuid);
     }
+    public Map getPlayers(){
+        return players;
+    }
 
 }
