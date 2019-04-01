@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
@@ -24,6 +25,7 @@ public class GraphicsLoader {
     public BitmapFont   default_font,
                         default_markup_font,
                         default_font_1p6,
+                        default_font_1p7,
                         default_font_3p0;
 
     public Drawable logo,
@@ -45,8 +47,9 @@ public class GraphicsLoader {
                                                 btnStyle_rounded_frozen,
                                                 btnStyle_players[];
 
-    public static ButtonGenerator buttonGenerator;
-
+    /**
+     * Loads and store all graphics
+     */
     public GraphicsLoader() {
         /*
          * Skins and fonts
@@ -59,6 +62,9 @@ public class GraphicsLoader {
 
         default_font_1p6 = getSkin(folder_ui + "uiskin.json").getFont("default-font");
         default_font_1p6.getData().setScale(1.6f);
+
+        default_font_1p7 = getSkin(folder_ui + "uiskin.json").getFont("default-font");
+        default_font_1p7.getData().setScale(1.7f);
 
         default_font_3p0 = getSkin(folder_ui + "uiskin.json").getFont("default-font");
         default_font_3p0.getData().setScale(3f);
@@ -102,22 +108,47 @@ public class GraphicsLoader {
         for (int i = 0; i < playerColors.length; i++) {
             btnStyle_players[i] = styleFromDrawable(getDrawable(folder_Lobby + "player_" + playerColors[i] + ".png"), default_font_1p6, Color.BLACK);
         }
-
-        buttonGenerator = new ButtonGenerator();
     }
 
-    public Skin getSkin(String link) {
+    /**
+     * Craetes a new skin from a link
+     * @param link path to skin-file
+     * @return new skin
+     */
+    private Skin getSkin(String link) {
         return new Skin(Gdx.files.internal(link));
     }
 
+    /**
+     * Create a new drawable from a link
+     * @param link path to drawable-file (Most often .png)
+     * @return new drawable
+     */
     public Drawable getDrawable(String link) {
         return new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(link))));
     }
 
 
+    /**
+     * Temporary function to create an ugly button.
+     * @param text inside button
+     * @return new button
+     */
+    TextButton generateTextButton(String text) {
+        Drawable tmpD = getDrawable(folder_Buttons+ "textButtonStyle.png");
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle(tmpD, tmpD, tmpD, default_font_3p0);
+        textButtonStyle.fontColor = Color.BLACK;
+        textButtonStyle.downFontColor = Color.WHITE;
+        return new TextButton(text, textButtonStyle);
+    }
 
-
-
+    /**
+     * Creates a new ImageTextButtonStyle from a drawable, given a font and a color
+     * @param tmpD the given drawable
+     * @param font text-font
+     * @param color text-color
+     * @return new ImageButtonStyle
+     */
     public ImageTextButton.ImageTextButtonStyle styleFromDrawable(Drawable tmpD, BitmapFont font, Color color) {
         ImageTextButton.ImageTextButtonStyle tmpStyle = new ImageTextButton.ImageTextButtonStyle(tmpD, tmpD, tmpD, font);
         tmpStyle.fontColor = color;

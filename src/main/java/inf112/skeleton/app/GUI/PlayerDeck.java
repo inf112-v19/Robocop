@@ -100,7 +100,7 @@ public class PlayerDeck {
      *     -> "Choose cards": When clicked, all cards should reappear such that one may decide which cards to choose.
      */
     private void initializeButtons() {
-        btn_chooseCards = GraphicsLoader.buttonGenerator.generate("Choose cards");
+        btn_chooseCards = RoboRally.graphics.generateTextButton("Choose cards");
         btn_chooseCards.setPosition(stage.getViewport().getScreenWidth()-btn_chooseCards.getWidth(),0);
         btn_chooseCards.addListener(new ChangeListener() {
             @Override
@@ -110,7 +110,7 @@ public class PlayerDeck {
         });
         altStage.addActor(btn_chooseCards);
 
-        btn_done = GraphicsLoader.buttonGenerator.generate("Done");
+        btn_done = RoboRally.graphics.generateTextButton("Done");
         btn_done.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {

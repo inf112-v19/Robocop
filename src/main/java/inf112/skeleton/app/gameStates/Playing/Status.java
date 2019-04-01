@@ -3,24 +3,20 @@ package inf112.skeleton.app.gameStates.Playing;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import io.netty.channel.Channel;
 
 import java.util.HashMap;
 
 class SingleStatus{
-    TextButton lives, damage;
+    private TextButton lives, damage;
 
     SingleStatus (TextButton lives, TextButton damage) {
         this.lives = lives;
@@ -38,21 +34,26 @@ class SingleStatus{
 
 
 public class Status {
-    public GameStateManager gsm;
-    public InputMultiplexer im;
-    public Channel channel;
+    private GameStateManager gsm;
+    private InputMultiplexer im;
+    private Channel channel;
 
-    Stage stage;
+    private Stage stage;
 
-    BitmapFont font;
-    TextButton.TextButtonStyle style_Lives, style_Damage;
-    TextField.TextFieldStyle txtStyle;
+    private TextButton.TextButtonStyle style_Lives, style_Damage;
+    private TextField.TextFieldStyle txtStyle;
 
-    HashMap<String, SingleStatus> statusUpdater;
-    Table statusbar;
+    private HashMap<String, SingleStatus> statusUpdater;
+    private Table statusbar;
 
     public static int height = 30;
 
+    /**
+     * Initialize status bar.
+     * @param gameStateManager helps to get current game-state (State_Playing)
+     * @param inputMultiplexer allows multiple objects to receive input
+     * @param channel allows communication with server
+     */
     public Status (GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, final Channel channel) {
         this.gsm = gameStateManager;
         this.im = inputMultiplexer;
@@ -60,24 +61,18 @@ public class Status {
 
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()));
 
-        font = new BitmapFont();
-        font.setColor(Color.BLACK);
-        font.getData().setScale(1.7f);
+        style_Lives = RoboRally.graphics.styleFromDrawable(
+                RoboRally.graphics.getDrawable(RoboRally.graphics.folder_ui + "status_Life.png"),
+                RoboRally.graphics.default_font_1p7,
+                Color.BLACK);
 
-        Drawable d;
-
-        d =  new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/status_Life.png"))));
-        style_Lives = new TextButton.TextButtonStyle(d,d,d,font);
-        style_Lives.fontColor = Color.BLACK;
-
-        d =  new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/status_DamageNoExclSquished.png"))));
-        style_Damage = new TextButton.TextButtonStyle(d,d,d,font);
-        style_Damage.fontColor = Color.BLACK;
+        style_Damage = RoboRally.graphics.styleFromDrawable(
+                RoboRally.graphics.getDrawable(RoboRally.graphics.folder_ui + "status_DamageNoExclSquished.png"),
+                RoboRally.graphics.default_font_1p7,
+                Color.BLACK);
 
         txtStyle = new TextField.TextFieldStyle();
-        txtStyle.font = new BitmapFont();
+        txtStyle.font = RoboRally.graphics.default_font;
         txtStyle.fontColor = Color.BLACK;
 
         statusUpdater = new HashMap<>();
@@ -86,6 +81,10 @@ public class Status {
         stage.addActor(statusbar);
     }
 
+    /**
+     * Add a new status-line for a robot.
+     * @param roboName name of player
+     */
     public void add(String roboName) {
         TextButton btn_lives, btn_damage;
         TextField txt_roboName;
@@ -107,18 +106,37 @@ public class Status {
                 Gdx.graphics.getHeight()-statusbar.getHeight()-25);
     }
 
+    /**
+     * Finds the robot to update and update life-display
+     * @param roboName name of player
+     * @param lives number of updated lives
+     */
     public void updateLives(String roboName, int lives) {
         statusUpdater.get(roboName).updateLives(lives);
     }
 
+    /**
+     * Finds the robot to update and update damage-display
+     * @param roboName name of player
+     * @param damage number of updated lives
+     */
     public void updateDamage(String roboName, int damage) {
         statusUpdater.get(roboName).updateDamage(damage);
     }
 
+    /**
+     * Draw status-bar to screen.
+     * @param sb sprite-batch, not used.
+     */
     public void render(Batch sb) {
         stage.draw();
     }
 
+    /**
+     * Sets the position of the status bar on screen
+     * @param x coordinate
+     * @param y coordinate
+     */
     public void setPosition(int x, int y) {
         statusbar.setPosition(x, y);
     }
