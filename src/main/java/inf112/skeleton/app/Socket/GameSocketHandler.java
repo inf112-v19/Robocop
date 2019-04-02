@@ -3,6 +3,7 @@ package inf112.skeleton.app.Socket;
 
 import com.badlogic.gdx.Gdx;
 import com.google.gson.JsonObject;
+import inf112.skeleton.app.GUI.ChatBox;
 import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
@@ -49,9 +50,9 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 RoboRally.gameBoard.setupPlayer(PlayerInitPacket.parseJSON(jsonObject));
                 break;
             case CHATMESSAGE:
-                if (ScrollableTextbox.textbox != null) {
+                if (ChatBox.chatBox != null) {
                     ChatMessagePacket chatMessagePacket = ChatMessagePacket.parseJSON(jsonObject);
-                    ScrollableTextbox.textbox.push(chatMessagePacket);
+                    ChatBox.chatBox.addMessage(chatMessagePacket);
                 }
                 break;
 

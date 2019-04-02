@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -23,7 +24,8 @@ public class GraphicsLoader {
                     folder_ChatBox = folder_ui + "ChatBox/";
 
     public Skin     default_skin,
-                    chatBox_skin;
+                    chatBox_skin,
+                    chatBox_skin2;
 
     public BitmapFont   default_font,
                         default_markup_font,
@@ -57,6 +59,7 @@ public class GraphicsLoader {
     public ImageTextButton.ImageTextButtonStyle btnStyle_rounded_frozen;
     public ImageTextButton.ImageTextButtonStyle btnStyle_lobbies_entry_focused;
     public ImageTextButton.ImageTextButtonStyle btnStyle_lobbies_entry_unfocused;
+    public Label.LabelStyle                     labelStyle_markup_enabled;
 
     public ImageTextButton.ImageTextButtonStyle[] btnStyle_players;
 
@@ -71,6 +74,7 @@ public class GraphicsLoader {
         default_font = default_skin.getFont("default-font");
 
         chatBox_skin = getSkin(folder_ChatBox + "uiskin.json");
+        chatBox_skin2 = getSkin(folder_ChatBox + "uiskin.json");
 
         default_markup_font = getSkin(folder_ui + "uiskin.json").getFont("default-font");
         default_markup_font.getData().markupEnabled = true;
@@ -135,6 +139,8 @@ public class GraphicsLoader {
 
         btnStyle_lobbies_entry_focused = styleFromDrawable(getDrawable(folder_Lobbies + "LobbyButtonFocused.png"), default_font, Color.BLACK);
         btnStyle_lobbies_entry_unfocused = styleFromDrawable(getDrawable(folder_Lobbies + "LobbyButtonUnfocused.png"), default_font, Color.BLACK);
+
+        labelStyle_markup_enabled = new Label.LabelStyle(default_markup_font, Color.YELLOW);
     }
 
     /**

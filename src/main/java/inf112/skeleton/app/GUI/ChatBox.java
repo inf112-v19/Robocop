@@ -2,6 +2,7 @@ package inf112.skeleton.app.GUI;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.utils.Align;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.ToServer;
@@ -12,7 +13,7 @@ public class ChatBox extends Table {
     Channel channel;
 
     private TextField inputField;
-    private TextArea messages;
+    private Table messages;
     private ScrollPane scrollPane;
 
     private final int   width = 400,
@@ -21,8 +22,8 @@ public class ChatBox extends Table {
                         padTop = 8,
                         padRight = 8;
 
-    private int numMessages;
     private Image black_box;
+    public static ChatBox chatBox = null;
 
     /**
      * Initialize chat-box
@@ -31,9 +32,8 @@ public class ChatBox extends Table {
     public ChatBox(Channel channel) {
         super();
         this.channel = channel;
+        chatBox = this;
         setSize(width, height);
-
-        numMessages = 0;
 
         black_box = new Image(RoboRally.graphics.pixel_black);
 
@@ -84,8 +84,7 @@ public class ChatBox extends Table {
      * Initialize the message field (where all messages are displayed).
      */
     private void init_messageField() {
-        messages = new TextArea("", inputField.getStyle());
-        messages.setDisabled(true);
+        messages = new Table().left().bottom();
 
         scrollPane = new ScrollPane(messages, RoboRally.graphics.chatBox_skin);
         scrollPane.setForceScroll(false, true);
@@ -99,10 +98,12 @@ public class ChatBox extends Table {
      * Add a message to the message-field.
      * @param chatMsg packet containing chat message.
      */
-    private void addMessage(ChatMessagePacket chatMsg) {
-        messages.appendText((numMessages == 0 ? "" : "\n") + chatMsg.getMessage());
-        messages.setPrefRows(++numMessages);
-        scrollPane.scrollTo(0,0,0,0);
+    public void addMessage(ChatMessagePacket chatMsg) {
+        Label messageLabel = new Label(chatMsg.getMessage(), RoboRally.graphics.labelStyle_markup_enabled);
+        messageLabel.setAlignment(Align.left, Align.left);
+
+        messages.add(messageLabel).height(RoboRally.graphics.labelStyle_markup_enabled.font.getLineHeight()).left().row();
         scrollPane.layout();
+        scrollPane.scrollTo(0,0,0,0);
     }
 }

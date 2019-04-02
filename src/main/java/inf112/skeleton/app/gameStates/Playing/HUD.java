@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import inf112.skeleton.app.GUI.ChatBox;
 import inf112.skeleton.app.GUI.PlayerDeck;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
@@ -99,6 +100,7 @@ public class HUD {
      */
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(stage.getCamera().combined);
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1/30f));
         stage.draw();
         if (status != null) {
             if (RoboRally.gameBoard.getPlayers().size() + 1 != status.statusUpdater.size()) {
@@ -137,11 +139,13 @@ public class HUD {
      * Setup game chat and give welcome message to player.
      */
     private void setupGameChatAndPushWelcome() {
-        ScrollableTextbox gameChat = new ScrollableTextbox(100, channel);
-        gameChat.push(new ChatMessagePacket("Welcome to RoboCop. You have 30 seconds to choose cards"));
-        gameChat.push(new ChatMessagePacket("[INFO]: Available commands: "));
-        gameChat.push(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
-        gameChat.push(new ChatMessagePacket("[INFO]:     \"!players\""));
+        ChatBox gameChat = new ChatBox(channel);
+        gameChat.addMessage(new ChatMessagePacket("Welcome to RoboCop. You have 30 seconds to choose cards"));
+        gameChat.addMessage(new ChatMessagePacket("[INFO]: Available commands: "));
+        gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
+        gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!players\""));
+        gameChat.setSize(600,200);
+
         stage.addActor(gameChat);
     }
 }
