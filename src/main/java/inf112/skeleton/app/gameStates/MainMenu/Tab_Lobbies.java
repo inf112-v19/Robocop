@@ -1,17 +1,11 @@
 package inf112.skeleton.app.gameStates.MainMenu;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.common.packet.Packet;
@@ -25,23 +19,13 @@ import io.netty.channel.Channel;
 import java.util.LinkedHashMap;
 
 public class Tab_Lobbies extends MenuTab {
-
     Table lobbies;
-
-    Drawable lobbyView_bg;
+    Table lobbiesHeader;
 
     LinkedHashMap<String, ImageTextButton> lobbyButtons;
     LinkedHashMap<String, Table> lobbyViews;
 
-    ImageTextButton.ImageTextButtonStyle lobbyButtonStyleFocused;
-    ImageTextButton.ImageTextButtonStyle lobbyButtonStyleUnfocused;
     ImageTextButton currentLobby;
-
-    public Table lobbiesHeader;
-
-
-    BitmapFont font;
-
 
     // lb = Lobbies, lv = Lobby view, mp = mini-map
     private final int   lb_width = 382,
@@ -62,28 +46,9 @@ public class Tab_Lobbies extends MenuTab {
      */
     public Tab_Lobbies(GameStateManager gameStateManager, Channel ch) {
         super(gameStateManager, ch);
-        font = new BitmapFont();
-        font.getData().setScale(1.5f);
 
         lobbyButtons = new LinkedHashMap<>();
         lobbyViews = new LinkedHashMap<>();
-
-        // Set style of lobby buttons
-        lobbyView_bg = new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/LobbiesView_bg.png"))));
-
-        Drawable tmp;
-
-        tmp = new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/LobbyButtonFocused.png"))));
-        lobbyButtonStyleFocused = new ImageTextButton.ImageTextButtonStyle(tmp, tmp, tmp, font);
-        lobbyButtonStyleFocused.fontColor = Color.BLACK;
-
-        tmp = new TextureRegionDrawable(new TextureRegion(
-                new Texture(Gdx.files.internal("graphics/ui/MainMenu/Lobbies/LobbyButtonUnfocused.png"))));
-        lobbyButtonStyleUnfocused = new ImageTextButton.ImageTextButtonStyle(tmp, tmp, tmp, font);
-        lobbyButtonStyleUnfocused.fontColor = Color.BLACK;
-
 
         // Add Lobbies table (Left side of screen)
         lobbies = new Table().top();
@@ -132,7 +97,7 @@ public class Tab_Lobbies extends MenuTab {
      */
     public void addLobby(final MapInfo mapInfo) {
         // Create button which may be used to choose this map
-        ImageTextButton btn_lobbyTab = new ImageTextButton(mapInfo.lobbyName, lobbyButtonStyleUnfocused);
+        ImageTextButton btn_lobbyTab = new ImageTextButton(mapInfo.lobbyName, RoboRally.graphics.btnStyle_lobbies_entry_unfocused);
         btn_lobbyTab.padLeft(20).left();
         lobbyButtons.put(mapInfo.lobbyName, btn_lobbyTab);
         lobbies.add(btn_lobbyTab).size(lb_width-4, lb_tabHeight);
@@ -149,9 +114,9 @@ public class Tab_Lobbies extends MenuTab {
 
                     // Change button-focus
                     if (currentLobby != null)
-                        currentLobby.setStyle(lobbyButtonStyleUnfocused);
+                        currentLobby.setStyle(RoboRally.graphics.btnStyle_lobbies_entry_unfocused);
                     currentLobby = (ImageTextButton)actor;
-                    currentLobby.setStyle(lobbyButtonStyleFocused);
+                    currentLobby.setStyle(RoboRally.graphics.btnStyle_lobbies_entry_focused);
                 }
             }
         });
@@ -159,12 +124,12 @@ public class Tab_Lobbies extends MenuTab {
 
         // Add map information displayed when button is clicked.
         Table map = new Table();
-        map.setBackground(lobbyView_bg);
+        map.setBackground(RoboRally.graphics.lobbies_bg);
         map.setSize(lv_width, height);
         map.pad(10,5,5,5);
         map.columnDefaults(2);
 
-        Label.LabelStyle txtStyle = new Label.LabelStyle(font, Color.BLACK);
+        Label.LabelStyle txtStyle = new Label.LabelStyle(RoboRally.graphics.default_font_1p5, Color.BLACK);
 
         // Force wanted table width to center header + add header
         map.add().size(lv_width-10, 0).colspan(2).row();
@@ -195,7 +160,7 @@ public class Tab_Lobbies extends MenuTab {
 
         // Add join-button
 
-        ImageTextButton btn_join = new ImageTextButton("Join", lobbyButtonStyleFocused);
+        ImageTextButton btn_join = new ImageTextButton("Join", RoboRally.graphics.btnStyle_lobbies_entry_focused);
         btn_join.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {

@@ -29,6 +29,7 @@ public class GraphicsLoader {
 
     public BitmapFont   default_font,
                         default_markup_font,
+                        default_font_1p5,
                         default_font_1p6,
                         default_font_1p7,
                         default_font_3p0;
@@ -78,6 +79,9 @@ public class GraphicsLoader {
 
         default_markup_font = getSkin(folder_ui + "uiskin.json").getFont("default-font");
         default_markup_font.getData().markupEnabled = true;
+
+        default_font_1p5 = getSkin(folder_ui + "uiskin.json").getFont("default-font");
+        default_font_1p5.getData().setScale(1.5f);
 
         default_font_1p6 = getSkin(folder_ui + "uiskin.json").getFont("default-font");
         default_font_1p6.getData().setScale(1.6f);
@@ -137,8 +141,8 @@ public class GraphicsLoader {
             btnStyle_players[i] = styleFromDrawable(getDrawable(folder_Lobby + "player_" + playerColors[i] + ".png"), default_font_1p6, Color.BLACK);
         }
 
-        btnStyle_lobbies_entry_focused = styleFromDrawable(getDrawable(folder_Lobbies + "LobbyButtonFocused.png"), default_font, Color.BLACK);
-        btnStyle_lobbies_entry_unfocused = styleFromDrawable(getDrawable(folder_Lobbies + "LobbyButtonUnfocused.png"), default_font, Color.BLACK);
+        btnStyle_lobbies_entry_focused = styleFromDrawable(getDrawable(folder_Lobbies + "LobbyButtonFocused.png"), default_font_1p5, Color.BLACK);
+        btnStyle_lobbies_entry_unfocused = styleFromDrawable(getDrawable(folder_Lobbies + "LobbyButtonUnfocused.png"), default_font_1p5, Color.BLACK);
 
         labelStyle_markup_enabled = new Label.LabelStyle(default_markup_font, Color.YELLOW);
     }
