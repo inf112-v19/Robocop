@@ -25,7 +25,7 @@ public abstract class GameBoard {
      * @param y
      */
     void addTileEntity(TiledMapTile tile, int x, int y) {
-        TileEntity newTile;
+        TileEntity newTile = null;
         switch (TileDefinition.getTileById(tile.getId())) {
             case LASER:
             case LASERSOURCE:
@@ -35,11 +35,17 @@ public abstract class GameBoard {
             case BLACK_HOLE:
                 newTile = new BlackHole(tile, x, y);
                 break;
+            case VERTICAL:
+            case HORISONTAL:
+                System.out.println("Found belt");
+                break;
             default:
                 System.err.println("fatal error adding tile: " + TileDefinition.getTileById(tile.getId()).getName());
                 return;
         }
-        tileEntities.add(newTile);
+        if (newTile != null) {
+            tileEntities.add(newTile);
+        }
     }
 
     /**
