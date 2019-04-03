@@ -50,5 +50,10 @@ public class Belt extends TileEntity  {
         return true;
     }
 
+    @Override
+    public boolean canEnter(Directions walkingDirection) {
+        return true;
+    }
+
 
 }

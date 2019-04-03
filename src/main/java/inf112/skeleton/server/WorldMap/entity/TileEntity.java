@@ -58,6 +58,9 @@ public abstract class TileEntity {
      */
     public abstract boolean canContinueWalking();
 
+
+    public abstract boolean canEnter(Directions walkingDirection);
+
     public Directions getDirection() {
         Directions tileDefault = tileType.getDefaultFace();
         int rotation = 4 + tileDefault.ordinal();

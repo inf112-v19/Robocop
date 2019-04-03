@@ -3,6 +3,7 @@ package inf112.skeleton.server.WorldMap.entity.mapEntities;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
 
@@ -45,6 +46,19 @@ public class Wall extends TileEntity  {
         System.out.println("Flip vert " + cell.getFlipHorizontally());
         System.out.println("Flip horiz " + cell.getFlipHorizontally());
         System.out.println(getDirection().name());
+        return false;
+    }
+
+    @Override
+    public boolean canEnter(Directions walkingDirection) {
+        if(getTileType() == TileDefinition.LWALL) {
+            if (walkingDirection == Directions.values()[getDirection().ordinal() + 3%4]) {
+                return false;
+            }
+        }
+        if (walkingDirection == getDirection()) {
+            return false;
+        }
         return true;
     }
 

@@ -8,6 +8,7 @@ import inf112.skeleton.server.WorldMap.entity.TileEntity;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.Belt;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.BlackHole;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.Laser;
+import inf112.skeleton.server.WorldMap.entity.mapEntities.Wall;
 
 import java.util.ArrayList;
 
@@ -44,6 +45,10 @@ public abstract class GameBoard {
             case RIGHTTURN:
             case LEFTTURN:
                 newTile = new Belt(tile, x, y, cell);
+                break;
+            case WALL:
+            case LWALL:
+                newTile = new Wall(tile, x, y, cell);
                 break;
 
             default:
