@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
+import inf112.skeleton.common.packet.data.CardPacket;
 import inf112.skeleton.common.packet.data.StateChangePacket;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.Directions;
@@ -28,7 +29,7 @@ public class Game {
     private HashMap<Player, Card> cardsForOneRound = new HashMap<>();
     private GameBoard gameBoard;
 
-    private int roundSelectTime = 30; //The time the player will have to select their cards.
+    private int roundSelectTime = 12; //The time the player will have to select their cards.
     private int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
     private long timerStarted = 0;
     private long timerCountdownSeconds = 0;
@@ -46,64 +47,65 @@ public class Game {
      * Main game loop
      */
     public void update() {
-        if (tickCountdown > 0) {
-            tickCountdown--;
-        } else {
-            switch (gameStage) {
-                case LOBBY:
-                    break;
+        switch (gameStage) {
+            case LOBBY:
+                break;
 
-                case DEALING:   //Deal cards to players
-                    Gdx.app.log("Game - update - DEALING", "Dealing cards to players.");
-                    lobby.broadcastChatMessage("You have 30 seconds to choose cards or cards will be automatically chosen");
-                    for (Player player : players) {
-                        player.sendCardHandToClient(createCardHand(player));
-                    }
-                    deck = new CardDeck();
+            case DEALING:   //Deal cards to players
+                Gdx.app.log("Game - update - DEALING", "Dealing cards to players.");
+                lobby.broadcastChatMessage("You have 30 seconds to choose cards or cards will be automatically chosen");
+                for (Player player : players) {
+                    player.sendCardHandToClient(createCardHand(player));
+                }
+                deck = new CardDeck();
 
-                    setTimer(roundSelectTime);
-                    Gdx.app.log("Game - update - DEALING", "Moving to WAITING-stage.");
-                    gameStage = WAITING;
-                    break;
+                setTimer(roundSelectTime);
+                Gdx.app.log("Game - update - DEALING", "Moving to WAITING-stage.");
+                gameStage = WAITING;
+                break;
 
-                case WAITING:   //Wait for players to choose cards from their hand or send card after request.
-                    if (checkTimer()) {
-                        Gdx.app.log("Game - update - WAITING", "Moving to REQUEST-stage.");
-                        timerStarted = 0;
-                        lobby.broadcastChatMessage("30 Seconds is up, cards locked in.");
-                        if (!allPlayersReady() && !players.isEmpty()) {
-                            forcePlayersReady();
-                        }
-                        gameStage = GET_CARDS;
-                    }
-
-                    break;
-                case GET_CARDS:
-                    for (Player player : players) {
-                        cardsForOneRound.put(player, player.getNextFromSelected());
-                    }
-                    cardRound++;
-                    gameStage = MOVING;
-                    if (cardRound > 5) {
-                        gameStage = DEALING;
-                        cardRound = 0;
-                        Gdx.app.log("Game - update - WAITING", "Moving to MOVING-stage.");
-                    }
-                    break;
-                case MOVING:    //Move the robots in correct order.
-                    if (!cardsForOneRound.isEmpty()) {
-                        useCard();
-                        return;
+            case WAITING:   //Wait for players to choose cards from their hand or send card after request.
+                if (checkTimer()) {
+                    Gdx.app.log("Game - update - WAITING", "Moving to REQUEST-stage.");
+                    timerStarted = 0;
+                    lobby.broadcastChatMessage("30 Seconds is up, cards locked in.");
+                    if (!allPlayersReady() && !players.isEmpty()) {
+                        forcePlayersReady();
                     }
                     gameStage = GET_CARDS;
-                    break;
+                }
 
-                case VICTORY:
-                    // Unreachable at the moment
-                    lobby.broadcastChatMessage("Winner winner chicken dinner.");
-                    break;
-            }
+                break;
+            case GET_CARDS:
+                for (Player player : players) {
+                    cardsForOneRound.put(player, player.getNextFromSelected());
+                }
+                cardRound++;
+                gameStage = MOVING;
+                if (cardRound > 5) {
+                    gameStage = DEALING;
+                    cardRound = 0;
+                    Gdx.app.log("Game - update - WAITING", "Moving to MOVING-stage.");
+                }
+                break;
+            case MOVING:    //Move the robots in correct order.
+                if (!cardsForOneRound.isEmpty()) {
+                    if (tickCountdown > 0) {
+                        tickCountdown--;
+                    } else {
+                        useCard();
+                    }
+                    return;
+                }
+                gameStage = GET_CARDS;
+                break;
+
+            case VICTORY:
+                // Unreachable at the moment
+                lobby.broadcastChatMessage("Winner winner chicken dinner.");
+                break;
         }
+
 
         //Update each player.
         for (Player player : players) {
@@ -141,6 +143,11 @@ public class Game {
             System.out.println("player IS NULL!!!!!!!");
         }
         Gdx.app.log("Game - useCard", "Moving player " + player.toString() + " with card " + card.toString());
+
+        CardPacket cardPacket = new CardPacket(card);
+        player.getOwner().sendPacket(new Packet(FromServer.CARD_PACKET.ordinal(), cardPacket));
+        Gdx.app.log("Game - useCard", "Sent card " + card.toString() + " back to player for marking as played on clientside.");
+
         handleMovement(player, card);
         cardsForOneRound.remove(player);
     }

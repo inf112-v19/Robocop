@@ -9,10 +9,9 @@ import inf112.skeleton.common.packet.data.CardHandPacket;
 import inf112.skeleton.common.packet.data.CardPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
+import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
-
-import java.util.ArrayList;
 
 public class Player {
     private final String uuid;
@@ -65,17 +64,18 @@ public class Player {
 
     /**
      * Fill in first empty slot in the players card-hand.
-     *
+     * Tell the user that the card has been played.
      * @param packet A single card to be added to the hand.
      */
     public void receiveCardPacket(CardPacket packet) {
-        for (int i = 0; i < cards.length; i++) {
-            if (cards[i] == null) {
-                cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packet.getPriority());
-                return;
+        Card card = Tools.CARD_RECONSTRUCTOR.reconstructCard(packet.getPriority());
+        Gdx.app.log("Player clientside - receiveCardPacket", "Server has played my card " + card.toString());
+        for (int i = 0; i < selectedCards.length; i++) {
+            if(selectedCards[i].equals(card)) {
+                Gdx.app.log("Player clientside - receiveCardPacket", "Found my card!");
+                break;
             }
         }
-        RoboRally.gameBoard.hud.addDeck();
     }
 
     /**
@@ -84,6 +84,7 @@ public class Player {
      * @param packet An array of cards.
      */
     public void receiveCardHandPacket(CardHandPacket packet) {
+        selectedCards = new Card[5];
         int[] packetCardHand = packet.getHand();
         if (cards == null) {
             cards = new Card[9];
@@ -94,7 +95,6 @@ public class Player {
         for (int i = 0; i < packetCardHand.length; i++) {
             cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packetCardHand[i]);
         }
-        selectedCards = new Card[5];
     }
 
     /**
@@ -125,8 +125,6 @@ public class Player {
         CardHandPacket data = new CardHandPacket(hand);
         Packet packet = new Packet(ToServer.CARD_HAND_PACKET.ordinal(), data);
         packet.sendPacket(RoboRally.channel);
-
-        selectedCards = new Card[5];
 
         Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards sent to server.");
     }
