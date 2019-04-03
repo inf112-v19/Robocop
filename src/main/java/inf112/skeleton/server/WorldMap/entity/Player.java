@@ -322,7 +322,6 @@ public class Player {
             }
 
 
-
             switch (direction) {
                 case SOUTH:
                     dy = -1;
@@ -339,7 +338,7 @@ public class Player {
             }
             outerloop:
             for (int i = 1; i <= amount; i++) {
-                if(amount == 0){
+                if (amount == 0) {
                     break;
                 }
 
@@ -365,8 +364,7 @@ public class Player {
                     }
                 }
 
-                for (TileEntity wall :
-                        walls) {
+                for (TileEntity wall : walls) {
 
                     if (!wall.canEnter(direction)) {
                         amount = i - 1;
