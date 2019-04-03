@@ -21,7 +21,8 @@ public class GraphicsLoader {
                     folder_MainMenu = folder_ui + "MainMenu/",
                     folder_Lobby = folder_MainMenu + "Lobby/",
                     folder_Lobbies = folder_MainMenu + "Lobbies/",
-                    folder_ChatBox = folder_ui + "ChatBox/";
+                    folder_ChatBox = folder_ui + "ChatBox/",
+                    folder_MessageBox = folder_ui + "MessageBox/";
 
     public Skin     default_skin,
                     chatBox_skin,
@@ -51,7 +52,8 @@ public class GraphicsLoader {
                     lobbies_horizontal_line,
                     btn_update,
                     btn_add,
-                    pixel_black;
+                    pixel_black,
+                    messageBox_bg;
 
     public Color    color_primary;
 
@@ -120,6 +122,8 @@ public class GraphicsLoader {
         btn_update = getDrawable(folder_Lobbies + "updateButtonFocused.png");
         btn_add = getDrawable(folder_Lobbies + "plusButtonFocused.png");
         pixel_black = getDrawable(folder_ChatBox + "pixel_black.png");
+
+        messageBox_bg = getDrawable(folder_MessageBox + "bg.png");
 
 
         /*
