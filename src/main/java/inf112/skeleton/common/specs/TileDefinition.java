@@ -5,8 +5,8 @@ import java.util.HashMap;
 public enum TileDefinition {
     BACKGROUND(1, false, Directions.NORTH, "Background"),
     GROUND(2, true, Directions.NORTH, "Ground"),
-    BIDIRECTION(3, true, Directions.NORTH, "BiDirectional"),
-    HORISONTAL(4, true, Directions.EAST, "Horisontal"),
+    BIDIRECTION(3, true, Directions.NORTH, "BiDirectional (Unused)"),
+    BELT_HORISONTAL(4, true, Directions.EAST, "Horisontal Belt"),
     VERTICAL(5, true, Directions.NORTH, "Vertical"),
     TBRACKET(6, true, Directions.NORTH, "T-Bracket"),
     TBRACKETFLIPPED(7, true, Directions.NORTH, "T-BracketFlipped"),

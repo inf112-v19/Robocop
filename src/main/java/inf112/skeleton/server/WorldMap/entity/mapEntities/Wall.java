@@ -2,16 +2,14 @@ package inf112.skeleton.server.WorldMap.entity.mapEntities;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.Directions;
-import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
 
-public class Belt extends TileEntity  {
+public class Wall extends TileEntity  {
 
 
-    public Belt(TiledMapTile tile, int x, int y, TiledMapTileLayer.Cell cell) {
+    public Wall(TiledMapTile tile, int x, int y, TiledMapTileLayer.Cell cell) {
         super(tile, x, y, cell);
     }
 

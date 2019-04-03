@@ -24,7 +24,7 @@ public class TiledMapLoader extends GameBoard {
                 if (cell != null) {
                     TiledMapTile tile = cell.getTile();
                     if (tile != null) {
-                        addTileEntity(tile, x, y);
+                        addTileEntity(tile, x, y, cell);
                     }
                 }
             }
@@ -38,7 +38,32 @@ public class TiledMapLoader extends GameBoard {
                 if (cell != null) {
                     TiledMapTile tile = cell.getTile();
                     if (tile != null) {
-                        addTileEntity(tile, x, y);
+                        addTileEntity(tile, x, y, cell);
+                    }
+                }
+            }
+        }
+        // CHeck for tile entities like lasers and black holes
+        TiledMapTileLayer wallsLayer = ((TiledMapTileLayer) tiledMap.getLayers().get("Walls"));
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                TiledMapTileLayer.Cell cell = wallsLayer.getCell(x, y);
+                if (cell != null) {
+                    TiledMapTile tile = cell.getTile();
+                    if (tile != null) {
+                        addTileEntity(tile, x, y, cell);
+                    }
+                }
+            }
+        }
+        wallsLayer = ((TiledMapTileLayer) tiledMap.getLayers().get("Walls2"));
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                TiledMapTileLayer.Cell cell = wallsLayer.getCell(x, y);
+                if (cell != null) {
+                    TiledMapTile tile = cell.getTile();
+                    if (tile != null) {
+                        addTileEntity(tile, x, y, cell);
                     }
                 }
             }
