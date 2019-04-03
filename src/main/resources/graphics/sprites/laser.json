@@ -110,12 +110,17 @@
  ],
  "meta": {
   "app": "http://www.aseprite.org/",
-  "version": "1.2.9",
-  "image": "/Users/henning/Downloads/mavenTemplate/src/main/resources/graphics/sprites/laser.png",
+  "version": "1.3-dev",
+  "image": "/home/henning/Documents/Skule/inf112/group1.team1/src/main/resources/graphics/sprites/laser.png",
   "format": "RGBA8888",
   "size": { "w": 768, "h": 64 },
   "scale": "1",
   "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
   ]
  }
 }

@@ -7,7 +7,7 @@ import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
 
-public class Wall extends TileEntity  {
+public class Wall extends TileEntity {
 
 
     public Wall(TiledMapTile tile, int x, int y, TiledMapTileLayer.Cell cell) {
@@ -51,15 +51,22 @@ public class Wall extends TileEntity  {
 
     @Override
     public boolean canEnter(Directions walkingDirection) {
-        if(getTileType() == TileDefinition.LWALL) {
-            if (walkingDirection == Directions.values()[getDirection().ordinal() + 3%4]) {
+        walkingDirection = Directions.values()[(walkingDirection.ordinal() + 2) % 4];
+        return canWalkOver(walkingDirection);
+    }
+
+    @Override
+    public boolean canLeave(Directions walkingDirection) {
+        return canWalkOver(walkingDirection);
+    }
+
+    private boolean canWalkOver(Directions walkingDirection) {
+        if (getTileType() == TileDefinition.LWALL) {
+            if (walkingDirection == Directions.values()[(getDirection().ordinal() + 3) % 4]) {
                 return false;
             }
         }
-        if (walkingDirection == getDirection()) {
-            return false;
-        }
-        return true;
+        return walkingDirection != getDirection();
     }
 
 

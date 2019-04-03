@@ -18,7 +18,7 @@ public class Lobby {
     private MapFile map;
     private User host;
     private long timeStarted;
-    private long timeDelay = 1000;
+    private long timeDelay = 300;
     private boolean startedTimer = false;
     private int startStage = 0;
     private int userCount = 0;

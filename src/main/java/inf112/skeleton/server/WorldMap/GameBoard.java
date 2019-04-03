@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public abstract class GameBoard {
 
     public ArrayList<TileEntity> tileEntities;
+    public ArrayList<TileEntity>[] walls;
 
     public GameBoard() {
         tileEntities = new ArrayList<>();
@@ -48,8 +49,8 @@ public abstract class GameBoard {
                 break;
             case WALL:
             case LWALL:
-                newTile = new Wall(tile, x, y, cell);
-                break;
+                walls[x + getWidth() * y].add(new Wall(tile, x, y, cell));
+                return;
 
             default:
                 System.err.println("fatal error adding tile: " + TileDefinition.getTileById(tile.getId()).getName());
@@ -83,6 +84,18 @@ public abstract class GameBoard {
             }
         }
         return null;
+    }
+
+
+    /**
+     * Get a list of walls at a given postition
+     *
+     * @param pos
+     * @return Arraylist of walls if found, empty arraylist if not
+     */
+    public ArrayList<TileEntity> getWallsAtPosition(Vector2 pos) {
+        int wallindex = (int)(pos.x + getWidth() *pos.y);
+        return walls[wallindex];
     }
 
     /**

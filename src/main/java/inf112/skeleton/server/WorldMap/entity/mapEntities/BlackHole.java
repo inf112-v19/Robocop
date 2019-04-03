@@ -46,4 +46,8 @@ public class BlackHole extends TileEntity {
     public boolean canEnter(Directions walkingDirection) {
         return true;
     }
+    @Override
+    public boolean canLeave(Directions walkingDirection) {
+        return false;
+    }
 }

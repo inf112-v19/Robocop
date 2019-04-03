@@ -38,7 +38,6 @@ public abstract class TileEntity {
     }
 
 
-
     /**
      * Do an action to a player, for example harm it when walking into lasers
      *
@@ -60,6 +59,8 @@ public abstract class TileEntity {
 
 
     public abstract boolean canEnter(Directions walkingDirection);
+
+    public abstract boolean canLeave(Directions walkingDirection);
 
     public Directions getDirection() {
         Directions tileDefault = tileType.getDefaultFace();

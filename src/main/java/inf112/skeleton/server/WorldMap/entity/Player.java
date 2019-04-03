@@ -13,6 +13,8 @@ import inf112.skeleton.server.Instance.Lobby;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.user.User;
 
+import java.util.ArrayList;
+
 import static inf112.skeleton.common.specs.Directions.values;
 
 
@@ -301,7 +303,10 @@ public class Player {
      */
     public void startMovement(Directions direction, int amount, boolean pushed) {
         if (!processMovement(System.currentTimeMillis())) {
+            System.out.println(direction);
             GameBoard gameBoard = owner.getLobby().getGame().getGameBoard();
+            ArrayList<TileEntity> walls = gameBoard.getWallsAtPosition(currentPos);
+
             this.timeMoved = System.currentTimeMillis();
 
             if (!pushed) {
@@ -309,6 +314,13 @@ public class Player {
             }
             int dx = 0;
             int dy = 0;
+            for (TileEntity wall :
+                    walls) {
+                if (!wall.canLeave(direction)) {
+                    amount = 0;
+                }
+            }
+
 
 
             switch (direction) {
@@ -325,8 +337,22 @@ public class Player {
                     dx = -1;
                     break;
             }
+            outerloop:
             for (int i = 1; i <= amount; i++) {
+                if(amount == 0){
+                    break;
+                }
+
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
+                walls = gameBoard.getWallsAtPosition(toCheck);
+
+                for (TileEntity wall :
+                        walls) {
+                    if (!wall.canLeave(direction)) {
+                        amount = i;
+                        break outerloop;
+                    }
+                }
                 if (!gameBoard.isTileWalkable(toCheck)) {
                     amount = i - 1;
                     break;
@@ -338,6 +364,17 @@ public class Player {
                         break;
                     }
                 }
+
+                for (TileEntity wall :
+                        walls) {
+
+                    if (!wall.canEnter(direction)) {
+                        amount = i - 1;
+                        break outerloop;
+                    }
+
+                }
+
             }
             this.movingTo.add(dx * amount, dy * amount);
             this.movingTiles = amount;
