@@ -3,14 +3,21 @@ package inf112.skeleton.app.GUI;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import inf112.skeleton.app.RoboRally;
 
+/**
+ * Count-down timer. Run start() to start timer.
+ * Note: Fires ChangeEvent upon ending. Check isFinished to be sure timer has ended.
+ */
 public class Timer extends Table {
     private long    endTime;
     private Label   timeLabel;
 
     private long originalms, ms;
     private int decimals;
+
+    public boolean isFinished;
 
     /**
      * Initialize count-down timer.
@@ -38,8 +45,15 @@ public class Timer extends Table {
      */
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        long currentTime = System.currentTimeMillis();
+
         if (endTime != 0) {
             timeLabel.setText(formatTime(endTime - System.currentTimeMillis()));
+
+            if (endTime <= currentTime && !isFinished) {
+                isFinished = true;
+                fire(new ChangeListener.ChangeEvent());
+            }
         }
         super.draw(batch, parentAlpha);
     }
@@ -82,6 +96,6 @@ public class Timer extends Table {
      */
     public void reset() {
         ms = originalms;
-        start();
+        isFinished = false;
     }
 }
