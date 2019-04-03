@@ -165,7 +165,7 @@ public class State_MainMenu extends GameState {
     public void addTab(String tabName, MenuTab tab, boolean goTo) {
         // Add tab-button to second header.
         ImageTextButton newTabButton = new ImageTextButton(tabName, RoboRally.graphics.btnStyle_rounded_unfocused);
-        h2.add(newTabButton).height(h2_height-2).pad(1).width(100).padLeft(10);
+        h2.add(newTabButton).height(h2_height-2).pad(1).width(150).padLeft(10);
 
         // Keep track of the new tab and tab-button.
         tabButtons.put(tabName, newTabButton);
@@ -197,7 +197,7 @@ public class State_MainMenu extends GameState {
         ImageTextButton lastButton = null;
 
         for (ImageTextButton btn : tabButtons.values()) {
-            h2.add(btn).height(h2_height-2).pad(1).width(100).padLeft(10);
+            h2.add(btn).height(h2_height-2).pad(1).width(150).padLeft(10);
             lastButton = btn;
         }
         tabButtonAction(lastButton);
