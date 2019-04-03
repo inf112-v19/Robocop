@@ -25,17 +25,21 @@ public class Timer extends Table {
      * @param ms number of milliseconds to count down from
      * @param decimals number of decimal points of timer
      */
-    public Timer(String displayText, int ms, int decimals) {
+    public Timer(String displayText, int ms, int decimals){
         super();
-        this.ms = originalms = (long)ms;
         this.decimals = decimals;
 
-        endTime = 0;
+        originalms = (long)ms;
+
+        setBackground(RoboRally.graphics.messageBox_bg);
+
 
         add(new Label(displayText, RoboRally.graphics.labelStyle_markup_enabled));
 
         timeLabel = new Label(formatTime(ms),  RoboRally.graphics.labelStyle_markup_enabled);
         add(timeLabel);
+
+        reset();
     }
 
     /**
@@ -96,6 +100,7 @@ public class Timer extends Table {
      */
     public void reset() {
         ms = originalms;
+        endTime = 0;
         isFinished = false;
     }
 }
