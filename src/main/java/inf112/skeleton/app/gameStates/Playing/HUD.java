@@ -5,14 +5,13 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.GUI.ChatBox;
 import inf112.skeleton.app.GUI.PlayerDeck;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameStateManager;
-import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.common.packet.data.ChatMessagePacket;
 import io.netty.channel.Channel;
 
@@ -25,6 +24,8 @@ public class HUD {
     private PlayerDeck playerDeck = null;
     private InputMultiplexer inputMultiplexer;
     private Channel channel;
+    public ChatBox gameChat;
+    public boolean gameChatIsTouched;
 
     private Status status;
 
@@ -99,6 +100,9 @@ public class HUD {
      * @param sb sprite-batch
      */
     public void render(SpriteBatch sb) {
+        if (!Gdx.input.isTouched())
+            gameChatIsTouched = false;
+
         sb.setProjectionMatrix(stage.getCamera().combined);
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1/30f));
         stage.draw();
@@ -110,7 +114,6 @@ public class HUD {
                     status.add(player);
                 }
             }
-
         }
         status.render(sb);
         if (playerDeck != null) {
@@ -139,13 +142,20 @@ public class HUD {
      * Setup game chat and give welcome message to player.
      */
     private void setupGameChatAndPushWelcome() {
-        ChatBox gameChat = new ChatBox(channel);
+        gameChat = new ChatBox(channel);
         gameChat.addMessage(new ChatMessagePacket("Welcome to RoboCop. You have 30 seconds to choose cards"));
         gameChat.addMessage(new ChatMessagePacket("[INFO]: Available commands: "));
         gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
         gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!players\""));
         gameChat.setSize(600,200);
 
+        gameChat.setTouchable(Touchable.enabled);
+        gameChat.addListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                gameChatIsTouched = true;
+                return true;
+            }
+        });
         stage.addActor(gameChat);
     }
 }

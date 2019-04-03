@@ -14,7 +14,7 @@ public class ChatBox extends Table {
 
     private TextField inputField;
     private Table messages;
-    private ScrollPane scrollPane;
+    public ScrollPane scrollPane;
 
     private final int   width = 400,
                         height = 190,

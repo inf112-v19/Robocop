@@ -47,7 +47,9 @@ public class State_Playing extends GameState {
 
     @Override
     public void update(float dt) {
-        cameraHandler.handle();
+        if (!hud.gameChat.scrollPane.isDragging() && !hud.gameChatIsTouched)
+            cameraHandler.handle();
+
         camera.update();
         gameBoard.update();
 
