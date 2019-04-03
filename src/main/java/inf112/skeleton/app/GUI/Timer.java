@@ -12,6 +12,12 @@ public class Timer extends Table {
     private long originalms, ms;
     private int decimals;
 
+    /**
+     * Initialize count-down timer.
+     * @param displayText Text to be displayed before timer
+     * @param ms number of milliseconds to count down from
+     * @param decimals number of decimal points of timer
+     */
     public Timer(String displayText, int ms, int decimals) {
         super();
         this.ms = originalms = (long)ms;
@@ -25,6 +31,11 @@ public class Timer extends Table {
         add(timeLabel);
     }
 
+    /**
+     * Updates timer-text and draws timer to screen.
+     * @param batch spritebatch
+     * @param parentAlpha opacity
+     */
     @Override
     public void draw(Batch batch, float parentAlpha) {
         if (endTime != 0) {
@@ -33,20 +44,42 @@ public class Timer extends Table {
         super.draw(batch, parentAlpha);
     }
 
+    /**
+     * Formats milliseconds to seconds with correct number of decimal places.
+     * @param ms milliseconds
+     * @return String formated with correct number of decimal places.
+     */
     private String formatTime(long ms) {
         String format = String.format("%%.%df s", decimals);
         return String.format(format, ms > 0 ? ms/1000f : 0f);
     }
 
+    /**
+     * Start/Resume timer.
+     */
     public void start() {
         endTime = System.currentTimeMillis() + ms;
     }
 
+    /**
+     * Set the time when the timer should end (used for synchronization between clients).
+     * @param endTime time till timer should end.
+     */
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
+    }
+
+    /**
+     * Pauses the timer. May be resumed using start().
+     */
     public void pause() {
         long currentTime = System.currentTimeMillis();
         ms = originalms - currentTime;
     }
 
+    /**
+     * Reset timer.
+     */
     public void reset() {
         ms = originalms;
         start();
