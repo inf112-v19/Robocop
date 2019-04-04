@@ -51,10 +51,10 @@ public class Timer extends Table {
     public void draw(Batch batch, float parentAlpha) {
         long currentTime = System.currentTimeMillis();
 
-        if (endTime != 0) {
-            timeLabel.setText(formatTime(endTime - System.currentTimeMillis()));
+        if (!isFinished) {
+            timeLabel.setText(formatTime(endTime - currentTime));
 
-            if (endTime <= currentTime && !isFinished) {
+            if (endTime <= currentTime) {
                 isFinished = true;
                 fire(new ChangeListener.ChangeEvent());
             }
@@ -77,6 +77,7 @@ public class Timer extends Table {
      */
     public void start() {
         endTime = System.currentTimeMillis() + ms;
+        isFinished = false;
     }
 
     /**
@@ -100,7 +101,6 @@ public class Timer extends Table {
      */
     public void reset() {
         ms = originalms;
-        endTime = 0;
-        isFinished = false;
+        isFinished = true;
     }
 }
