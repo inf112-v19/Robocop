@@ -9,6 +9,7 @@ public class Card {
     private int priority;
     private CardType type;
     private static HashMap<CardType, Drawable> drawables;
+    private static HashMap<CardType, Drawable> drawables_checked;
 
     public Card(int priority, CardType type) {
         this.priority = priority;
@@ -27,14 +28,17 @@ public class Card {
         return "Type: " + type + " | Priority: " + priority;
     }
 
-    public Drawable getDrawable() {
+    public Drawable getDrawable(boolean checked) {
         // Fetch all card-textures if unfetched
         if (drawables == null) {
             drawables = new HashMap<>();
-            for (CardType move : CardType.values())
+            drawables_checked = new HashMap<>();
+            for (CardType move : CardType.values()) {
                 drawables.put(move, RoboRally.graphics.getDrawable(RoboRally.graphics.folder_ui + "properCards/" + move.name() + ".png"));
+                drawables_checked.put(move, RoboRally.graphics.getDrawable(RoboRally.graphics.folder_ui + "properCards/checked/" + move.name() + ".png"));
+            }
         }
-        return drawables.get(type);
+        return (checked ? drawables_checked : drawables).get(type);
     }
 
     public boolean equals(Object b) {
