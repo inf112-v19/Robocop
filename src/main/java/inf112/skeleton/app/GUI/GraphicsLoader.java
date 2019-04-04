@@ -191,7 +191,7 @@ public class GraphicsLoader {
      * @return new ImageButtonStyle
      */
     public ImageTextButton.ImageTextButtonStyle styleFromDrawable(Drawable tmpD, BitmapFont font, Color color) {
-        ImageTextButton.ImageTextButtonStyle tmpStyle = new ImageTextButton.ImageTextButtonStyle(tmpD, tmpD, tmpD, font);
+        ImageTextButton.ImageTextButtonStyle tmpStyle = new ImageTextButton.ImageTextButtonStyle(tmpD, tmpD, tmpD, font == null ? default_font : font);
         tmpStyle.fontColor = color;
         return tmpStyle;
     }
