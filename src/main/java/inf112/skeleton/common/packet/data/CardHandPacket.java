@@ -10,7 +10,7 @@ public class CardHandPacket implements PacketData {
     public CardHandPacket(Card[] hand) {
         this.hand = new int[hand.length];
         for(int i = 0; i < hand.length; i++) {
-            this.hand[i] = hand[i].getPriority();
+            this.hand[i] = hand[i] == null ? -1 : hand[i].getPriority();
         }
     }
 

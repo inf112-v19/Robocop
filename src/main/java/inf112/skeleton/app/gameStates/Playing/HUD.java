@@ -59,31 +59,10 @@ public class HUD {
         turnTimer.setSize(turnTimer.getMinWidth(), turnTimer.getMinHeight());
         turnTimer.setPosition(Gdx.graphics.getWidth() / 2f - turnTimer.getMinWidth() / 2f, Gdx.graphics.getHeight() - turnTimer.getHeight() - 5);
 
-        RoboRally.gameBoard.hud = this;
-    }
-
-    /**
-     * Add player-deck to screen
-     */
-    public void addDeck() {
         playerDeck = new PlayerDeck(gsm, inputMultiplexer, channel);
-        System.out.println("adding deck");
-    }
+        turnTimer.start();
 
-    /**
-     * Remove player-deck from screen
-     */
-    public void removeDeck() {
-        playerDeck = null;
-        System.out.println("remove deck");
-    }
-
-    /**
-     * Check whether there is a deck on screen
-     * @return true if deck exists
-     */
-    public boolean hasDeck() {
-        return playerDeck != null;
+        RoboRally.gameBoard.hud = this;
     }
 
     /**
