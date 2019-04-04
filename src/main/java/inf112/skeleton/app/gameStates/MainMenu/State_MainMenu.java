@@ -29,7 +29,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class State_MainMenu extends GameState {
-    public Stage            stage;
     public InputMultiplexer im;
     private Table           h2,
                             main;

@@ -21,8 +21,6 @@ import io.netty.channel.Channel;
 import static inf112.skeleton.common.status.LoginResponseStatus.NO_RESPONSE_YET;
 
 public class State_Login extends GameState {
-    Stage stage;
-
     private TextField usernameField, passwordField, messageToUser;
 
     public LoginResponseStatus loginStatus;
