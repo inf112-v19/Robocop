@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.GUI.ChatBox;
 import inf112.skeleton.app.GUI.PlayerDeck;
+import inf112.skeleton.app.GUI.Timer;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameStateManager;
@@ -26,6 +27,7 @@ public class HUD {
     private Channel channel;
     public ChatBox gameChat;
     public boolean gameChatIsTouched;
+    public Timer turnTimer;
 
     private Status status;
 
@@ -52,6 +54,10 @@ public class HUD {
 
         // Status-bar
         status = new Status(gsm,inputMultiplexer,channel);
+
+        turnTimer = new Timer("Time to choose cards: ", 30000, 1);
+        turnTimer.setSize(turnTimer.getMinWidth(), turnTimer.getMinHeight());
+        turnTimer.setPosition(Gdx.graphics.getWidth() / 2f - turnTimer.getMinWidth() / 2f, Gdx.graphics.getHeight() - turnTimer.getHeight() - 5);
 
         RoboRally.gameBoard.hud = this;
     }
@@ -103,6 +109,7 @@ public class HUD {
         if (!Gdx.input.isTouched())
             gameChatIsTouched = false;
 
+
         sb.setProjectionMatrix(stage.getCamera().combined);
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1/30f));
         stage.draw();
@@ -122,6 +129,9 @@ public class HUD {
 
         sb.begin();
         font.draw(sb, "fps: " + Gdx.graphics.getFramesPerSecond(), stage.getWidth() - 60, stage.getHeight() - 10);
+        if (!turnTimer.isFinished) {
+            turnTimer.draw(sb, 1);
+        }
         sb.end();
     }
 
