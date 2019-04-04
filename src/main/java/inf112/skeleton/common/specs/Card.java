@@ -1,18 +1,14 @@
 package inf112.skeleton.common.specs;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import inf112.skeleton.common.specs.CardType;
+import inf112.skeleton.app.RoboRally;
 
 import java.util.HashMap;
 
 public class Card {
     private int priority;
     private CardType type;
-    private HashMap<CardType, Drawable> drawables;
+    private static HashMap<CardType, Drawable> drawables;
 
     public Card(int priority, CardType type) {
         this.priority = priority;
@@ -36,8 +32,7 @@ public class Card {
         if (drawables == null) {
             drawables = new HashMap<>();
             for (CardType move : CardType.values())
-                drawables.put(move, new TextureRegionDrawable(new TextureRegion(
-                        new Texture(Gdx.files.internal("graphics/ui/properCards/" + move.name() + ".png")))));
+                drawables.put(move, RoboRally.graphics.getDrawable(RoboRally.graphics.folder_ui + "properCards/" + move.name() + ".png"));
         }
         return drawables.get(type);
     }
