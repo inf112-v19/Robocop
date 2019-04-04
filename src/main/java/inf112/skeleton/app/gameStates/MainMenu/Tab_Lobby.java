@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import inf112.skeleton.app.GUI.ChatBox;
-import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.common.packet.Packet;

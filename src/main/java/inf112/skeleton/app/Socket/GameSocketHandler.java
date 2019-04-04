@@ -4,7 +4,6 @@ package inf112.skeleton.app.Socket;
 import com.badlogic.gdx.Gdx;
 import com.google.gson.JsonObject;
 import inf112.skeleton.app.GUI.ChatBox;
-import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameState;
