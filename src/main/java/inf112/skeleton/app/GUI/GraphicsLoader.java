@@ -11,6 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.common.specs.CardType;
+
+import java.util.HashMap;
 
 public class GraphicsLoader {
     public String[] playerColors = {"Blue", "DarkGreen", "Green", "Orange", "Pink", "Red", "Grey", "DarkYellow"};
@@ -54,6 +58,9 @@ public class GraphicsLoader {
                     btn_add,
                     pixel_black,
                     messageBox_bg;
+
+    public HashMap<CardType, Drawable> card_drawables;
+    public HashMap<CardType, Drawable> card_drawables_checked;
 
     public Color    color_primary;
 
@@ -124,6 +131,13 @@ public class GraphicsLoader {
         pixel_black = getDrawable(folder_ChatBox + "pixel_black.png");
 
         messageBox_bg = getDrawable(folder_MessageBox + "bg.png");
+
+        card_drawables = new HashMap<>();
+        card_drawables_checked = new HashMap<>();
+        for (CardType move : CardType.values()) {
+            card_drawables.put(move, getDrawable(folder_ui + "properCards/" + move.name() + ".png"));
+            card_drawables_checked.put(move, getDrawable(folder_ui + "properCards/checked/" + move.name() + ".png"));
+        }
 
 
         /*

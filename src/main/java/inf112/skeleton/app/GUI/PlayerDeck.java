@@ -34,7 +34,7 @@ public class PlayerDeck {
     private HashMap<ImageTextButton, Card> buttonToCardMap;
     private TextButton btn_done;
 
-    private ImageTextButton.ImageTextButtonStyle greyCardStyle = RoboRally.graphics.styleFromDrawable(new Card(0, GREY).getDrawable(false), null, Color.RED);
+    private ImageTextButton.ImageTextButtonStyle greyCardStyle = RoboRally.graphics.styleFromDrawable(RoboRally.graphics.card_drawables.get(GREY), null, Color.RED);
 
     private boolean fromDeckHidden;
     private int numberOfChosenButtons;
