@@ -26,8 +26,6 @@ public class HUD {
     public ChatBox gameChat;
     public boolean gameChatIsTouched;
     public Timer turnTimer;
-
-    private Status status;
     private StatusBar statusBar;
 
     /**

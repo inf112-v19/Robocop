@@ -26,7 +26,8 @@ public class GraphicsLoader {
                     folder_Lobbies = folder_MainMenu + "Lobbies/",
                     folder_ChatBox = folder_ui + "ChatBox/",
                     folder_MessageBox = folder_ui + "MessageBox/",
-                    folder_StatusBar = folder_ui + "StatusBar/";
+                    folder_StatusBar = folder_ui + "StatusBar/",
+                    folder_Cards = folder_ui + "Cards/";
 
     public Skin     default_skin,
                     chatBox_skin,
@@ -41,8 +42,6 @@ public class GraphicsLoader {
                         default_font_3p0;
 
     public Drawable logo,
-                    btn_up,
-                    btn_down,
                     btn_rounded_focused,
                     btn_rounded_unfocused,
                     btn_rounded_frozen,
@@ -50,7 +49,6 @@ public class GraphicsLoader {
                     mainMenu_h2,
                     mainMenu_body,
                     lobby_playerList_bg,
-                    chatBox_bg,
                     lobbies_view_bg,
                     lobbies_bg,
                     lobbies_header,
@@ -119,8 +117,6 @@ public class GraphicsLoader {
          * Drawables
          */
         logo = getDrawable(folder_ui + "robocop_logo_500W.png");
-        btn_up = getDrawable(folder_ui + "triangleBlack.png");
-        btn_down = getDrawable(folder_ui + "triangleBlackRot.png");
 
         btn_rounded_frozen = getDrawable(folder_Buttons + "btn_rounded_frozen.png");
         btn_rounded_focused = getDrawable(folder_Buttons + "btn_rounded_focused.png");
@@ -131,8 +127,6 @@ public class GraphicsLoader {
         mainMenu_body = getDrawable(folder_MainMenu + "main.png");
 
         lobby_playerList_bg = getDrawable(folder_Lobby + "player_bg.png");
-
-        chatBox_bg = getDrawable(folder_ui + "chatStyleOpac.png");
 
         lobbies_bg = getDrawable(folder_Lobbies + "Lobbies_bg.png");
         lobbies_header = getDrawable(folder_Lobbies + "Lobbies_header.png");
@@ -148,8 +142,8 @@ public class GraphicsLoader {
         card_drawables = new HashMap<>();
         card_drawables_checked = new HashMap<>();
         for (CardType move : CardType.values()) {
-            card_drawables.put(move, getDrawable(folder_ui + "properCards/" + move.name() + ".png"));
-            card_drawables_checked.put(move, getDrawable(folder_ui + "properCards/checked/" + move.name() + ".png"));
+            card_drawables.put(move, getDrawable(folder_Cards + move.name() + ".png"));
+            card_drawables_checked.put(move, getDrawable(folder_Cards + "checked/" + move.name() + ".png"));
         }
 
         sb_bg = getDrawable(folder_StatusBar + "bg.png");
