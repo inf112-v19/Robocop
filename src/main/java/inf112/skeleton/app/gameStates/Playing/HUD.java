@@ -2,13 +2,12 @@ package inf112.skeleton.app.gameStates.Playing;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.GUI.ChatBox;
 import inf112.skeleton.app.GUI.PlayerDeck;
+import inf112.skeleton.app.GUI.StatusBar;
 import inf112.skeleton.app.GUI.Timer;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
@@ -19,10 +18,9 @@ import io.netty.channel.Channel;
 import java.util.Collection;
 
 public class HUD {
-    private BitmapFont font;
     private GameStateManager gsm;
     private Stage stage;
-    private PlayerDeck playerDeck = null;
+    private PlayerDeck playerDeck;
     private InputMultiplexer inputMultiplexer;
     private Channel channel;
     public ChatBox gameChat;
@@ -30,6 +28,7 @@ public class HUD {
     public Timer turnTimer;
 
     private Status status;
+    private StatusBar statusBar;
 
     /**
      * Initializes display which may be seen on top of actual game.
@@ -39,21 +38,14 @@ public class HUD {
      */
     HUD(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, final Channel channel) {
         this.gsm = gameStateManager;
-
         this.inputMultiplexer = inputMultiplexer;
         this.channel = channel;
+        RoboRally.gameBoard.hud = this;
 
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         inputMultiplexer.addProcessor(stage);
 
-        font = new BitmapFont();
-        font.setColor(Color.RED);
-
-
         setupGameChatAndPushWelcome();
-
-        // Status-bar
-        status = new Status(gsm,inputMultiplexer,channel);
 
         turnTimer = new Timer("Time to choose cards: ", 30000, 1);
         turnTimer.setSize(turnTimer.getMinWidth(), turnTimer.getMinHeight());
@@ -62,7 +54,9 @@ public class HUD {
         playerDeck = new PlayerDeck(gsm, inputMultiplexer, channel);
         turnTimer.start();
 
-        RoboRally.gameBoard.hud = this;
+        statusBar = new StatusBar();
+
+        stage.addActor(statusBar);
     }
 
     /**
@@ -77,7 +71,6 @@ public class HUD {
      * Dispose of data-structures used by HUD
      */
     public void dispose() {
-        font.dispose();
     }
 
     /**
@@ -85,29 +78,38 @@ public class HUD {
      * @param sb sprite-batch
      */
     public void render(SpriteBatch sb) {
+        // Part of making sure that the map shouldn't be moved when scrolling in chat
         if (!Gdx.input.isTouched())
             gameChatIsTouched = false;
 
-
-        sb.setProjectionMatrix(stage.getCamera().combined);
+        // Act stage for certain features as chat-box to work
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1/30f));
-        stage.draw();
-        if (status != null) {
-            if (RoboRally.gameBoard.getPlayers().size() + 1 != status.statusUpdater.size()) {
-                status.statusUpdater.clear();
-                status.add(RoboRally.gameBoard.myPlayer);
-                for (Player player : (Collection<Player>) RoboRally.gameBoard.getPlayers().values()) {
-                    status.add(player);
-                }
+
+        // Update players displayed in status-bar.
+        if (statusBar != null && RoboRally.gameBoard.getPlayers().size() + 1 != statusBar.size()) {
+            statusBar_clearPlayers();
+            statusBar_addPlayer(RoboRally.gameBoard.myPlayer.name);
+            for (Player player : (Collection<Player>) RoboRally.gameBoard.getPlayers().values()) {
+                statusBar_addPlayer(player.name);
             }
         }
-        status.render(sb);
+
+        // Set projection matrix for correct positioning on screen.
+        sb.setProjectionMatrix(stage.getCamera().combined);
+
+        // Draw stage to screen (Contains messages to player, among other things)
+        stage.draw();
+
+        // Todo: Make it addable to stage...
+        // Render player-deck.
         if (playerDeck != null) {
             playerDeck.render(sb);
         }
 
         sb.begin();
-        font.draw(sb, "fps: " + Gdx.graphics.getFramesPerSecond(), stage.getWidth() - 60, stage.getHeight() - 10);
+        RoboRally.graphics.default_markup_font.draw(sb, "[RED]fps: " + Gdx.graphics.getFramesPerSecond(), 15, stage.getHeight() - 10);
+
+        // Todo: Overwrite draw function such that it might be added to stage...
         if (!turnTimer.isFinished) {
             turnTimer.draw(sb, 1);
         }
@@ -146,5 +148,30 @@ public class HUD {
             }
         });
         stage.addActor(gameChat);
+    }
+
+    public void statusBar_addPlayer(String username) {
+        statusBar.addStatus(username);
+        statusBar.setPosition(stage.getWidth() - statusBar.getWidth(),stage.getHeight() - statusBar.getHeight());
+        turnTimer.setPosition(stage.getWidth() - turnTimer.getMinWidth() - 2,stage.getHeight() - statusBar.getHeight() - turnTimer.getHeight() - 2);
+    }
+    private void statusBar_clearPlayers() {
+        statusBar.clear();
+    }
+
+    public void statusBar_addDamage(String username) {
+        statusBar.addDamage(username);
+    }
+    public void statusBar_removeDamage(String username) {
+        statusBar.removeDamage(username);
+    }
+    public void statusBar_addLife(String username) {
+        statusBar.addLife(username);
+    }
+    public void statusBar_removeLife(String username) {
+        statusBar.removeLife(username);
+    }
+    public void statusBar_powerDown(String username, boolean powerDown) {
+        statusBar.powerDown(username, powerDown);
     }
 }
