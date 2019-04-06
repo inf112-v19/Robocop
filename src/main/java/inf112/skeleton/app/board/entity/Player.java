@@ -124,9 +124,6 @@ public class Player {
         robot.updateMovement(update);
         RoboRally.gameBoard.hud.getPlayerDeck().setFromDeckHidden(true);
         RoboRally.gameBoard.hud.turnTimer.reset();
-
-        // Todo: Check game-card at appropriate time (in Robot, ask others)
-        RoboRally.gameBoard.hud.getPlayerDeck().check();
     }
 
     public String getUUID() {
