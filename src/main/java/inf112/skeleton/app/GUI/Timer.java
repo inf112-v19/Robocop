@@ -58,8 +58,9 @@ public class Timer extends Table {
                 isFinished = true;
                 fire(new ChangeListener.ChangeEvent());
             }
+
+            super.draw(batch, parentAlpha);
         }
-        super.draw(batch, parentAlpha);
     }
 
     /**
