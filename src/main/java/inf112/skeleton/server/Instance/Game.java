@@ -67,17 +67,20 @@ public class Game {
                     break;
 
                 case WAITING:   //Wait for players to choose cards from their hand or send card after request.
-                    if (checkTimer()) {
+                    boolean timerOK = checkTimer(),
+                            playersReady = allPlayersReady();
+                    if (timerOK || playersReady) {
                         Gdx.app.log("Game - update - WAITING", "Moving to REQUEST-stage.");
                         timerStarted = 0;
-                        lobby.broadcastChatMessage("30 Seconds is up, cards locked in.");
-                        if (!allPlayersReady() && !players.isEmpty()) {
+
+                        lobby.broadcastChatMessage(timerOK ? "30 Seconds is up, cards locked in." : "All players ready.");
+                        if (!playersReady && !players.isEmpty()) {
                             forcePlayersReady();
                         }
                         gameStage = GET_CARDS;
                     }
-
                     break;
+
                 case GET_CARDS:
                     for (Player player : players) {
                         cardsForOneRound.put(player, player.getNextFromSelected());
