@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.GUI.ChatBox;
 import inf112.skeleton.app.GUI.PlayerDeck;
@@ -27,6 +28,7 @@ public class HUD {
     public boolean gameChatIsTouched;
     public Timer turnTimer;
     private StatusBar statusBar;
+    private Label fpsLabel;
 
     /**
      * Initializes display which may be seen on top of actual game.
@@ -52,6 +54,10 @@ public class HUD {
         playerDeck = new PlayerDeck(gsm, inputMultiplexer, channel);
         statusBar = new StatusBar();
 
+        fpsLabel = new Label("[RED]fps: ", RoboRally.graphics.labelStyle_markup_enabled);
+        fpsLabel.setPosition(15, stage.getHeight() - fpsLabel.getHeight() - 10);
+
+        stage.addActor(fpsLabel);
         stage.addActor(turnTimer);
         stage.addActor(statusBar);
     }
@@ -91,6 +97,9 @@ public class HUD {
             }
         }
 
+        // Set fps-text
+        fpsLabel.setText("[RED]fps: " + Gdx.graphics.getFramesPerSecond());
+
         // Set projection matrix for correct positioning on screen.
         sb.setProjectionMatrix(stage.getCamera().combined);
 
@@ -102,10 +111,6 @@ public class HUD {
         if (playerDeck != null) {
             playerDeck.render(sb);
         }
-
-        sb.begin();
-        RoboRally.graphics.default_markup_font.draw(sb, "[RED]fps: " + Gdx.graphics.getFramesPerSecond(), 15, stage.getHeight() - 10);
-        sb.end();
     }
 
     /**
