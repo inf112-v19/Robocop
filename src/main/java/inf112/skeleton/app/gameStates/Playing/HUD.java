@@ -47,13 +47,12 @@ public class HUD {
 
         turnTimer = new Timer("Time to choose cards: ", 30000, 1);
         turnTimer.setSize(turnTimer.getMinWidth(), turnTimer.getMinHeight());
-        turnTimer.setPosition(Gdx.graphics.getWidth() / 2f - turnTimer.getMinWidth() / 2f, Gdx.graphics.getHeight() - turnTimer.getHeight() - 5);
-
-        playerDeck = new PlayerDeck(gsm, inputMultiplexer, channel);
         turnTimer.start();
 
+        playerDeck = new PlayerDeck(gsm, inputMultiplexer, channel);
         statusBar = new StatusBar();
 
+        stage.addActor(turnTimer);
         stage.addActor(statusBar);
     }
 
@@ -95,7 +94,7 @@ public class HUD {
         // Set projection matrix for correct positioning on screen.
         sb.setProjectionMatrix(stage.getCamera().combined);
 
-        // Draw stage to screen (Contains messages to player, among other things)
+        // Draw stage to screen
         stage.draw();
 
         // Todo: Make it addable to stage...
@@ -106,11 +105,6 @@ public class HUD {
 
         sb.begin();
         RoboRally.graphics.default_markup_font.draw(sb, "[RED]fps: " + Gdx.graphics.getFramesPerSecond(), 15, stage.getHeight() - 10);
-
-        // Todo: Overwrite draw function such that it might be added to stage...
-        if (!turnTimer.isFinished) {
-            turnTimer.draw(sb, 1);
-        }
         sb.end();
     }
 
