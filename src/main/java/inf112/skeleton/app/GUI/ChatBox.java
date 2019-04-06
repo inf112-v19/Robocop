@@ -1,5 +1,7 @@
 package inf112.skeleton.app.GUI;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -29,6 +31,7 @@ public class ChatBox extends Table {
     public static ChatBox chatBox = null;
 
     private ConcurrentLinkedQueue<String> messageQueue;
+    private boolean justFocused;
 
     /**
      * Initialize chat-box
@@ -82,6 +85,8 @@ public class ChatBox extends Table {
                         new Packet(ToServer.CHAT_MESSAGE.ordinal(), new ChatMessagePacket(inputText)).sendPacket(channel);
                     }
                     inputField.setText("");
+                    getStage().setKeyboardFocus(null);
+                    justFocused = true;
                 }
             }
         });
@@ -125,6 +130,11 @@ public class ChatBox extends Table {
             scrollPane.layout();
             scrollPane.scrollTo(0,0,0,0);
         }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && !justFocused) {
+            getStage().setKeyboardFocus(inputField);
+        }
+        justFocused = false;
 
         super.draw(sb, alpha);
     }
