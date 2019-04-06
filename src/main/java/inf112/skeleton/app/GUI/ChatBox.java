@@ -1,6 +1,7 @@
 package inf112.skeleton.app.GUI;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import inf112.skeleton.app.RoboRally;
@@ -8,6 +9,8 @@ import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.ToServer;
 import inf112.skeleton.common.packet.data.ChatMessagePacket;
 import io.netty.channel.Channel;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ChatBox extends Table {
     Channel channel;
@@ -24,6 +27,8 @@ public class ChatBox extends Table {
 
     private Image black_box;
     public static ChatBox chatBox = null;
+
+    private ConcurrentLinkedQueue<String> messageQueue;
 
     /**
      * Initialize chat-box
@@ -44,6 +49,8 @@ public class ChatBox extends Table {
         add(scrollPane).size(width - padRight, height - height_input - padTop).padTop(padTop).padRight(padRight).row();
         add(black_box).size(width - padRight, 1).padRight(padRight).row();
         add(inputField).size(width, height_input).bottom().row();
+
+        messageQueue = new ConcurrentLinkedQueue<>();
     }
 
     /**
@@ -99,11 +106,26 @@ public class ChatBox extends Table {
      * @param chatMsg packet containing chat message.
      */
     public void addMessage(ChatMessagePacket chatMsg) {
-        Label messageLabel = new Label(chatMsg.getMessage(), RoboRally.graphics.labelStyle_markup_enabled);
-        messageLabel.setAlignment(Align.left, Align.left);
+        messageQueue.add(chatMsg.getMessage());
+    }
 
-        messages.add(messageLabel).height(RoboRally.graphics.labelStyle_markup_enabled.font.getLineHeight()).left().row();
-        scrollPane.layout();
-        scrollPane.scrollTo(0,0,0,0);
+    /**
+     * Updates message-display if needed, before drawing message-box to screen. Avoid concurrency issues.
+     * @param sb
+     * @param alpha
+     */
+    @Override
+    public void draw(Batch sb, float alpha) {
+        if (!messageQueue.isEmpty()) {
+            while(!messageQueue.isEmpty()) {
+                Label messageLabel = new Label(messageQueue.poll(), RoboRally.graphics.labelStyle_markup_enabled);
+                messageLabel.setAlignment(Align.left, Align.left);
+                messages.add(messageLabel).height(RoboRally.graphics.labelStyle_markup_enabled.font.getLineHeight()).left().row();
+            }
+            scrollPane.layout();
+            scrollPane.scrollTo(0,0,0,0);
+        }
+
+        super.draw(sb, alpha);
     }
 }
