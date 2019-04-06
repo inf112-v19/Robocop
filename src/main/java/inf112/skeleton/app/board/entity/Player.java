@@ -90,7 +90,6 @@ public class Player {
         while(true) {
             try {
                 RoboRally.gameBoard.hud.getPlayerDeck().resetDeck();
-                RoboRally.gameBoard.hud.turnTimer.reset();
                 RoboRally.gameBoard.hud.turnTimer.start();
                 return;
             } catch(NullPointerException npe) {}
@@ -124,6 +123,7 @@ public class Player {
     public void updateRobot(UpdatePlayerPacket update) {
         robot.updateMovement(update);
         RoboRally.gameBoard.hud.getPlayerDeck().setFromDeckHidden(true);
+        RoboRally.gameBoard.hud.turnTimer.reset();
 
         // Todo: Check game-card at appropriate time (in Robot, ask others)
         RoboRally.gameBoard.hud.getPlayerDeck().check();
