@@ -73,7 +73,12 @@ public class ChatBox extends Table {
     private void init_inputField() {
         inputField = new TextField("", RoboRally.graphics.chatBox_skin);
         inputField.getStyle().cursor = RoboRally.graphics.chatBox_skin.newDrawable("cursor", Color.YELLOW);
-        inputField.setMessageText("Username: Press ENTER to chat.");
+
+        String username = "Username";
+        try {
+            username = RoboRally.gameBoard.myPlayer.name;
+        } catch (Exception e) {}
+        inputField.setMessageText(username + ": Press ENTER to chat.");
 
         // Send message to server if enter key typed.
         inputField.setTextFieldListener(new TextField.TextFieldListener() {
