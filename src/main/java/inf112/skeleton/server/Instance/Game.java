@@ -29,7 +29,7 @@ public class Game {
     private HashMap<Player, Card> cardsForOneRound = new HashMap<>();
     private GameBoard gameBoard;
 
-    private int roundSelectTime = 12; //The time the player will have to select their cards.
+    private int roundSelectTime = 5; //The time the player will have to select their cards.
     private int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
     private long timerStarted = 0;
     private long timerCountdownSeconds = 0;
@@ -53,7 +53,7 @@ public class Game {
 
             case DEALING:   //Deal cards to players
                 Gdx.app.log("Game - update - DEALING", "Dealing cards to players.");
-                lobby.broadcastChatMessage("You have 30 seconds to choose cards or cards will be automatically chosen");
+                lobby.broadcastChatMessage("You have " + roundSelectTime + " seconds to choose cards or cards will be automatically chosen");
                 for (Player player : players) {
                     player.sendCardHandToClient(createCardHand(player));
                 }
@@ -65,10 +65,9 @@ public class Game {
                 break;
 
             case WAITING:   //Wait for players to choose cards from their hand or send card after request.
-                if (checkTimer()) {
+                if (checkTimer() || allPlayersReady()) {
                     Gdx.app.log("Game - update - WAITING", "Moving to REQUEST-stage.");
                     timerStarted = 0;
-                    lobby.broadcastChatMessage("30 Seconds is up, cards locked in.");
                     if (!allPlayersReady() && !players.isEmpty()) {
                         forcePlayersReady();
                     }
@@ -149,7 +148,14 @@ public class Game {
         Gdx.app.log("Game - useCard", "Sent card " + card.toString() + " back to player for marking as played on clientside.");
 
         handleMovement(player, card);
+        returnPlayedCard(player, card);
         cardsForOneRound.remove(player);
+    }
+
+    private void returnPlayedCard(Player player, Card card) {
+        CardPacket cardPacket = new CardPacket(card);
+        Packet packet = new Packet(FromServer.CARD_PACKET.ordinal(), cardPacket);
+        player.getOwner().sendPacket(packet);
     }
 
     /**

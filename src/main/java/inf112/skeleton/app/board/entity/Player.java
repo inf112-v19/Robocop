@@ -22,6 +22,7 @@ public class Player {
     Directions initalDirection;
     public Card[] cards;
     public Card[] selectedCards;
+    public boolean[] cardPlayedByServer;
     int slot;
 
     /**
@@ -42,6 +43,7 @@ public class Player {
         this.initialPos = pos;
         this.initalDirection = directions;
         this.selectedCards = new Card[5];
+        this.cardPlayedByServer = new boolean[5];
     }
 
     /**
@@ -63,17 +65,16 @@ public class Player {
     }
 
     /**
-     * Fill in first empty slot in the players card-hand.
-     * Tell the user that the card has been played.
-     * @param packet A single card to be added to the hand.
+     * Updates the array that tells the client if a card has been played by the server.
+     * @param packet containing a card that has been played.
      */
     public void receiveCardPacket(CardPacket packet) {
-        Card card = Tools.CARD_RECONSTRUCTOR.reconstructCard(packet.getPriority());
-        Gdx.app.log("Player clientside - receiveCardPacket", "Server has played my card " + card.toString());
-        for (int i = 0; i < selectedCards.length; i++) {
-            if(selectedCards[i].equals(card)) {
-                Gdx.app.log("Player clientside - receiveCardPacket", "Found my card!");
-                break;
+        Card foo = Tools.CARD_RECONSTRUCTOR.reconstructCard(packet.getPriority());
+        for(int i = 0; i < selectedCards.length; i++) {
+            if (selectedCards[i].equals(foo)) {
+                cardPlayedByServer[i] = true;
+                Gdx.app.log("Player - receiveCardPacket", "Set bool-arr pos " + i + " to true.");
+                return;
             }
         }
     }
@@ -85,6 +86,7 @@ public class Player {
      */
     public void receiveCardHandPacket(CardHandPacket packet) {
         selectedCards = new Card[5];
+        cardPlayedByServer = new boolean[5];
         int[] packetCardHand = packet.getHand();
         if (cards == null) {
             cards = new Card[9];

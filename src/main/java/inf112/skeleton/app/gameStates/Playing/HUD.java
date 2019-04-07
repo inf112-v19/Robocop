@@ -138,7 +138,7 @@ public class HUD {
      */
     private void setupGameChatAndPushWelcome() {
         ScrollableTextbox gameChat = new ScrollableTextbox(100, channel);
-        gameChat.push(new ChatMessagePacket("Welcome to RoboCop. You have 30 seconds to choose cards"));
+        gameChat.push(new ChatMessagePacket("Welcome to RoboCop. Please select your cards."));
         gameChat.push(new ChatMessagePacket("[INFO]: Available commands: "));
         gameChat.push(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
         gameChat.push(new ChatMessagePacket("[INFO]:     \"!players\""));
