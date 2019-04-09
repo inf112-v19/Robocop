@@ -110,7 +110,9 @@ public class HUD {
             }
 
         }
-        status.render(sb);
+        if (status != null) {
+            status.render(sb);
+        }
         if (playerDeck != null) {
             playerDeck.render(sb);
         }

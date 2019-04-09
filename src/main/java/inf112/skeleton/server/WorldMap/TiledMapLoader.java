@@ -8,6 +8,9 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.specs.TileDefinition;
+import inf112.skeleton.server.WorldMap.entity.TileEntity;
+
+import java.util.ArrayList;
 
 public class TiledMapLoader extends GameBoard {
 
@@ -16,7 +19,10 @@ public class TiledMapLoader extends GameBoard {
     public TiledMapLoader(MapFile file) {
         super();
         tiledMap = new TmxMapLoader().load(file.filename);
-
+        walls = new ArrayList[getHeight()*getWidth()];
+        for (int i = 0; i < walls.length; i++) {
+            walls[i] = new ArrayList<TileEntity>();
+        }
         // CHeck for tile entities like lasers and black holes
         TiledMapTileLayer enitylayer = ((TiledMapTileLayer) tiledMap.getLayers().get("Entities"));
         for (int x = 0; x < getWidth(); x++) {
@@ -25,12 +31,52 @@ public class TiledMapLoader extends GameBoard {
                 if (cell != null) {
                     TiledMapTile tile = cell.getTile();
                     if (tile != null) {
-                        addTileEntity(tile, x, y);
+                        addTileEntity(tile, x, y, cell);
+                    }
+                }
+            }
+        }
+
+        // CHeck for tile entities like lasers and black holes
+        TiledMapTileLayer tileLayer = ((TiledMapTileLayer) tiledMap.getLayers().get(0));
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                TiledMapTileLayer.Cell cell = tileLayer.getCell(x, y);
+                if (cell != null) {
+                    TiledMapTile tile = cell.getTile();
+                    if (tile != null) {
+                        addTileEntity(tile, x, y, cell);
+                    }
+                }
+            }
+        }
+        // CHeck for tile entities like lasers and black holes
+        TiledMapTileLayer wallsLayer = ((TiledMapTileLayer) tiledMap.getLayers().get("Walls"));
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                TiledMapTileLayer.Cell cell = wallsLayer.getCell(x, y);
+                if (cell != null) {
+                    TiledMapTile tile = cell.getTile();
+                    if (tile != null) {
+                        addTileEntity(tile, x, y, cell);
+                    }
+                }
+            }
+        }
+        wallsLayer = ((TiledMapTileLayer) tiledMap.getLayers().get("Walls2"));
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                TiledMapTileLayer.Cell cell = wallsLayer.getCell(x, y);
+                if (cell != null) {
+                    TiledMapTile tile = cell.getTile();
+                    if (tile != null) {
+                        addTileEntity(tile, x, y, cell);
                     }
                 }
             }
         }
     }
+
 
     /**
      * Clock based events owned by the board.
