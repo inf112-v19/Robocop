@@ -299,11 +299,15 @@ public class Player {
      *
      * @param direction to move in
      * @param amount    to move
-     * @param pushed    if the player has been pushed to move
+     * @param pushed    player is being pushed by robot or moved by conveyor-belt.
      */
     public void startMovement(Directions direction, int amount, boolean pushed) {
+        if (amount == 0) {
+            return;
+        }
         if (!processMovement(System.currentTimeMillis())) {
-            System.out.println(direction);
+            int dx = 0;
+            int dy = 0;
             GameBoard gameBoard = owner.getLobby().getGame().getGameBoard();
             ArrayList<TileEntity> walls = gameBoard.getWallsAtPosition(currentPos);
 
@@ -311,16 +315,13 @@ public class Player {
 
             if (!pushed) {
                 this.direction = direction;
+
             }
-            int dx = 0;
-            int dy = 0;
-            for (TileEntity wall :
-                    walls) {
+            for (TileEntity wall : walls) {
                 if (!wall.canLeave(direction)) {
                     amount = 0;
                 }
             }
-
 
             switch (direction) {
                 case SOUTH:
@@ -336,12 +337,9 @@ public class Player {
                     dx = -1;
                     break;
             }
+
             outerloop:
             for (int i = 1; i <= amount; i++) {
-                if (amount == 0) {
-                    break;
-                }
-
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
                 walls = gameBoard.getWallsAtPosition(toCheck);
 

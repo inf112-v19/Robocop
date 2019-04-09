@@ -117,13 +117,13 @@ public class Game {
      * @param card
      */
     public void handleMovement(Player player, Card card) {
-        if (card.getType().moveAmount <= 0) { // For rotation cards and backward1 (special case)
+        if (card.getType().moveAmount == 0) {   // For rotation cards
             setTimerTicks(10);
         } else {
-            setTimerTicks(10 * card.getType().moveAmount); // For other cards.
+            setTimerTicks(10 * card.getType().moveAmount);  // For other cards.
         }
         Directions moveDirection = player.getDirection();
-        if(card.getType() == CardType.BACKWARD1) {
+        if(card.getType() == CardType.BACKWARD1) {          // Special case for backward1.
             moveDirection = Directions.values()[(moveDirection.ordinal() + 2) % 4];
         }
         player.startMovement(moveDirection, card.getType().moveAmount, card.getPushed());

@@ -142,7 +142,7 @@ public class IncomingPacketHandler {
                     if (Directions.fromString(command[1].toUpperCase()) != null) {
                         Directions direction = Directions.valueOf(command[1].toUpperCase());
                         if (StringUtilities.isStringInt(command[2])) {
-                            messagingUser.sendServerMessage("You moved "+ command[2] + " tiles you little shit");
+                            messagingUser.sendServerMessage("You moved "+ command[2] + " tiles.");
                             messagingUser.getPlayer().startMovement(direction, Integer.parseInt(command[2]), false);
                             return;
                         }
