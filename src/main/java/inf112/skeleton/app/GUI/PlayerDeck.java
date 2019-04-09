@@ -248,7 +248,10 @@ public class PlayerDeck {
      * Remove deck and cleanup
      */
     public void removeDeck() {
-        RoboRally.gameBoard.myPlayer.cards = null;
+        //RoboRally.gameBoard.myPlayer.cards = null;
+        for (int i = 0; i < RoboRally.gameBoard.myPlayer.cards.length; i++) {
+            RoboRally.gameBoard.myPlayer.cards[i] = null;
+        }
         RoboRally.gameBoard.hud.removeDeck();
         inputMultiplexer.removeProcessor(stage);
     }

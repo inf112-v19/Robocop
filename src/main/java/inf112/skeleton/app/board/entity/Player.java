@@ -42,6 +42,7 @@ public class Player {
         this.slot = slot;
         this.initialPos = pos;
         this.initalDirection = directions;
+        this.cards = new Card[hp];
         this.selectedCards = new Card[5];
         this.cardPlayedByServer = new boolean[5];
     }
@@ -57,7 +58,7 @@ public class Player {
             RoboRally.gameBoard.addEntity(robot);
         }
         if (!RoboRally.gameBoard.hud.hasDeck()) {
-            if (cards != null) {
+            if (cards[0] != null) {
                 RoboRally.gameBoard.hud.addDeck();
             }
         }
@@ -88,11 +89,8 @@ public class Player {
         selectedCards = new Card[5];
         cardPlayedByServer = new boolean[5];
         int[] packetCardHand = packet.getHand();
-        if (cards == null) {
-            cards = new Card[9];
-        }
         if (packetCardHand.length != cards.length) {
-            return;
+            cards = new Card[packetCardHand.length];
         }
         for (int i = 0; i < packetCardHand.length; i++) {
             cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packetCardHand[i]);
