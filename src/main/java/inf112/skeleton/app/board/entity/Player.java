@@ -80,6 +80,7 @@ public class Player {
             cards = new Card[9];
         }
         if (packetCardHand.length != cards.length) {
+            System.out.println("what?");
             return;
         }
         for (int i = 0; i < packetCardHand.length; i++) {

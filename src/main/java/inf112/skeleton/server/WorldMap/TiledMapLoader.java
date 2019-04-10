@@ -8,6 +8,9 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.specs.TileDefinition;
+import inf112.skeleton.server.WorldMap.entity.TileEntity;
+
+import java.util.ArrayList;
 
 public class TiledMapLoader extends GameBoard {
 
@@ -16,21 +19,30 @@ public class TiledMapLoader extends GameBoard {
     public TiledMapLoader(MapFile file) {
         super();
         tiledMap = new TmxMapLoader().load(file.filename);
-
+        walls = new ArrayList[getHeight() * getWidth()];
+        newTileEntities = new ArrayList[getHeight() * getWidth()];
+        for (int i = 0; i < walls.length; i++) {
+            walls[i] = new ArrayList<TileEntity>();
+            newTileEntities[i] = new ArrayList<TileEntity>();
+        }
         // CHeck for tile entities like lasers and black holes
-        TiledMapTileLayer enitylayer = ((TiledMapTileLayer) tiledMap.getLayers().get("Entities"));
-        for (int x = 0; x < getWidth(); x++) {
-            for (int y = 0; y < getHeight(); y++) {
-                TiledMapTileLayer.Cell cell = enitylayer.getCell(x, y);
-                if (cell != null) {
-                    TiledMapTile tile = cell.getTile();
-                    if (tile != null) {
-                        addTileEntity(tile, x, y);
+        for (int i = 0; i < tiledMap.getLayers().getCount(); i++) {
+            TiledMapTileLayer layer = ((TiledMapTileLayer) tiledMap.getLayers().get(i));
+            for (int x = 0; x < getWidth(); x++) {
+                for (int y = 0; y < getHeight(); y++) {
+                    TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+                    if (cell != null) {
+                        TiledMapTile tile = cell.getTile();
+                        if (tile != null) {
+                            addTileEntity(tile, x, y, cell);
+                        }
                     }
                 }
             }
         }
+
     }
+
 
     /**
      * Clock based events owned by the board.
@@ -39,7 +51,6 @@ public class TiledMapLoader extends GameBoard {
     public void update() {
         super.update();
     }
-
 
 
     /**
@@ -66,6 +77,7 @@ public class TiledMapLoader extends GameBoard {
 
     /**
      * Get TiledMapTileLayer Cell at a given coordinate
+     *
      * @param layer
      * @param col
      * @param row
@@ -79,6 +91,7 @@ public class TiledMapLoader extends GameBoard {
     /**
      * Gets the rotation of a tile,
      * useful for checking which way a belt might push a player
+     *
      * @param layer
      * @param col
      * @param row
@@ -95,6 +108,7 @@ public class TiledMapLoader extends GameBoard {
 
     /**
      * Get the board width
+     *
      * @return width
      */
     @Override
@@ -104,6 +118,7 @@ public class TiledMapLoader extends GameBoard {
 
     /**
      * Get the board height
+     *
      * @return height
      */
     @Override
@@ -113,6 +128,7 @@ public class TiledMapLoader extends GameBoard {
 
     /**
      * Get the count of board layers
+     *
      * @return layer count
      */
     @Override

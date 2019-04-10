@@ -39,4 +39,8 @@ public class Card {
         }
         return ((Card) b).priority == this.priority && ((Card) b).type == this.type;
     }
+
+    public boolean getPushed() {
+        return type == CardType.BACKWARD1;
+    }
 }
