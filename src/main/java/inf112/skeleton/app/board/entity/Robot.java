@@ -3,26 +3,31 @@ package inf112.skeleton.app.board.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.app.board.TiledMapLoader;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Directions;
+
+import java.util.HashMap;
+import java.util.Iterator;
+
+import static inf112.skeleton.common.specs.TileDefinition.TILE_SIZE;
 
 public class Robot extends Entity {
     // TODO: cleanup variable, collect animations to one array.
     private Directions facing;
     private int health;
-    private int[] position;
+    Vector2 position;
     private int delayMove = 400;
     private long timeMoved = 0;
     private Vector2 tileTo;
 
-    private int movementLenght = 1;
+    private int movementLength = 1;
     Animation<TextureRegion> currentAnimation;
-    Animation<TextureRegion> facing_north;
-    Animation<TextureRegion> facing_south;
-    Animation<TextureRegion> facing_west;
-    Animation<TextureRegion> facing_east;
+    private static HashMap<Vector2, TiledMapTileLayer.Cell> cellsCovered = new HashMap<>();
+    private TiledMapTileLayer entities;
     int colour;
 
     TextureAtlas textureAtlas;
@@ -37,15 +42,14 @@ public class Robot extends Entity {
     public Robot(float x, float y,int slot, Player player) {
         super(x, y, EntityType.ROBOT);
         this.tileTo = new Vector2(x, y);
-        this.position = new int[2];
-        this.position[0] = (int) x * 64;
-        this.position[1] = (int) y * 64;
+        this.position = new Vector2(x * TILE_SIZE, y * TILE_SIZE);
         this.health = player.initalHp;
         this.colour = slot;
         System.out.println("Robot constructor, slot = " + this.colour);
         this.facing = player.initalDirection;
         stateTime = 0f;
         this.player = player;
+        entities = (TiledMapTileLayer)((TiledMapLoader)RoboRally.gameBoard).tiledMap.getLayers().get("Entities");
     }
 
 
@@ -70,41 +74,38 @@ public class Robot extends Entity {
      * @return true if currently moving, false if not moving.
      */
     public boolean processMovement(long currentTime) {
-        if (this.pos.x == this.tileTo.x && this.pos.y == this.tileTo.y) {
+        if (pos.x == tileTo.x && pos.y == tileTo.y) {
             return false;
         }
-        int movementDelay = this.delayMove * movementLenght;
-        if ((currentTime - this.timeMoved) >= movementDelay) {
-            this.placeAt(this.tileTo.x, this.tileTo.y);
+
+        int movementDelay = delayMove * movementLength;
+        if ((currentTime - timeMoved) >= movementDelay) {
+            placeAt(tileTo.x, tileTo.y);
         } else {
-            int tileHeight = 64;
-            int tileWidth = 64;
+            Vector2 deltaDistance = new Vector2(TILE_SIZE, TILE_SIZE);
             switch (getFacingDirection()) {
                 case NORTH:
                 case SOUTH:
-                    tileHeight = tileHeight * movementLenght;
+                    deltaDistance.y *= movementLength;
                     break;
                 case WEST:
                 case EAST:
-                    tileWidth = tileWidth * movementLenght;
+                    deltaDistance.x *= movementLength;
+            }
 
+            position.x = pos.x * TILE_SIZE;
+            position.y = pos.y * TILE_SIZE;
+
+            if (tileTo.x != pos.x) {
+                position.x += ((long) (((deltaDistance.x) / movementDelay) * (currentTime - this.timeMoved))) * (tileTo.x < pos.x ? -1 : 1);
             }
-            this.position[0] = (int) (this.pos.x * 64);
-            this.position[1] = (int) (this.pos.y * 64);
-            if (this.tileTo.x != this.pos.x) {
-                long diff = (long) ((((float) tileWidth) / movementDelay) * (currentTime - this.timeMoved));
-                this.position[0] += (this.tileTo.x < this.pos.x ? 0 - diff : diff);
-            }
+
             if (this.tileTo.y != this.pos.y) {
-                long diff = (long) ((((float) tileHeight) / movementDelay) * (currentTime - this.timeMoved));
-                this.position[1] += (this.tileTo.y < this.pos.y ? 0 - diff : diff);
+                position.y += ((long) ((deltaDistance.y / movementDelay) * (currentTime - this.timeMoved))) * (tileTo.y < pos.y ? -1 : 1);
             }
 
-
-            this.position[0] = Math.round(this.position[0]);
-            this.position[1] = Math.round(this.position[1]);
-
-
+            position.x = (int)position.x;
+            position.y = (int)position.y;
         }
         return true;
 
@@ -119,7 +120,7 @@ public class Robot extends Entity {
         this.tileTo = updatePlayerPacket.getToTile();
         this.facing = updatePlayerPacket.getDirection();
         this.movementDirection = updatePlayerPacket.getMovingTiles();
-        this.movementLenght = Math.abs(updatePlayerPacket.getMovingTiles());
+        this.movementLength = Math.abs(updatePlayerPacket.getMovingTiles());
         this.pos = updatePlayerPacket.getFromTile();
         this.timeMoved = System.currentTimeMillis();
         processMovement(System.currentTimeMillis());
@@ -135,12 +136,12 @@ public class Robot extends Entity {
      * @param y
      */
     public void placeAt(float x, float y) {
-        this.pos.x = x;
-        this.pos.y = y;
-        this.tileTo.x = x;
-        this.tileTo.y = y;
-        this.position[0] = (int) (this.pos.x * 64);
-        this.position[1] = (int) (this.pos.y * 64);
+        pos.x = x;
+        pos.y = y;
+        tileTo.x = x;
+        tileTo.y = y;
+        position.x = (int) (this.pos.x * TILE_SIZE);
+        position.y = (int) (this.pos.y * TILE_SIZE);
     }
 
     @Override
@@ -154,6 +155,8 @@ public class Robot extends Entity {
 
         stateTime += Gdx.graphics.getDeltaTime();
 
+        Vector2 oldPos = getRealPos();
+
         boolean isMoving = processMovement(System.currentTimeMillis());
 
         //Is the robot currently moving
@@ -166,11 +169,25 @@ public class Robot extends Entity {
             }
             TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
 
-            batch.draw(currentFrame, position[0], position[1], getWidth(), getHeight());
+            batch.draw(currentFrame, position.x, position.y, getWidth(), getHeight());
+
+
+            // Update which lasers are displayed...
+            Vector2 newPos = getRealPos();
+            if (!newPos.equals(oldPos)) {
+                System.out.println("Robot position: (" + getRealPos().x + ", " + getRealPos().y + ").");
+
+                if(((TiledMapLoader)RoboRally.gameBoard).laserSources.containsKey(oldPos)) {
+                    updateLaser(((TiledMapLoader)RoboRally.gameBoard).laserSources.get(oldPos));
+                }
+                if(((TiledMapLoader)RoboRally.gameBoard).laserSources.containsKey(newPos)) {
+                    updateLaser(((TiledMapLoader)RoboRally.gameBoard).laserSources.get(newPos));
+                }
+            }
 
         } else {
             //No it is not moving, render static frame(first frame) statically.
-            batch.draw(currentAnimation.getKeyFrames()[0], position[0], position[1], getWidth(), getHeight());
+            batch.draw(currentAnimation.getKeyFrames()[0], position.x, position.y, getWidth(), getHeight());
 
             // Check player cards.
             if (movedLastTick) {
@@ -182,6 +199,55 @@ public class Robot extends Entity {
         movedLastTick = isMoving;
     }
 
+    private void updateLaser(Vector2 sourceCoo) {
+        boolean shouldDisplayLaser = true;
+
+        // Loop over all tiles which the laser covers...
+        for (Vector2 checkCoo : ((TiledMapLoader)RoboRally.gameBoard).laserLists.get(sourceCoo)) {
+
+            // Checks whether the laser should be displayed (if not covered by robot)
+            if (shouldDisplayLaser) {
+                Iterator<Object> players = RoboRally.gameBoard.getPlayers().values().iterator();
+                Object player = null;
+
+                do {
+                    player = player == null ? this.player : players.next();
+                    if (((Player)player).robot.getRealPos().equals(checkCoo)) {
+                        shouldDisplayLaser = false;
+                        break;
+                    }
+                } while (players.hasNext());
+            }
+
+            // Show/Hide laser.
+            if (shouldDisplayLaser) {
+                // Display laser if not already displayed.
+                if (cellsCovered.containsKey(checkCoo)) {
+                    entities.setCell((int)checkCoo.x, (int)checkCoo.y, cellsCovered.get(checkCoo));
+                }
+            } else {
+                // Hide laser if not already hidden.
+                TiledMapTileLayer.Cell cell = entities.getCell((int)checkCoo.x, (int)checkCoo.y);
+                if (cell != null) {
+                    cellsCovered.put(checkCoo, cell);
+                    entities.setCell((int)checkCoo.x, (int)checkCoo.y, null);
+                }
+            }
+        }
+    }
+
+    private void updateLasers(Vector2 oldPos, Vector2 newPos) {
+        TiledMapTileLayer.Cell cell = entities.getCell((int)newPos.x, (int)newPos.y);
+
+        if (cell != null) {
+            cellsCovered.put(newPos, cell);
+            entities.setCell((int)newPos.x, (int)newPos.y, null);
+        }
+
+        if (cellsCovered.containsKey(oldPos)) {
+            entities.setCell((int)oldPos.x, (int)oldPos.y, cellsCovered.get(oldPos));
+        }
+    }
 
     /**
      * Renders the name seprately from sprite, avoids rendering entities ontop of name.
@@ -191,9 +257,17 @@ public class Robot extends Entity {
     @Override
     public void renderName(SpriteBatch batch, float scale) {
         final GlyphLayout layout = new GlyphLayout(font, player.name);
-        final float fontX = position[0] + (64 - layout.width) / 2;
+        final float fontX = position.x + (TILE_SIZE - layout.width) / 2;
         font.setColor(Color.RED);
         font.getData().setScale(scale);
-        font.draw(batch, player.name, fontX, position[1] + (78+(10*scale-1)-10));
+        font.draw(batch, player.name, fontX, position.y + (78+(10*scale-1)-10));
+    }
+
+    /**
+     * Get the current tile coordinates (Considers tiles during animation, not just start/end coo).
+     * @return
+     */
+    public Vector2 getRealPos() {
+        return new Vector2((int)position.x/TILE_SIZE, (int)position.y/TILE_SIZE);
     }
 }
