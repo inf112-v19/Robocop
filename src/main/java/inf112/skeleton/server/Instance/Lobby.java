@@ -208,6 +208,9 @@ public class Lobby {
      * Kick all users and destory the lobby
      */
     private void kickAllAndDestroy() {
+        if (gameStarted) {
+            return;
+        }
         for (User user : users) {
             if (user != null) {
                 removeUser(user);
