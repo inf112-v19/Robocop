@@ -16,6 +16,7 @@ public abstract class GameBoard {
 
     public ArrayList<TileEntity> tileEntities;
     public ArrayList<TileEntity>[] walls;
+    public ArrayList<TileEntity>[] newTileEntities;
 
     public GameBoard() {
         tileEntities = new ArrayList<>();
@@ -57,6 +58,7 @@ public abstract class GameBoard {
                 return;
         }
         if (newTile != null) {
+            newTileEntities[x + getWidth() * y].add(newTile);
             tileEntities.add(newTile);
         }
     }
