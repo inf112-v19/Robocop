@@ -3,7 +3,7 @@ package inf112.skeleton.app.Socket;
 
 import com.badlogic.gdx.Gdx;
 import com.google.gson.JsonObject;
-import inf112.skeleton.app.GUI.ScrollableTextbox;
+import inf112.skeleton.app.GUI.ChatBox;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameState;
@@ -49,9 +49,9 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 RoboRally.gameBoard.setupPlayer(PlayerInitPacket.parseJSON(jsonObject));
                 break;
             case CHATMESSAGE:
-                if (ScrollableTextbox.textbox != null) {
+                if (ChatBox.chatBox != null) {
                     ChatMessagePacket chatMessagePacket = ChatMessagePacket.parseJSON(jsonObject);
-                    ScrollableTextbox.textbox.push(chatMessagePacket);
+                    ChatBox.chatBox.addMessage(chatMessagePacket);
                 }
                 break;
 
@@ -103,9 +103,8 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                         }
                         break;
                     case FORCE_CARDS:
-                        if (RoboRally.gameBoard.hud.hasDeck()) {
-                            RoboRally.gameBoard.hud.getPlayerDeck().removeDeck();
-                        }
+                        RoboRally.gameBoard.hud.getPlayerDeck().forceUpdateSelected();
+
                         break;
                 }
                 break;
@@ -115,7 +114,9 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 if (RoboRally.roboRally.gsm.peek() instanceof State_MainMenu) {
                     ((State_MainMenu) RoboRally.roboRally.gsm.peek()).packets_LobbyUpdates.add(lobbyUpdatePacket);
                 }
-
+                break;
+            case ERROR_LOBBY_RESPONSE:
+                RoboRally.roboRally.gsm.peek().addMessageToScreen("Lobby already exists...");
                 break;
             default:
                 System.err.println("Unhandled packet: " + packetId.name());

@@ -39,6 +39,7 @@ public class State_Playing extends GameState {
         inputContainer = new InputContainer();
         cameraHandler = new CameraHandler(camera, inputContainer);
         inputMultiplexer = new InputMultiplexer(inputContainer);
+        inputMultiplexer.addProcessor(stage);
 
         gameBoard = RoboRally.gameBoard;
         hud = new HUD(gsm, inputMultiplexer, channel);
@@ -47,7 +48,9 @@ public class State_Playing extends GameState {
 
     @Override
     public void update(float dt) {
-        cameraHandler.handle();
+        if (!hud.gameChat.scrollPane.isDragging() && !hud.gameChatIsTouched)
+            cameraHandler.handle();
+
         camera.update();
         gameBoard.update();
 
@@ -64,6 +67,7 @@ public class State_Playing extends GameState {
         gameBoard.render(camera, sb);
         if (displayHUD)
             hud.render(sb);
+        stage.draw();
     }
 
     @Override

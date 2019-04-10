@@ -9,31 +9,42 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
+import inf112.skeleton.common.packet.Packet;
+import inf112.skeleton.common.packet.ToServer;
+import inf112.skeleton.common.packet.data.CardHandPacket;
 import inf112.skeleton.common.specs.Card;
 import io.netty.channel.Channel;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
 import static inf112.skeleton.common.specs.CardType.GREY;
 
 public class PlayerDeck {
+    public enum ACTIONS {RESET_DECK, HIDE_FROM_DECK, FORCE_UPDATE_SELECTED, CHECK}
+
     private GameStateManager gsm;
     private InputMultiplexer inputMultiplexer;
     private Channel channel;
 
-    private Stage stage, altStage;
+    private Stage stage;
     private Table chooseFrom, chooseTo;
     private LinkedList<ImageTextButton> chooseFromButtons, chooseToButtons, greyButtons;
-    private HashMap<ImageTextButton, Card> pCards;
-    private Drawable greyCardDrawable = new Card(0, GREY).getDrawable();
-    private TextButton btn_chooseCards, btn_done;
+    private HashMap<ImageTextButton, Card> buttonToCardMap;
+    private TextButton btn_done;
 
+    private ImageTextButton.ImageTextButtonStyle greyCardStyle = RoboRally.graphics.styleFromDrawable(RoboRally.graphics.card_drawables.get(GREY), null, Color.RED);
+
+    private boolean fromDeckHidden;
     private int numberOfChosenButtons;
+    private int checkCount;
+
+    private ConcurrentLinkedQueue<ACTIONS> actionqueue;
+    private ConcurrentLinkedQueue<Boolean> hideornot;
 
     private final int
             NUM_CARDS_FROM = 9,
@@ -53,157 +64,208 @@ public class PlayerDeck {
         this.inputMultiplexer = inputMultiplexer;
         this.channel = channel;
 
-        numberOfChosenButtons = 0;
-
         stage = new Stage();
-        altStage = new Stage();
-
-        chooseFromButtons = new LinkedList<>();
-        chooseToButtons = new LinkedList<>();
-        greyButtons = new LinkedList<>();
-        pCards = new HashMap<>();
+        actionqueue = new ConcurrentLinkedQueue<>();
+        hideornot = new ConcurrentLinkedQueue<>();
+        waitTillPlayerInitialized();
 
 
-        initializeButtons();
-        initializeFromDeck();
-        initializeToDeck();
+        // Button "Done": When clicked, all cards should disappear and the choice should be sent to the server.
+        btn_done = RoboRally.graphics.generateTextButton("Done");
+        btn_done.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                // Make sure that the user selected 5 buttons...
+                if (numberOfChosenButtons != 5) {
+                    gsm.peek().addMessageToScreen("Please choose 5 cards...");
+                    return;
+                }
 
+                // Temporary store all the selected cards. Add to Player for compatibility.
+                Card[] hand = new Card[5];
+                for (int i = 0; i < 5; i++) {
+                    hand[i] = buttonToCardMap.get(chooseToButtons.get(i));
+                    RoboRally.gameBoard.myPlayer.selectedCards[i] = hand[i];
+                }
+
+                // Send selected cards to server.
+                new Packet(ToServer.CARD_HAND_PACKET.ordinal(), new CardHandPacket(hand)).sendPacket(channel);
+
+                // Remove from-deck from screen.
+                setFromDeckHidden(true);
+            }
+        });
+
+        // Initial table in the middle of the screen, containing all the buttons to chose from.
+        chooseFrom = new Table();
+        chooseFrom.setSize(NUM_CARDS_FROM * CARD_WIDTH, CARD_HEIGHT + btn_done.getHeight());
+        chooseFrom.setPosition(stage.getViewport().getScreenWidth() / 2f - chooseFrom.getWidth() / 2, 145);
+
+        // Setup table in bottom right of screen, containing all selected buttons (or grey placeholder button if none selected).
+        chooseTo = new Table();
+        chooseTo.setSize(NUM_CARDS_TO * (CARD_WIDTH - 8 * 2), CARD_HEIGHT - 8 * 2);
+        chooseTo.setPosition(stage.getViewport().getScreenWidth() - chooseTo.getWidth() - 7, 2);
+
+        stage.addActor(chooseFrom);
+        stage.addActor(chooseTo);
         inputMultiplexer.addProcessor(stage);
 
-        updateDisplays();
-        swapStages();
+        resetDeck();
+    }
+
+    public void resetDeck() {
+        actionqueue.add(ACTIONS.RESET_DECK);
+    }
+
+    public void setFromDeckHidden(boolean hidden) {
+        actionqueue.add(ACTIONS.HIDE_FROM_DECK);
+        hideornot.add(new Boolean(hidden));
+    }
+
+    public void forceUpdateSelected() {
+        actionqueue.add(ACTIONS.FORCE_UPDATE_SELECTED);
+    }
+
+    public void check() {
+        actionqueue.add(ACTIONS.CHECK);
     }
 
     /**
-     * Wait for player to be initialized by gameSocketHandler before returning its cards
-     *
-     * @return Arraylist of cards
+     * Wait for player to be initialized by gameSocketHandler
      */
-    private Card[] getCardsFromPlayer() {
+    private void waitTillPlayerInitialized() {
         long msWaited = 100, totalWaited = 0;
         while (true) {
             try {
-                return RoboRally.gameBoard.myPlayer.cards;
+                if (RoboRally.gameBoard.myPlayer.cards != null)
+                    return;
             } catch (NullPointerException npe) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(msWaited);
                     totalWaited += msWaited;
                     msWaited <<= 1;
-                    System.out.println("PlayerDeck <getCardsFromPlayer>: Waiting until player initialized... (waited " + (totalWaited / 1000f) + " seconds)");
+                    System.out.println("PlayerDeck <waitTillPlayerInitialized>: Waiting until player initialized... (waited " + (totalWaited / 1000f) + " seconds)");
                 } catch (InterruptedException ie) {
+                    return;
                 }
             }
         }
     }
 
     /**
-     * Add buttons:
-     * -> "Done": When clicked, all cards should disappear, the choice should be sent to the server and the next button should appear
-     * -> "Choose cards": When clicked, all cards should reappear such that one may decide which cards to choose.
+     * Render the player-deck.
+     *
+     * @param sb sprite-batch
      */
-    private void initializeButtons() {
-        btn_chooseCards = RoboRally.graphics.generateTextButton("Choose cards");
-        btn_chooseCards.setPosition(stage.getViewport().getScreenWidth() - btn_chooseCards.getWidth(), 0);
-        btn_chooseCards.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-                swapStages();
+    public void render(Batch sb) {
+        while (!actionqueue.isEmpty()) {
+            switch (actionqueue.poll()) {
+                case CHECK:
+                    do_check();
+                    break;
+                case RESET_DECK:
+                    do_ResetDeck();
+                    break;
+                case HIDE_FROM_DECK:
+                    do_SetFromDeckHidden(hideornot.poll().booleanValue());
+                    break;
+                case FORCE_UPDATE_SELECTED:
+                    do_ForceUpdateSelected();
+                    break;
             }
-        });
-        altStage.addActor(btn_chooseCards);
+        }
 
-        btn_done = RoboRally.graphics.generateTextButton("Done");
-        btn_done.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-                swapStages();
-                // Iterate through clicked cards and add them to the players selected cards list.
-                for (int i = 0; i < 5; i++) {
-                    ImageTextButton cardButton = chooseToButtons.get(i);
-                    RoboRally.gameBoard.myPlayer.selectedCards[i] = pCards.get(cardButton);
-                }
-                RoboRally.gameBoard.myPlayer.sendSelectedCardsToServer();
-                removeDeck();
-            }
-        });
+
+        stage.draw();
     }
 
     /**
-     * Initialize the deck of cards which one may chose from.
+     * Update viewports of stages whenever the screen is resized.
+     *
+     * @param width  of screen after resize
+     * @param height of screen after resize
      */
-    private void initializeFromDeck() {
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height);
+    }
+
+    private void do_ForceUpdateSelected() {
+        // Remove buttons in selected deck.
+        while (numberOfChosenButtons > 0) {
+            cardAction(chooseToButtons.getFirst());
+        }
+        for (int i = 0; i < 5; i++) {
+            // TODO: Display the correct chosen cards...
+            if (RoboRally.gameBoard.myPlayer.cards[i] == null) {
+                System.out.println("Error: Tried to force card #" + (i + 1) + "/5 onto player-deck, but card doesn't exist.");
+            } else for (ImageTextButton btn : chooseFromButtons) {
+                if (buttonToCardMap.get(btn).getPriority() == RoboRally.gameBoard.myPlayer.cards[i].getPriority()) {
+                    cardAction(btn);
+                    break;
+                }
+            }
+        }
+        updateDisplays();
+    }
+
+    /**
+     * Check of the next unchecked card in selected list.
+     */
+    private void do_check() {
+        if (fromDeckHidden && checkCount < 5) {
+            ImageTextButton btn = chooseToButtons.get(checkCount++);
+            btn.setStyle(RoboRally.graphics.styleFromDrawable(buttonToCardMap.get(btn).getDrawable(true), null, Color.RED));
+        }
+    }
+
+    private void do_ResetDeck() {
         ImageTextButton tmpButton;
-        Drawable tmpDrawable;
 
-        chooseFrom = new Table();   //Card pool.
-        chooseFrom.setSize(NUM_CARDS_FROM * CARD_WIDTH, CARD_HEIGHT + btn_done.getHeight());
-        chooseFrom.setPosition(stage.getViewport().getScreenWidth() / 2 - chooseFrom.getWidth() / 2, 140);
-        stage.addActor(chooseFrom);
+        buttonToCardMap = new HashMap<>();
+        chooseFromButtons = new LinkedList<>();
+        chooseToButtons = new LinkedList<>();
+        greyButtons = new LinkedList<>();
 
-        for (Card card : getCardsFromPlayer()) {
-            tmpDrawable = card.getDrawable();
+        chooseFrom.clearChildren();
+        chooseTo.clearChildren();
+        setFromDeckHidden(false);
+        numberOfChosenButtons = 0;
+        checkCount = 0;
 
-            // Create new card-image button with priority in top-right corner.
-            tmpButton = new ImageTextButton("" + card.getPriority(), new ImageTextButton.ImageTextButtonStyle(
-                    tmpDrawable, tmpDrawable, tmpDrawable, RoboRally.graphics.default_font));
-            tmpButton.getStyle().fontColor = Color.RED;
-            tmpButton.top().padTop(11).padLeft(38);
+        // From-deck: Add cards-buttons to table and add the priority in top-right corner.
+        for (Card card : RoboRally.gameBoard.myPlayer.cards) {
+            tmpButton = new ImageTextButton("" + card.getPriority(), RoboRally.graphics.styleFromDrawable(card.getDrawable(false), null, Color.RED));
+            tmpButton.top().padTop(10).padLeft(38);
 
             // If a card is clicked, move it from one deck to the other.
             tmpButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent changeEvent, Actor actor) {
-                    ImageTextButton btn = (ImageTextButton) actor;
-                    if (chooseFromButtons.contains(btn)) {
-                        if (numberOfChosenButtons < 5) {
-                            greyButtons.add(chooseToButtons.removeLast());
-                            chooseFromButtons.remove(btn);
-                            chooseToButtons.add(numberOfChosenButtons, btn);
-                            numberOfChosenButtons++;
-                        }
-                    } else {
-                        chooseToButtons.remove(btn);
-                        chooseFromButtons.add(btn);
-                        chooseToButtons.add(greyButtons.pop());
-                        numberOfChosenButtons--;
-                    }
-                    updateDisplays();
+                    cardAction((ImageTextButton) actor);
                 }
             });
             chooseFromButtons.add(tmpButton);
-            pCards.put(tmpButton, card);
+            buttonToCardMap.put(tmpButton, card);
         }
-    }
 
-    /**
-     * Initialize the deck of cards which contains cards already chosen
-     */
-    private void initializeToDeck() {
-        chooseTo = new Table();     //Selected cards.
-        chooseTo.setSize(NUM_CARDS_TO * (CARD_WIDTH - 8 * 2), CARD_HEIGHT - 8 * 2);
-        chooseTo.setPosition(stage.getViewport().getScreenWidth() - chooseTo.getWidth() - 7, 2);
-        stage.addActor(chooseTo);
-
-
-        // Grey cards
+        // Selected-deck: Add grey cards to screen
         for (int i = 0; i < NUM_CARDS_TO; i++) {
-            ImageTextButton.ImageTextButtonStyle btnStyle = new ImageTextButton.ImageTextButtonStyle(
-                    greyCardDrawable, greyCardDrawable, greyCardDrawable, RoboRally.graphics.default_font);
-            btnStyle.fontColor = Color.RED;
-            chooseToButtons.add(new ImageTextButton("", btnStyle));
+            chooseToButtons.add(new ImageTextButton("", greyCardStyle));
         }
+
+        updateDisplays();
     }
 
     /**
-     * Swap stages (Hide/Show cards)
+     * hide/display from-deck.
      */
-    private void swapStages() {
-        Stage tmpStage = stage;
-        stage = altStage;
-        altStage = tmpStage;
-
-        inputMultiplexer.removeProcessor(altStage);
-        inputMultiplexer.addProcessor(stage);
+    private void do_SetFromDeckHidden(boolean hidden) {
+        if (fromDeckHidden && !hidden) {
+            stage.addActor(chooseFrom);
+        } else if (!fromDeckHidden && hidden) {
+            chooseFrom.remove();
+        }
+        fromDeckHidden = hidden;
     }
 
     /**
@@ -225,31 +287,48 @@ public class PlayerDeck {
     }
 
     /**
-     * Render the player-deck.
+     * When a card-button is clicked, try to move it to the other card-deck...
      *
-     * @param sb sprite-batch
+     * @param cardButton card to move.
      */
-    public void render(Batch sb) {
-        stage.draw();
-    }
+    private void cardAction(ImageTextButton cardButton) {
+        // Nothing should happen if the cards are locked in.
+        if (fromDeckHidden)
+            return;
 
-    /**
-     * Update viewports of stages whenever the screen is resized.
-     *
-     * @param width  of screen after resize
-     * @param height of screen after resize
-     */
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height);
-        altStage.getViewport().update(width, height);
-    }
+        /*
+         * Card is in from-deck.
+         */
+        if (chooseFromButtons.contains(cardButton)) {
+            // Make sure that our card fits into the selected deck.
+            if (numberOfChosenButtons < 5) {
+                // Retrieve and store grey card
+                greyButtons.add(chooseToButtons.removeLast());
 
-    /**
-     * Remove deck and cleanup
-     */
-    public void removeDeck() {
-        RoboRally.gameBoard.myPlayer.cards = null;
-        RoboRally.gameBoard.hud.removeDeck();
-        inputMultiplexer.removeProcessor(stage);
+                // Remove selected card from from-deck and put into selected-deck.
+                chooseFromButtons.remove(cardButton);
+                chooseToButtons.add(numberOfChosenButtons, cardButton);
+
+                // Update selected-count and display.
+                numberOfChosenButtons++;
+                updateDisplays();
+            }
+            return;
+        }
+
+        /*
+         * Card is in selected-deck
+         */
+
+        // Replace card in selected-deck by a grey card.
+        chooseToButtons.remove(cardButton);
+        chooseToButtons.add(greyButtons.pop());
+
+        // Add our card to the from-deck.
+        chooseFromButtons.add(cardButton);
+
+        // Update selected-counter and display.
+        numberOfChosenButtons--;
+        updateDisplays();
     }
 }

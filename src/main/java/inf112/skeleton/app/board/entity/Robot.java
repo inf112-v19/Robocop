@@ -4,14 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
+import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
-import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.Directions;
-
-import java.util.ArrayList;
-
-import static inf112.skeleton.common.specs.Directions.*;
-
 
 public class Robot extends Entity {
     // TODO: cleanup variable, collect animations to one array.
@@ -36,6 +31,8 @@ public class Robot extends Entity {
     BitmapFont font = new BitmapFont();
 
     private int movementDirection = 1;
+
+    boolean movedLastTick;
 
     public Robot(float x, float y,int slot, Player player) {
         super(x, y, EntityType.ROBOT);
@@ -119,7 +116,6 @@ public class Robot extends Entity {
      * @param updatePlayerPacket
      */
     public void updateMovement(UpdatePlayerPacket updatePlayerPacket) {
-
         this.tileTo = updatePlayerPacket.getToTile();
         this.facing = updatePlayerPacket.getDirection();
         this.movementDirection = updatePlayerPacket.getMovingTiles();
@@ -128,7 +124,7 @@ public class Robot extends Entity {
         this.timeMoved = System.currentTimeMillis();
         processMovement(System.currentTimeMillis());
 
-
+        movedLastTick = true;
     }
 
 
@@ -157,8 +153,11 @@ public class Robot extends Entity {
         currentAnimation = Sprites.animations[colour][facing.ordinal()];
 
         stateTime += Gdx.graphics.getDeltaTime();
+
+        boolean isMoving = processMovement(System.currentTimeMillis());
+
         //Is the robot currently moving
-        if (processMovement(System.currentTimeMillis())) {
+        if (isMoving) {
             //Yes it is moving, render animated frames.
             if(movementDirection >= 0) {
                 currentAnimation.setPlayMode(Animation.PlayMode.NORMAL);
@@ -170,11 +169,17 @@ public class Robot extends Entity {
             batch.draw(currentFrame, position[0], position[1], getWidth(), getHeight());
 
         } else {
-            //No it is not moving, render static frame(first frame) staticly.
-            TextureRegion currentFrame = currentAnimation.getKeyFrames()[0];
+            //No it is not moving, render static frame(first frame) statically.
+            batch.draw(currentAnimation.getKeyFrames()[0], position[0], position[1], getWidth(), getHeight());
 
-            batch.draw(currentFrame, position[0], position[1], getWidth(), getHeight());
+            // Check player cards.
+            if (movedLastTick) {
+                if (player.name.equals(RoboRally.gameBoard.myPlayer.name)) {
+                    RoboRally.gameBoard.hud.getPlayerDeck().check();
+                }
+            }
         }
+        movedLastTick = isMoving;
     }
 
 

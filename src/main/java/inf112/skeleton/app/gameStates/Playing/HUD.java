@@ -2,30 +2,33 @@ package inf112.skeleton.app.gameStates.Playing;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import inf112.skeleton.app.GUI.ChatBox;
 import inf112.skeleton.app.GUI.PlayerDeck;
+import inf112.skeleton.app.GUI.StatusBar;
+import inf112.skeleton.app.GUI.Timer;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameStateManager;
-import inf112.skeleton.app.GUI.ScrollableTextbox;
 import inf112.skeleton.common.packet.data.ChatMessagePacket;
 import io.netty.channel.Channel;
 
 import java.util.Collection;
 
 public class HUD {
-    private BitmapFont font;
     private GameStateManager gsm;
     private Stage stage;
-    private PlayerDeck playerDeck = null;
+    private PlayerDeck playerDeck;
     private InputMultiplexer inputMultiplexer;
     private Channel channel;
-
-    private Status status;
+    public ChatBox gameChat;
+    public boolean gameChatIsTouched;
+    public Timer turnTimer;
+    private StatusBar statusBar;
+    private Label fpsLabel;
 
     /**
      * Initializes display which may be seen on top of actual game.
@@ -35,47 +38,28 @@ public class HUD {
      */
     HUD(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, final Channel channel) {
         this.gsm = gameStateManager;
-
         this.inputMultiplexer = inputMultiplexer;
         this.channel = channel;
+        RoboRally.gameBoard.hud = this;
 
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         inputMultiplexer.addProcessor(stage);
 
-        font = new BitmapFont();
-        font.setColor(Color.RED);
-
-
         setupGameChatAndPushWelcome();
 
-        // Status-bar
-        status = new Status(gsm,inputMultiplexer,channel);
+        turnTimer = new Timer("Time to choose cards: ", 30000, 1);
+        turnTimer.setSize(turnTimer.getMinWidth(), turnTimer.getMinHeight());
+        turnTimer.start();
 
-        RoboRally.gameBoard.hud = this;
-    }
-
-    /**
-     * Add player-deck to screen
-     */
-    public void addDeck() {
         playerDeck = new PlayerDeck(gsm, inputMultiplexer, channel);
-        System.out.println("adding deck");
-    }
+        statusBar = new StatusBar();
 
-    /**
-     * Remove player-deck from screen
-     */
-    public void removeDeck() {
-        playerDeck = null;
-        System.out.println("remove deck");
-    }
+        fpsLabel = new Label("[RED]fps: ", RoboRally.graphics.labelStyle_markup_enabled);
+        fpsLabel.setPosition(15, stage.getHeight() - fpsLabel.getHeight() - 10);
 
-    /**
-     * Check whether there is a deck on screen
-     * @return true if deck exists
-     */
-    public boolean hasDeck() {
-        return playerDeck != null;
+        stage.addActor(fpsLabel);
+        stage.addActor(turnTimer);
+        stage.addActor(statusBar);
     }
 
     /**
@@ -90,7 +74,6 @@ public class HUD {
      * Dispose of data-structures used by HUD
      */
     public void dispose() {
-        font.dispose();
     }
 
     /**
@@ -98,28 +81,35 @@ public class HUD {
      * @param sb sprite-batch
      */
     public void render(SpriteBatch sb) {
-        sb.setProjectionMatrix(stage.getCamera().combined);
-        stage.draw();
-        if (status != null) {
-            if (RoboRally.gameBoard.getPlayers().size() + 1 != status.statusUpdater.size()) {
-                status.statusUpdater.clear();
-                status.add(RoboRally.gameBoard.myPlayer);
-                for (Player player : (Collection<Player>) RoboRally.gameBoard.getPlayers().values()) {
-                    status.add(player);
-                }
-            }
+        // Part of making sure that the map shouldn't be moved when scrolling in chat
+        if (!Gdx.input.isTouched())
+            gameChatIsTouched = false;
 
+        // Act stage for certain features as chat-box to work
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1/30f));
+
+        // Update players displayed in status-bar.
+        if (statusBar != null && RoboRally.gameBoard.getPlayers().size() + 1 != statusBar.size()) {
+            statusBar_clearPlayers();
+            statusBar_addPlayer(RoboRally.gameBoard.myPlayer.name);
+            for (Player player : (Collection<Player>) RoboRally.gameBoard.getPlayers().values()) {
+                statusBar_addPlayer(player.name);
+            }
         }
-        if (status != null) {
-            status.render(sb);
-        }
+
+        // Set fps-text
+        fpsLabel.setText("[RED]fps: " + Gdx.graphics.getFramesPerSecond());
+
+        // Set projection matrix for correct positioning on screen.
+        sb.setProjectionMatrix(stage.getCamera().combined);
+
+        // Draw stage to screen
+        stage.draw();
+
+
         if (playerDeck != null) {
             playerDeck.render(sb);
         }
-
-        sb.begin();
-        font.draw(sb, "fps: " + Gdx.graphics.getFramesPerSecond(), stage.getWidth() - 60, stage.getHeight() - 10);
-        sb.end();
     }
 
     /**
@@ -139,11 +129,45 @@ public class HUD {
      * Setup game chat and give welcome message to player.
      */
     private void setupGameChatAndPushWelcome() {
-        ScrollableTextbox gameChat = new ScrollableTextbox(100, channel);
-        gameChat.push(new ChatMessagePacket("Welcome to RoboCop. You have 30 seconds to choose cards"));
-        gameChat.push(new ChatMessagePacket("[INFO]: Available commands: "));
-        gameChat.push(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
-        gameChat.push(new ChatMessagePacket("[INFO]:     \"!players\""));
+        gameChat = new ChatBox(channel);
+        gameChat.addMessage(new ChatMessagePacket("Welcome to RoboCop. You have 30 seconds to choose cards"));
+        gameChat.addMessage(new ChatMessagePacket("[INFO]: Available commands: "));
+        gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
+        gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!players\""));
+        gameChat.setSize(600,200);
+
+        gameChat.setTouchable(Touchable.enabled);
+        gameChat.addListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                gameChatIsTouched = true;
+                return true;
+            }
+        });
         stage.addActor(gameChat);
+    }
+
+    public void statusBar_addPlayer(String username) {
+        statusBar.addStatus(username);
+        statusBar.setPosition(stage.getWidth() - statusBar.getWidth(),stage.getHeight() - statusBar.getHeight());
+        turnTimer.setPosition(stage.getWidth() - turnTimer.getMinWidth() - 2,stage.getHeight() - statusBar.getHeight() - turnTimer.getHeight() - 2);
+    }
+    private void statusBar_clearPlayers() {
+        statusBar.clear();
+    }
+
+    public void statusBar_addDamage(String username) {
+        statusBar.addDamage(username);
+    }
+    public void statusBar_removeDamage(String username) {
+        statusBar.removeDamage(username);
+    }
+    public void statusBar_addLife(String username) {
+        statusBar.addLife(username);
+    }
+    public void statusBar_removeLife(String username) {
+        statusBar.removeLife(username);
+    }
+    public void statusBar_powerDown(String username, boolean powerDown) {
+        statusBar.powerDown(username, powerDown);
     }
 }

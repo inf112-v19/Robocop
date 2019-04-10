@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import inf112.skeleton.app.GUI.ScrollableTextbox;
+import inf112.skeleton.app.GUI.ChatBox;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.common.packet.Packet;
@@ -71,7 +71,7 @@ public class Tab_Lobby extends MenuTab{
         Table leftHalf_display = new Table();
         leftHalf_display.setSize(pl_width, height);
         leftHalf_display.add(players_display).row();
-        leftHalf_display.add(new ScrollableTextbox(5, channel)).width(pl_width);
+        leftHalf_display.add(new ChatBox(channel)).size(pl_width, height - players_display.getHeight());
 
 
         /*

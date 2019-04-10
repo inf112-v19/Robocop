@@ -12,8 +12,6 @@ import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
 
-import java.util.ArrayList;
-
 public class Player {
     private final String uuid;
     public String name;
@@ -55,12 +53,6 @@ public class Player {
             this.robot = new Robot(initialPos.x, initialPos.y, slot, this);
             RoboRally.gameBoard.addEntity(robot);
         }
-        if (!RoboRally.gameBoard.hud.hasDeck()) {
-            if (cards != null) {
-                RoboRally.gameBoard.hud.addDeck();
-            }
-        }
-
     }
 
     /**
@@ -75,7 +67,6 @@ public class Player {
                 return;
             }
         }
-        RoboRally.gameBoard.hud.addDeck();
     }
 
     /**
@@ -95,6 +86,14 @@ public class Player {
             cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packetCardHand[i]);
         }
         selectedCards = new Card[5];
+
+        while(true) {
+            try {
+                RoboRally.gameBoard.hud.getPlayerDeck().resetDeck();
+                RoboRally.gameBoard.hud.turnTimer.start();
+                return;
+            } catch(NullPointerException npe) {}
+        }
     }
 
     /**
@@ -105,32 +104,16 @@ public class Player {
         for (int i = 0; i < selectedCards.length; i++) {
             if (selectedCards[i] != null) {
                 CardPacket data = new CardPacket(selectedCards[i]);
-                selectedCards[i] = null;
-                Packet packet = new Packet(ToServer.CARD_PACKET.ordinal(), data);
-                packet.sendPacket(RoboRally.channel);
+                new Packet(ToServer.CARD_PACKET.ordinal(), data).sendPacket(RoboRally.channel);
                 Gdx.app.log("Player clientside - sendBurntCardToServer", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
+                selectedCards[i] = null;
+
                 return;
             }
         }
         Gdx.app.log("Player clientside - sendBurntCardToServer", "No cards selected");
 
     }
-
-    public void sendSelectedCardsToServer() {
-        Card[] hand;
-        hand = new Card[selectedCards.length];
-
-        System.arraycopy(selectedCards, 0, hand, 0, hand.length);
-
-        CardHandPacket data = new CardHandPacket(hand);
-        Packet packet = new Packet(ToServer.CARD_HAND_PACKET.ordinal(), data);
-        packet.sendPacket(RoboRally.channel);
-
-        selectedCards = new Card[5];
-
-        Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards sent to server.");
-    }
-
 
     /**
      * Accept packet related to any changes to this player, checks if its needed then applies changes.
@@ -139,6 +122,8 @@ public class Player {
      */
     public void updateRobot(UpdatePlayerPacket update) {
         robot.updateMovement(update);
+        RoboRally.gameBoard.hud.getPlayerDeck().setFromDeckHidden(true);
+        RoboRally.gameBoard.hud.turnTimer.reset();
     }
 
     public String getUUID() {
