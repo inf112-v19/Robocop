@@ -9,6 +9,7 @@ import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.Instance.Lobby;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.user.User;
@@ -23,6 +24,7 @@ public class Player {
     private Vector2 currentPos;
     private Vector2 movingTo;
     private User owner;
+    private String backup;
 
     private final int COUNT_CARDS = 5;
     private final int GIVEN_CARDS = 9;
@@ -162,6 +164,19 @@ public class Player {
         System.out.println("[Player serverside - sendCardHandToClient] Sending packet " + packet.toString());
         owner.sendPacket(packet);
 
+    }
+
+    public void createBackup () {
+        this.backup = null;
+        this.backup = Tools.GSON.toJson(this);
+
+    }
+
+    public void restoreBackup () {
+        Player toRestore = Tools.GSON.fromJson(this.backup, Player.class);
+        this.currentPos = toRestore.currentPos.cpy();
+        this.movingTo = toRestore.movingTo.cpy();
+        this.direction = toRestore.direction;
     }
 
     /**
