@@ -5,8 +5,8 @@ import java.util.HashMap;
 public enum TileDefinition {
     BACKGROUND(1, false, Directions.NORTH, "Background"),
     GROUND(2, true, Directions.NORTH, "Ground"),
-    BIDIRECTION(3, true, Directions.NORTH, "BiDirectional"),
-    HORISONTAL(4, true, Directions.EAST, "Horisontal"),
+    BIDIRECTION(3, true, Directions.NORTH, "BiDirectional (Unused)"),
+    BELT_HORISONTAL(4, true, Directions.EAST, "Horisontal Belt"),
     VERTICAL(5, true, Directions.NORTH, "Vertical"),
     TBRACKET(6, true, Directions.NORTH, "T-Bracket"),
     TBRACKETFLIPPED(7, true, Directions.NORTH, "T-BracketFlipped"),
@@ -15,7 +15,16 @@ public enum TileDefinition {
     LASERSOURCE(18, true, Directions.NORTH, "Laser-Source"),
     LASER(19, true, Directions.NORTH, "Laser"),
     LASERCROSS(20, true, Directions.NORTH, "LaserCross"),
-    BLACK_HOLE(21, true, Directions.NORTH, "BlackHole");
+    BLACK_HOLE(21, true, Directions.NORTH, "BlackHole"),
+    WALL(22, true, Directions.WEST, "Wall"),
+    LWALL(23, true, Directions.WEST, "L-Wall"),
+    DLASERSOURCE(24, true, Directions.NORTH, "Double-Laser-Source"),
+    DLASER(25, true, Directions.NORTH, "Double-Laser"),
+    DLASERCROSS(26, true, Directions.NORTH, "Double-LaserCross"),
+    DLASERSINGLECROSS(27, true, Directions.NORTH, "Double-Laser-Single-Cross"),
+    WRENCH(28, true, Directions.NORTH, "Wrench"),
+    DWRENCH(29, true, Directions.NORTH, "Double-Wrench");
+
 
 
     public static final int TILE_SIZE = 64;

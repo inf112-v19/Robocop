@@ -18,7 +18,7 @@ public class Lobby {
     private MapFile map;
     private User host;
     private long timeStarted;
-    private long timeDelay = 1000;
+    private long timeDelay = 300;
     private boolean startedTimer = false;
     private int startStage = 0;
     private int userCount = 0;
@@ -208,6 +208,9 @@ public class Lobby {
      * Kick all users and destory the lobby
      */
     private void kickAllAndDestroy() {
+        if (gameStarted) {
+            return;
+        }
         for (User user : users) {
             if (user != null) {
                 removeUser(user);

@@ -106,8 +106,7 @@ public class HUD {
         // Draw stage to screen
         stage.draw();
 
-        // Todo: Make it addable to stage...
-        // Render player-deck.
+
         if (playerDeck != null) {
             playerDeck.render(sb);
         }

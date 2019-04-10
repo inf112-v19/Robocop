@@ -5,10 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.StateChangePacket;
-import inf112.skeleton.common.specs.Card;
-import inf112.skeleton.common.specs.Directions;
-import inf112.skeleton.common.specs.MapFile;
-import inf112.skeleton.common.specs.StateChange;
+import inf112.skeleton.common.specs.*;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.WorldMap.entity.Player;
@@ -28,7 +25,7 @@ public class Game {
     private HashMap<Player, Card> cardsForOneRound = new HashMap<>();
     private GameBoard gameBoard;
 
-    private int roundSelectTime = 30; //The time the player will have to select their cards.
+    private int roundSelectTime = 30000; //The time the player will have to select their cards.
     private int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
     private long timerStarted = 0;
     private long timerCountdownSeconds = 0;
@@ -127,7 +124,11 @@ public class Game {
         } else {
             setTimerTicks(10 * card.getType().moveAmount); // For other cards.
         }
-        player.startMovement(player.getDirection(), card.getType().moveAmount, false);
+        Directions moveDirection = player.getDirection();
+        if(card.getType() == CardType.BACKWARD1) {
+            moveDirection = Directions.values()[(moveDirection.ordinal() + 2) % 4];
+        }
+        player.startMovement(moveDirection, card.getType().moveAmount, card.getPushed());
         player.rotate(card.getType());
     }
 
