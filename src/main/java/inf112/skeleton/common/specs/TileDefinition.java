@@ -1,5 +1,7 @@
 package inf112.skeleton.common.specs;
 
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+
 import java.util.HashMap;
 
 public enum TileDefinition {
@@ -12,9 +14,9 @@ public enum TileDefinition {
     TBRACKETFLIPPED(7, true, Directions.NORTH, "T-BracketFlipped"),
     RIGHTTURN(8, true, Directions.EAST, "RightTurn"),
     LEFTTURN(9, true, Directions.WEST, "LeftTurn"),
-    LASERSOURCE(18, true, Directions.NORTH, "Laser-Source"),
-    LASER(19, true, Directions.NORTH, "Laser"),
-    LASERCROSS(20, true, Directions.NORTH, "LaserCross"),
+    LASERSOURCE(18, true, Directions.EAST, "Laser-Source"),
+    LASER(19, true, Directions.EAST, "Laser"),
+    LASERCROSS(20, true, Directions.EAST, "LaserCross"),
     BLACK_HOLE(21, true, Directions.NORTH, "BlackHole");
 
 
@@ -81,5 +83,26 @@ public enum TileDefinition {
      */
     public static TileDefinition getTileById(int id) {
         return tileMap.get(id);
+    }
+
+    public static Directions getDirection(TiledMapTileLayer.Cell cell) {
+        Directions tileDefault = getTileById(cell.getTile().getId()).getDefaultFace();
+        int rotation = 4 + tileDefault.ordinal();
+        switch (tileDefault) {
+            case NORTH:
+            case SOUTH:
+                if (cell.getFlipHorizontally()) {
+                    rotation = +2;
+                }
+                break;
+            case WEST:
+            case EAST:
+                if (cell.getFlipVertically()) {
+                    rotation = +2;
+                }
+                break;
+        }
+        rotation -= cell.getRotation();
+        return Directions.values()[rotation % 4];
     }
 }
