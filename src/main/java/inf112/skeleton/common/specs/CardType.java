@@ -9,7 +9,7 @@ public enum CardType {
     FORWARD1("forward 1",1,0, 18, 490, 10),
     FORWARD2("forward 2",2,0, 12, 670, 10),
     FORWARD3("forward 3",3,0, 6, 790, 10),
-    BACKWARD1("backward 1",-1,0, 6, 430, 10),
+    BACKWARD1("backward 1",1,0, 6, 430, 10),
     GREY("blank",0,0, 0, 0, 0);
 
     public String name;

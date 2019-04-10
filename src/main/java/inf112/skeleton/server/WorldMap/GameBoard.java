@@ -5,14 +5,18 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
+import inf112.skeleton.server.WorldMap.entity.mapEntities.Belt;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.BlackHole;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.Laser;
+import inf112.skeleton.server.WorldMap.entity.mapEntities.Wall;
 
 import java.util.ArrayList;
 
 public abstract class GameBoard {
 
     public ArrayList<TileEntity> tileEntities;
+    public ArrayList<TileEntity>[] walls;
+    public ArrayList<TileEntity>[] newTileEntities;
 
     public GameBoard() {
         tileEntities = new ArrayList<>();
@@ -20,26 +24,43 @@ public abstract class GameBoard {
 
     /**
      * Register TileEntity to the board
+     *
      * @param tile
      * @param x
      * @param y
      */
-    void addTileEntity(TiledMapTile tile, int x, int y) {
+    void addTileEntity(TiledMapTile tile, int x, int y, TiledMapTileLayer.Cell cell) {
         TileEntity newTile;
         switch (TileDefinition.getTileById(tile.getId())) {
             case LASER:
             case LASERSOURCE:
             case LASERCROSS:
-                newTile = new Laser(tile, x, y);
+                newTile = new Laser(tile, x, y, cell);
                 break;
             case BLACK_HOLE:
-                newTile = new BlackHole(tile, x, y);
+                newTile = new BlackHole(tile, x, y, cell);
                 break;
+            case VERTICAL:
+            case BELT_HORISONTAL:
+            case TBRACKET:
+            case TBRACKETFLIPPED:
+            case RIGHTTURN:
+            case LEFTTURN:
+                newTile = new Belt(tile, x, y, cell);
+                break;
+            case WALL:
+            case LWALL:
+                walls[x + getWidth() * y].add(new Wall(tile, x, y, cell));
+                return;
+
             default:
                 System.err.println("fatal error adding tile: " + TileDefinition.getTileById(tile.getId()).getName());
                 return;
         }
-        tileEntities.add(newTile);
+        if (newTile != null) {
+            newTileEntities[x + getWidth() * y].add(newTile);
+            tileEntities.add(newTile);
+        }
     }
 
     /**
@@ -54,6 +75,7 @@ public abstract class GameBoard {
 
     /**
      * Get a tile entity if it exists at a specified position
+     *
      * @param pos
      * @return TileEntity if found, null if not found
      */
@@ -66,8 +88,21 @@ public abstract class GameBoard {
         return null;
     }
 
+
+    /**
+     * Get a list of walls at a given postition
+     *
+     * @param pos
+     * @return Arraylist of walls if found, empty arraylist if not
+     */
+    public ArrayList<TileEntity> getWallsAtPosition(Vector2 pos) {
+        int wallindex = (int)(pos.x + getWidth() *pos.y);
+        return walls[wallindex];
+    }
+
     /**
      * Check if a tile at a coordinate is walkable
+     *
      * @param coord
      * @return true if walkable
      */
@@ -91,6 +126,7 @@ public abstract class GameBoard {
 
     /**
      * Get TiledMapTileLayer Cell at a given coordinate
+     *
      * @param layer
      * @param col
      * @param row
@@ -101,6 +137,7 @@ public abstract class GameBoard {
     /**
      * Gets the rotation of a tile,
      * useful for checking which way a belt might push a player
+     *
      * @param layer
      * @param col
      * @param row
@@ -111,18 +148,21 @@ public abstract class GameBoard {
 
     /**
      * Get the board width
+     *
      * @return width
      */
     public abstract int getWidth();
 
     /**
      * Get the board height
+     *
      * @return height
      */
     public abstract int getHeight();
 
     /**
      * Get the count of board layers
+     *
      * @return layer count
      */
     public abstract int getLayers();
