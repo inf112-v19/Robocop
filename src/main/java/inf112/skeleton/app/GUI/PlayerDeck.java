@@ -214,7 +214,13 @@ public class PlayerDeck {
     private void do_check() {
         if (fromDeckHidden && checkCount < 5) {
             ImageTextButton btn = chooseToButtons.get(checkCount++);
-            btn.setStyle(RoboRally.graphics.styleFromDrawable(buttonToCardMap.get(btn).getDrawable(true), null, Color.RED));
+            if (btn != null && buttonToCardMap.containsKey(btn)) {
+                btn.setStyle(RoboRally.graphics.styleFromDrawable(buttonToCardMap.get(btn).getDrawable(true), null, Color.RED));
+            } else {
+                // If force-moving robot, errors may occur...
+                System.out.println("<PlayerDeck.java::do_check> Error with checking cards...");
+                checkCount--;
+            }
         }
     }
 
