@@ -1,5 +1,6 @@
-{ "frames": {
-   "flag 0.aseprite": {
+{ "frames": [
+   {
+    "filename": "flag 0.aseprite",
     "frame": { "x": 0, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -7,7 +8,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 1.aseprite": {
+   {
+    "filename": "flag 1.aseprite",
     "frame": { "x": 64, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -15,7 +17,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 2.aseprite": {
+   {
+    "filename": "flag 2.aseprite",
     "frame": { "x": 128, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -23,7 +26,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 3.aseprite": {
+   {
+    "filename": "flag 3.aseprite",
     "frame": { "x": 192, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -31,7 +35,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 4.aseprite": {
+   {
+    "filename": "flag 4.aseprite",
     "frame": { "x": 256, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -39,7 +44,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 5.aseprite": {
+   {
+    "filename": "flag 5.aseprite",
     "frame": { "x": 320, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -47,7 +53,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 6.aseprite": {
+   {
+    "filename": "flag 6.aseprite",
     "frame": { "x": 384, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -55,7 +62,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 7.aseprite": {
+   {
+    "filename": "flag 7.aseprite",
     "frame": { "x": 448, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -63,7 +71,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 8.aseprite": {
+   {
+    "filename": "flag 8.aseprite",
     "frame": { "x": 512, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -71,7 +80,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 9.aseprite": {
+   {
+    "filename": "flag 9.aseprite",
     "frame": { "x": 576, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -79,7 +89,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 10.aseprite": {
+   {
+    "filename": "flag 10.aseprite",
     "frame": { "x": 640, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -87,7 +98,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 11.aseprite": {
+   {
+    "filename": "flag 11.aseprite",
     "frame": { "x": 704, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -95,7 +107,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 12.aseprite": {
+   {
+    "filename": "flag 12.aseprite",
     "frame": { "x": 768, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -103,7 +116,8 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    },
-   "flag 13.aseprite": {
+   {
+    "filename": "flag 13.aseprite",
     "frame": { "x": 832, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -111,20 +125,15 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
    }
- },
+ ],
  "meta": {
   "app": "http://www.aseprite.org/",
-  "version": "1.2.9-x64",
-  "image": "C:\\Users\\sverr\\Robocop\\src\\main\\resources\\graphics\\sprites\\flag_active.png",
+  "version": "1.2.9",
+  "image": "/Users/henning/Documents/Skule/inf112/group1.team1/src/main/resources/graphics/sprites/flag_active.png",
   "format": "RGBA8888",
   "size": { "w": 896, "h": 64 },
   "scale": "1",
   "frameTags": [
-  ],
-  "layers": [
-   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
-  ],
-  "slices": [
   ]
  }
 }
