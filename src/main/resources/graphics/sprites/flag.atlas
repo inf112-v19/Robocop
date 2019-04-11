@@ -1,0 +1,200 @@
+flag.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+flag_Active
+  rotate: false
+  xy: 0,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 0
+flag_Active
+  rotate: false
+  xy: 64,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 1
+flag_Active
+  rotate: false
+  xy: 128,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 2
+flag_Active
+  rotate: false
+  xy: 192,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 3
+flag_Active
+  rotate: false
+  xy: 256,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 4
+flag_Active
+  rotate: false
+  xy: 320,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 5
+flag_Active
+  rotate: false
+  xy: 384,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 6
+flag_Active
+  rotate: false
+  xy: 448,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 7
+flag_Active
+  rotate: false
+  xy: 512,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 8
+flag_Active
+  rotate: false
+  xy: 576,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 9
+flag_Active
+  rotate: false
+  xy: 640,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 10
+flag_Active
+  rotate: false
+  xy: 704,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 11
+flag_Active
+  rotate: false
+  xy: 768,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 12
+flag_Active
+  rotate: false
+  xy: 832,0
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 13
+flag_Inactive
+  rotate: false
+  xy: 0,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 0
+flag_Inactive
+  rotate: false
+  xy: 64,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 1
+flag_Inactive
+  rotate: false
+  xy: 128,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 2
+flag_Inactive
+  rotate: false
+  xy: 192,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 3
+flag_Inactive
+  rotate: false
+  xy: 256,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 4
+flag_Inactive
+  rotate: false
+  xy: 320,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 5
+flag_Inactive
+  rotate: false
+  xy: 384,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 6
+flag_Inactive
+  rotate: false
+  xy: 448,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 7
+flag_Inactive
+  rotate: false
+  xy: 512,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 8
+flag_Inactive
+  rotate: false
+  xy: 576,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 9
+flag_Inactive
+  rotate: false
+  xy: 640,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 10
+flag_Inactive
+  rotate: false
+  xy: 704,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 11
+flag_Inactive
+  rotate: false
+  xy: 768,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 12
+flag_Inactive
+  rotate: false
+  xy: 832,64
+  size: 64,64
+  orig: 64,64
+  offset: 0,0
+  index: 13

@@ -3,7 +3,7 @@ package inf112.skeleton.common.packet.data;
 
 import com.badlogic.gdx.math.Vector2;
 import com.google.gson.JsonObject;
-import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.Direction;
 import inf112.skeleton.common.utility.Tools;
 
 public class PlayerInitPacket implements PacketData {
@@ -12,10 +12,10 @@ public class PlayerInitPacket implements PacketData {
     int health;
     int slot;
     String name;
-    Directions facing;
+    Direction facing;
     String uuid;
 
-    public PlayerInitPacket(String uuid, String name, Vector2 pos, int health, int slot, Directions facing) {
+    public PlayerInitPacket(String uuid, String name, Vector2 pos, int health, int slot, Direction facing) {
         this.uuid = uuid;
         this.name = name;
         this.pos = pos;
@@ -48,7 +48,7 @@ public class PlayerInitPacket implements PacketData {
         return slot;
     }
 
-    public Directions getFacing() {
+    public Direction getFacing() {
         return facing;
     }
 

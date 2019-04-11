@@ -1,13 +1,13 @@
 package inf112.skeleton.common.specs;
 
-public enum Directions {
+public enum Direction {
     NORTH,
     EAST,
     SOUTH,
     WEST;
 
-    public static Directions fromString(String str) {
-        for (Directions val : Directions.values()) {
+    public static Direction fromString(String str) {
+        for (Direction val : Direction.values()) {
             if (val.name().equalsIgnoreCase(str))
                 return val;
         }

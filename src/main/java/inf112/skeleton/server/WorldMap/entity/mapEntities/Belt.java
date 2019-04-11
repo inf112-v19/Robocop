@@ -2,9 +2,7 @@ package inf112.skeleton.server.WorldMap.entity.mapEntities;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.common.specs.Directions;
-import inf112.skeleton.common.specs.TileDefinition;
+import inf112.skeleton.common.specs.Direction;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
 
@@ -23,7 +21,7 @@ public class Belt extends TileEntity  {
     @Override
     public void walkOn(Player player) {
         //damage the player
-        player.startMovement(Directions.NORTH, 1, false);
+        player.startMovement(Direction.NORTH, 1, false);
 
 
     }
@@ -51,11 +49,11 @@ public class Belt extends TileEntity  {
     }
 
     @Override
-    public boolean canEnter(Directions walkingDirection) {
+    public boolean canEnter(Direction walkingDirection) {
         return true;
     }
    @Override
-    public boolean canLeave(Directions walkingDirection) {
+    public boolean canLeave(Direction walkingDirection) {
         return true;
     }
 

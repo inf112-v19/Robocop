@@ -5,7 +5,7 @@ import inf112.skeleton.common.packet.*;
 import inf112.skeleton.common.packet.data.*;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
-import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.Direction;
 import inf112.skeleton.common.status.LoginResponseStatus;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.RoboCopServerHandler;
@@ -139,8 +139,8 @@ public class IncomingPacketHandler {
                 break;
             case "move":
                 if (command.length > 2) {
-                    if (Directions.fromString(command[1].toUpperCase()) != null) {
-                        Directions direction = Directions.valueOf(command[1].toUpperCase());
+                    if (Direction.fromString(command[1].toUpperCase()) != null) {
+                        Direction direction = Direction.valueOf(command[1].toUpperCase());
                         if (StringUtilities.isStringInt(command[2])) {
                             messagingUser.sendServerMessage("You moved "+ command[2] + " tiles.");
                             messagingUser.getPlayer().startMovement(direction, Integer.parseInt(command[2]), false);

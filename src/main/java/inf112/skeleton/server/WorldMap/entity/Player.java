@@ -8,14 +8,14 @@ import inf112.skeleton.common.packet.data.PlayerInitPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
-import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.Direction;
 import inf112.skeleton.server.Instance.Lobby;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.user.User;
 
 import java.util.ArrayList;
 
-import static inf112.skeleton.common.specs.Directions.values;
+import static inf112.skeleton.common.specs.Direction.values;
 
 
 public class Player {
@@ -35,7 +35,7 @@ public class Player {
 
     private int slot;
     private int currentHP;
-    private Directions direction;
+    private Direction direction;
     private int movingTiles = 0;
 
 
@@ -47,13 +47,13 @@ public class Player {
     boolean readyForTurn = false;
     private int currentCard = 0;
 
-    public Player(String name, Vector2 pos, int hp, int slot, Directions directions, User owner) {
+    public Player(String name, Vector2 pos, int hp, int slot, Direction direction, User owner) {
         this.name = name;
         this.currentHP = hp;
         this.currentPos = pos;
         this.movingTo = new Vector2(currentPos.x, currentPos.y);
         this.slot = slot;
-        this.direction = directions;
+        this.direction = direction;
         this.owner = owner;
 
         owner.setPlayer(this);
@@ -68,7 +68,7 @@ public class Player {
      *
      * @return facing Direction
      */
-    public Directions getDirection() {
+    public Direction getDirection() {
         return this.direction;
     }
 
@@ -301,7 +301,7 @@ public class Player {
      * @param amount    to move
      * @param pushed    player is being pushed by robot or moved by conveyor-belt.
      */
-    public void startMovement(Directions direction, int amount, boolean pushed) {
+    public void startMovement(Direction direction, int amount, boolean pushed) {
         if (amount == 0) {
             return;
         }

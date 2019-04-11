@@ -2,7 +2,6 @@ package inf112.skeleton.app.board.entity;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.common.specs.Directions;
 
 
 public abstract class Entity {

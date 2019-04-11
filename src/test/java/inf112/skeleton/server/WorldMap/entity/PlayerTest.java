@@ -3,7 +3,7 @@ package inf112.skeleton.server.WorldMap.entity;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
-import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.Direction;
 import inf112.skeleton.server.user.User;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,7 +11,7 @@ import org.junit.Test;
 public class PlayerTest {
 
     User dummyUser = new User(null);
-    Player player = new Player("TestPlayer", new Vector2(0, 0), 9, 1, Directions.SOUTH, dummyUser);
+    Player player = new Player("TestPlayer", new Vector2(0, 0), 9, 1, Direction.SOUTH, dummyUser);
 
     @Test
     public void testAntiCheat() {

@@ -9,8 +9,7 @@ import inf112.skeleton.common.packet.data.CardHandPacket;
 import inf112.skeleton.common.packet.data.CardPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
-import inf112.skeleton.common.specs.CardType;
-import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.Direction;
 import inf112.skeleton.common.utility.Tools;
 
 public class Player {
@@ -19,7 +18,7 @@ public class Player {
     Robot robot = null;
     Vector2 initialPos;
     int initalHp;
-    Directions initalDirection;
+    Direction initalDirection;
     public Card[] cards;
     public Card[] selectedCards;
     public boolean[] cardPlayedByServer;
@@ -33,15 +32,15 @@ public class Player {
      * @param pos
      * @param hp
      * @param slot
-     * @param directions
+     * @param direction
      */
-    public Player(String uuid, String name, Vector2 pos, int hp, int slot, Directions directions) {
+    public Player(String uuid, String name, Vector2 pos, int hp, int slot, Direction direction) {
         this.uuid = uuid;
         this.name = name;
         this.initalHp = hp;
         this.slot = slot;
         this.initialPos = pos;
-        this.initalDirection = directions;
+        this.initalDirection = direction;
         this.cards = new Card[hp];
         this.selectedCards = new Card[5];
         this.cardPlayedByServer = new boolean[5];

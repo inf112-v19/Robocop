@@ -122,9 +122,9 @@ public class Game {
         } else {
             setTimerTicks(10 * card.getType().moveAmount);  // For other cards.
         }
-        Directions moveDirection = player.getDirection();
+        Direction moveDirection = player.getDirection();
         if(card.getType() == CardType.BACKWARD1) {          // Special case for backward1.
-            moveDirection = Directions.values()[(moveDirection.ordinal() + 2) % 4];
+            moveDirection = Direction.values()[(moveDirection.ordinal() + 2) % 4];
         }
         player.startMovement(moveDirection, card.getType().moveAmount, card.getPushed());
         player.rotate(card.getType());
@@ -283,7 +283,7 @@ public class Game {
         User[] users = lobby.getUsers();
         for (int i = 0; i < users.length; i++) {
             if (users[i] != null) {
-                Player player = new Player(users[i].getName(), new Vector2(10, 10), 9, i, Directions.SOUTH, users[i]);
+                Player player = new Player(users[i].getName(), new Vector2(10, 10), 9, i, Direction.SOUTH, users[i]);
                 this.players.add(player);
                 player.sendInit();
                 player.initAll(lobby);

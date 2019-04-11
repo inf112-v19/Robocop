@@ -6,19 +6,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Entity;
 import inf112.skeleton.app.board.entity.Player;
-import inf112.skeleton.app.board.entity.Robot;
 import inf112.skeleton.app.gameStates.Playing.HUD;
-import inf112.skeleton.common.packet.Packet;
-import inf112.skeleton.common.packet.ToServer;
 import inf112.skeleton.common.packet.data.*;
-import inf112.skeleton.common.specs.Card;
-import inf112.skeleton.common.specs.Directions;
-import inf112.skeleton.common.specs.TileDefinition;
-import inf112.skeleton.common.utility.Tools;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class GameBoard {
