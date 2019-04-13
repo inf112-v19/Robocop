@@ -20,6 +20,7 @@ public class TiledMapLoader extends GameBoard {
         super();
         tiledMap = new TmxMapLoader().load(mapFile.filename);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        //TODO Remove below when done.
         this.addEntity(new Flag(11,10,1));
         this.addEntity(new Flag(12,10,2));
         this.addEntity(new Flag(13,10,3));

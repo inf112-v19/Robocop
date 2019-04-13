@@ -159,6 +159,10 @@ public class Game {
         player.getOwner().sendPacket(packet);
     }
 
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
     /**
      * Set the amount of ticks (loops of update-method) that the server will skip.
      *

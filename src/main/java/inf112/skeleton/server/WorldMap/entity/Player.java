@@ -9,6 +9,7 @@ import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
 import inf112.skeleton.common.specs.Direction;
+import inf112.skeleton.server.Instance.Game;
 import inf112.skeleton.server.Instance.Lobby;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.user.User;
@@ -308,8 +309,11 @@ public class Player {
         if (!processMovement(System.currentTimeMillis())) {
             int dx = 0;
             int dy = 0;
-            GameBoard gameBoard = owner.getLobby().getGame().getGameBoard();
+            Game game = owner.getLobby().getGame();
+            GameBoard gameBoard = ((Game) game).getGameBoard();
+            ArrayList<Player> players = game.getPlayers();
             ArrayList<TileEntity> walls = gameBoard.getWallsAtPosition(currentPos);
+
 
             this.timeMoved = System.currentTimeMillis();
 
@@ -343,17 +347,18 @@ public class Player {
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
                 walls = gameBoard.getWallsAtPosition(toCheck);
 
-                for (TileEntity wall :
-                        walls) {
+                for (TileEntity wall : walls) {
                     if (!wall.canLeave(direction)) {
                         amount = i;
                         break outerloop;
                     }
                 }
+
                 if (!gameBoard.isTileWalkable(toCheck)) {
                     amount = i - 1;
                     break;
                 }
+
                 TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
                 if (entity != null) {
                     if (!entity.canContinueWalking()) {
@@ -363,12 +368,19 @@ public class Player {
                 }
 
                 for (TileEntity wall : walls) {
-
                     if (!wall.canEnter(direction)) {
                         amount = i - 1;
                         break outerloop;
                     }
 
+                }
+
+                for (Player player : players) {
+                    System.out.println(toCheck.toString() + " other player: " + player.currentPos.toString());
+                    System.out.println(toCheck.x == player.currentPos.x && toCheck.y == player.currentPos.y);
+                    if(toCheck.x == player.currentPos.x && toCheck.y == player.currentPos.y) {
+                        player.startMovement(direction, amount, true);
+                    }
                 }
 
             }

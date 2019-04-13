@@ -14,12 +14,12 @@ public class Flag extends Entity {
 
     public Flag(float x, float y, int flagNumber) {
         super(x, y, EntityType.FLAG);
-        this.active = 0;
+        this.active = 1;
         this.flagNumber = flagNumber;
     }
 
     public void disableFlag() {
-        this.active = 1;
+        this.active = 0;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class Flag extends Entity {
     }
 
     public void renderNumber(SpriteBatch batch) {
-        if(active == 0) {
+        if(active == 1) {
             final GlyphLayout layout = new GlyphLayout(font, "" + flagNumber);
             final float fontX = (pos.x * 64) + 3 + ((64-layout.width) / 2);
             final float fontY = (pos.y * 64) + 26;
