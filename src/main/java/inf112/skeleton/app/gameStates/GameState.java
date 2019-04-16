@@ -29,7 +29,7 @@ public abstract class GameState {
      */
     public void addMessageToScreen(String message) {
         // Create new message-box
-        Message_ok messageBox = new Message_ok(message);
+        final Message_ok messageBox = new Message_ok(message);
         messageBox.setSize(Math.max(300, messageBox.getMinWidth()), messageBox.getMinHeight());
         messageBox.setPosition(Gdx.graphics.getWidth() / 2f - messageBox.getWidth() / 2f,Gdx.graphics.getHeight() / 2f - messageBox.getHeight() / 2f);
 
