@@ -59,7 +59,7 @@ public class PlayerDeck {
      * @param inputMultiplexer to allow cards to be chosen
      * @param channel          to communicate with the server
      */
-    public PlayerDeck(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, Channel channel) {
+    public PlayerDeck(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, final Channel channel) {
         this.gsm = gameStateManager;
         this.inputMultiplexer = inputMultiplexer;
         this.channel = channel;
