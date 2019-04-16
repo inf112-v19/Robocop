@@ -17,3 +17,7 @@ when the java version used is >8. This has no effect on function or performance,
 
 ## How to run on mac
 make sure you add ```-XstartOnFirstThread``` as a jvm argument.
+
+
+## How to run test
+1. run the tests: ```$ mvn test```
