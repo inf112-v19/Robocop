@@ -9,6 +9,8 @@ import inf112.skeleton.common.specs.StateChange;
 import inf112.skeleton.server.GameWorldInstance;
 import inf112.skeleton.server.user.User;
 
+import java.util.UUID;
+
 public class Lobby {
     private Game game;
     private GameWorldInstance gwi;
@@ -50,6 +52,7 @@ public class Lobby {
 
     /**
      * Start the 5 second countdown to game start
+     *
      * @param user the user telling the game to start
      */
     public void startGameCountdown(User user) {
@@ -107,6 +110,7 @@ public class Lobby {
 
     /**
      * Check if the amount of time desired has passed
+     *
      * @param currentTime
      * @return true if the time has passed
      */
@@ -116,6 +120,7 @@ public class Lobby {
 
     /**
      * Send a packet to all users in lobby
+     *
      * @param packet
      */
     public void broadcastPacket(Packet packet) {
@@ -128,6 +133,7 @@ public class Lobby {
 
     /**
      * Send a chat message to all users in lobby
+     *
      * @param message
      */
     public void broadcastChatMessage(String message) {
@@ -139,6 +145,7 @@ public class Lobby {
 
     /**
      * Add a user to the lobby if there is an open slot
+     *
      * @param user
      */
     public void addUser(User user) {
@@ -169,6 +176,7 @@ public class Lobby {
 
     /**
      * Send a lobby updatepacket to a user
+     *
      * @param user
      */
     private void sendUpdate(User user) {
@@ -180,6 +188,7 @@ public class Lobby {
 
     /**
      * Remove a user from the lobby
+     *
      * @param user
      */
     public void removeUser(User user) {
@@ -221,6 +230,7 @@ public class Lobby {
 
     /**
      * Check if there is an open slot
+     *
      * @return true if there is an open slot
      */
     public boolean hasSlot() {
@@ -234,6 +244,7 @@ public class Lobby {
 
     /**
      * Get how many users in the lobby
+     *
      * @return user count
      */
     public int getUserCount() {
@@ -242,6 +253,7 @@ public class Lobby {
 
     /**
      * Get the lobby name
+     *
      * @return lobby name
      */
     public String getName() {
@@ -250,6 +262,7 @@ public class Lobby {
 
     /**
      * Get the chosen map for the lobby
+     *
      * @return MapFile
      */
     public MapFile getMap() {
@@ -258,6 +271,7 @@ public class Lobby {
 
     /**
      * Get the host of the lobby
+     *
      * @return User host
      */
     public User getHost() {
@@ -266,6 +280,7 @@ public class Lobby {
 
     /**
      * Get the lobby's game
+     *
      * @return Game
      */
     public Game getGame() {
@@ -287,7 +302,8 @@ public class Lobby {
     }
 
     /**
-     *  Check if the game has started
+     * Check if the game has started
+     *
      * @return true if game has started
      */
     public boolean isGameStarted() {
@@ -296,9 +312,57 @@ public class Lobby {
 
     /**
      * Get all the users in the lobby
+     *
      * @return User[] users
      */
     public User[] getUsers() {
         return users;
+    }
+
+    public void kickByName(String toKick, User actionUser) {
+        if (actionUser.getName().equalsIgnoreCase(toKick)) {
+            actionUser.sendServerMessage("You cannot kick yourself.");
+            return;
+
+        }
+        if (actionUser == host) {
+            for (int i = 0; i < users.length; i++) {
+                if (users[i] != null) {
+                    if (users[i].getName().equalsIgnoreCase(toKick)) {
+                        actionUser.sendServerMessage("Successfully kicked: " + users[i].getName());
+                        removeUser(users[i]);
+                        return;
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void kickBySlot(int slot, User actionUser) {
+        if (actionUser == users[slot]) {
+            actionUser.sendServerMessage("You cannot kick yourself.");
+            return;
+
+        }
+        if (actionUser == host) {
+            if (users[slot] != null) {
+                actionUser.sendServerMessage("Successfully kicked: " + users[slot].getName());
+                removeUser(users[slot]);
+            }
+        }
+
+    }
+
+    public void addArtificial(User actionUser) {
+        if(actionUser == host){
+            User user = new User(
+                    UUID.randomUUID().toString(),
+                    "Computer-" + UUID.randomUUID().toString().substring(0, 5),
+                    "cpu",
+                    null);
+            user.joinLobby(gwi, getName());
+        }
+
     }
 }

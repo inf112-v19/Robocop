@@ -29,12 +29,13 @@ public class IncomingPacketHandler {
             case LOGIN:
                 LoginPacket loginpkt = LoginPacket.parseJSON(jsonObject);
                 User loggingIn = UserLogging.login(loginpkt, incoming);
-                if (loggingIn != null) {
+                if (loggingIn != null && !loginpkt.getUsername().contains(" ")) {
                     if (!RoboCopServerHandler.loggedInPlayers.contains(loggingIn)) {
                         if (handler.alreadyLoggedIn(loggingIn.getName())) {
                             AlreadyLoggedIn(incoming, loggingIn.getName());
                             return;
                         }
+
 
                         RoboCopServerHandler.loggedInPlayers.add(loggingIn);
                         FromServer response = FromServer.LOGINRESPONSE;
@@ -137,12 +138,37 @@ public class IncomingPacketHandler {
             case "players":
                 messagingUser.sendServerMessage("There is currently " + RoboCopServerHandler.loggedInPlayers.size() + " player(s) online.");
                 break;
+            case "kick":
+                if (StringUtilities.isStringInt(command[1])) {
+                    messagingUser.getLobby().kickBySlot(Integer.parseInt(command[1]), messagingUser);
+                } else {
+                    messagingUser.getLobby().kickByName(command[1], messagingUser);
+                }
+                break;
+            case "addcomp":
+            case "addcpu":
+            case "addai":
+            case "add_ai":
+                if (command.length == 2) {
+                    if(StringUtilities.isStringInt(command[1])){
+                        for (int i = 0; i < Integer.parseInt(command[1]); i++) {
+                            messagingUser.getLobby().addArtificial(messagingUser);
+
+                        }
+
+                    }
+                } else {
+                    messagingUser.getLobby().addArtificial(messagingUser);
+
+                }
+
+                break;
             case "move":
                 if (command.length > 2) {
                     if (Direction.fromString(command[1].toUpperCase()) != null) {
                         Direction direction = Direction.valueOf(command[1].toUpperCase());
                         if (StringUtilities.isStringInt(command[2])) {
-                            messagingUser.sendServerMessage("You moved "+ command[2] + " tiles.");
+                            messagingUser.sendServerMessage("You moved " + command[2] + " tiles.");
                             messagingUser.getPlayer().startMovement(direction, Integer.parseInt(command[2]), false);
                             return;
                         }
@@ -190,7 +216,8 @@ public class IncomingPacketHandler {
     /**
      * User failed auth because a user with the same name is already loggid in, send a message to the new connection to
      * inform them.
-     *  @param incoming
+     *
+     * @param incoming
      * @param name
      */
     private void AlreadyLoggedIn(Channel incoming, String name) {

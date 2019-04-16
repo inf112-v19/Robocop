@@ -29,8 +29,8 @@ public class Sprites {
             robotAnimations[i][Direction.WEST.ordinal()] = new Animation(0.1f, textureAtlases[i].findRegions("robotAllSides_West"), Animation.PlayMode.LOOP);
         }
         textureAtlases[8] = new TextureAtlas(Gdx.files.internal("graphics/sprites/flag.atlas"));
-        animation_flag[0] = new Animation(0.1f,textureAtlases[8].findRegions("flag_Active"), Animation.PlayMode.LOOP);
-        animation_flag[1] = new Animation(0.1f,textureAtlases[8].findRegions("flag_Inactive"), Animation.PlayMode.LOOP);
+        animation_flag[0] = new Animation(0.1f,textureAtlases[8].findRegions("flag_Inactive"), Animation.PlayMode.LOOP);
+        animation_flag[1] = new Animation(0.1f,textureAtlases[8].findRegions("flag_Active"), Animation.PlayMode.LOOP);
     }
 
 }

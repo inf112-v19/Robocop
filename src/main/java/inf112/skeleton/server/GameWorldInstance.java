@@ -8,6 +8,7 @@ import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.card.CardDeck;
 import inf112.skeleton.server.user.User;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 

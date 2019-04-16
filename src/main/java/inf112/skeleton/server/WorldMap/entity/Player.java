@@ -159,11 +159,15 @@ public class Player {
         for (int i = 0; i < cardsGiven.length; i++) {
             cardsGiven[i] = null;
         }
-
+        System.out.println("Sending card to " + owner.getName());
         System.arraycopy(hand, 0, cardsGiven, 0, hand.length);
 
         System.out.println("[Player serverside - sendCardHandToClient] Sending packet " + packet.toString());
         owner.sendPacket(packet);
+
+        if(isArtificial()){
+            forceSelect();
+        }
 
     }
 
@@ -419,5 +423,9 @@ public class Player {
 
     public User getOwner() {
         return this.owner;
+    }
+
+    public boolean isArtificial() {
+        return owner.getChannel() == null;
     }
 }
