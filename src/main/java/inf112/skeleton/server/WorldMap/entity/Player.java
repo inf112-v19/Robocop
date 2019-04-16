@@ -8,15 +8,16 @@ import inf112.skeleton.common.packet.data.PlayerInitPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
-import inf112.skeleton.common.specs.Directions;
 import inf112.skeleton.common.utility.Tools;
+import inf112.skeleton.common.specs.Direction;
+import inf112.skeleton.server.Instance.Game;
 import inf112.skeleton.server.Instance.Lobby;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.user.User;
 
 import java.util.ArrayList;
 
-import static inf112.skeleton.common.specs.Directions.values;
+import static inf112.skeleton.common.specs.Direction.values;
 
 
 public class Player {
@@ -37,7 +38,7 @@ public class Player {
 
     private int slot;
     private int currentHP;
-    private Directions direction;
+    private Direction direction;
     private int movingTiles = 0;
 
 
@@ -49,13 +50,13 @@ public class Player {
     boolean readyForTurn = false;
     private int currentCard = 0;
 
-    public Player(String name, Vector2 pos, int hp, int slot, Directions directions, User owner) {
+    public Player(String name, Vector2 pos, int hp, int slot, Direction direction, User owner) {
         this.name = name;
         this.currentHP = hp;
         this.currentPos = pos;
         this.movingTo = new Vector2(currentPos.x, currentPos.y);
         this.slot = slot;
-        this.direction = directions;
+        this.direction = direction;
         this.owner = owner;
 
         owner.setPlayer(this);
@@ -70,7 +71,7 @@ public class Player {
      *
      * @return facing Direction
      */
-    public Directions getDirection() {
+    public Direction getDirection() {
         return this.direction;
     }
 
@@ -314,28 +315,32 @@ public class Player {
      *
      * @param direction to move in
      * @param amount    to move
-     * @param pushed    if the player has been pushed to move
+     * @param pushed    player is being pushed by robot or moved by conveyor-belt.
      */
-    public void startMovement(Directions direction, int amount, boolean pushed) {
+    public void startMovement(Direction direction, int amount, boolean pushed) {
+        if (amount == 0) {
+            return;
+        }
         if (!processMovement(System.currentTimeMillis())) {
-            System.out.println(direction);
-            GameBoard gameBoard = owner.getLobby().getGame().getGameBoard();
+            int dx = 0;
+            int dy = 0;
+            Game game = owner.getLobby().getGame();
+            GameBoard gameBoard = ((Game) game).getGameBoard();
+            ArrayList<Player> players = game.getPlayers();
             ArrayList<TileEntity> walls = gameBoard.getWallsAtPosition(currentPos);
+
 
             this.timeMoved = System.currentTimeMillis();
 
             if (!pushed) {
                 this.direction = direction;
+
             }
-            int dx = 0;
-            int dy = 0;
-            for (TileEntity wall :
-                    walls) {
+            for (TileEntity wall : walls) {
                 if (!wall.canLeave(direction)) {
                     amount = 0;
                 }
             }
-
 
             switch (direction) {
                 case SOUTH:
@@ -351,26 +356,24 @@ public class Player {
                     dx = -1;
                     break;
             }
+
             outerloop:
             for (int i = 1; i <= amount; i++) {
-                if (amount == 0) {
-                    break;
-                }
-
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
                 walls = gameBoard.getWallsAtPosition(toCheck);
 
-                for (TileEntity wall :
-                        walls) {
+                for (TileEntity wall : walls) {
                     if (!wall.canLeave(direction)) {
                         amount = i;
                         break outerloop;
                     }
                 }
+
                 if (!gameBoard.isTileWalkable(toCheck)) {
                     amount = i - 1;
                     break;
                 }
+
                 TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
                 if (entity != null) {
                     if (!entity.canContinueWalking()) {
@@ -380,12 +383,19 @@ public class Player {
                 }
 
                 for (TileEntity wall : walls) {
-
                     if (!wall.canEnter(direction)) {
                         amount = i - 1;
                         break outerloop;
                     }
 
+                }
+
+                for (Player player : players) {
+                    System.out.println(toCheck.toString() + " other player: " + player.currentPos.toString());
+                    System.out.println(toCheck.x == player.currentPos.x && toCheck.y == player.currentPos.y);
+                    if(toCheck.x == player.currentPos.x && toCheck.y == player.currentPos.y) {
+                        player.startMovement(direction, amount, true);
+                    }
                 }
 
             }

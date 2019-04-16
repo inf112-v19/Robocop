@@ -6,29 +6,25 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
-import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.Direction;
+
 
 public class Robot extends Entity {
     // TODO: cleanup variable, collect animations to one array.
-    private Directions facing;
+    private Direction facing;
     private int health;
     private int[] position;
     private int delayMove = 400;
     private long timeMoved = 0;
     private Vector2 tileTo;
 
-    private int movementLenght = 1;
-    Animation<TextureRegion> currentAnimation;
-    Animation<TextureRegion> facing_north;
-    Animation<TextureRegion> facing_south;
-    Animation<TextureRegion> facing_west;
-    Animation<TextureRegion> facing_east;
-    int colour;
+    private int movementLength = 1;
+    private Animation<TextureRegion> currentAnimation;
+    private int colour;
 
-    TextureAtlas textureAtlas;
-    float stateTime;
-    Player player;
-    BitmapFont font = new BitmapFont();
+    private float stateTime;
+    private Player player;
+    private BitmapFont font = new BitmapFont();
 
     private int movementDirection = 1;
 
@@ -48,16 +44,19 @@ public class Robot extends Entity {
         this.player = player;
     }
 
-
+    /**
+     * Get the current health of the robot.
+     * @return int health
+     */
     public int getHealth() {
         return health;
     }
 
-    public void getHit() {
-        health--;
-    }
-
-    public Directions getFacingDirection() {
+    /**
+     * Get the current direction the robot is facing.
+     * @return A direction.
+     */
+    public Direction getFacingDirection() {
         return facing;
     }
 
@@ -73,7 +72,7 @@ public class Robot extends Entity {
         if (this.pos.x == this.tileTo.x && this.pos.y == this.tileTo.y) {
             return false;
         }
-        int movementDelay = this.delayMove * movementLenght;
+        int movementDelay = this.delayMove * movementLength;
         if ((currentTime - this.timeMoved) >= movementDelay) {
             this.placeAt(this.tileTo.x, this.tileTo.y);
         } else {
@@ -82,11 +81,11 @@ public class Robot extends Entity {
             switch (getFacingDirection()) {
                 case NORTH:
                 case SOUTH:
-                    tileHeight = tileHeight * movementLenght;
+                    tileHeight = tileHeight * movementLength;
                     break;
                 case WEST:
                 case EAST:
-                    tileWidth = tileWidth * movementLenght;
+                    tileWidth = tileWidth * movementLength;
 
             }
             this.position[0] = (int) (this.pos.x * 64);
@@ -119,14 +118,13 @@ public class Robot extends Entity {
         this.tileTo = updatePlayerPacket.getToTile();
         this.facing = updatePlayerPacket.getDirection();
         this.movementDirection = updatePlayerPacket.getMovingTiles();
-        this.movementLenght = Math.abs(updatePlayerPacket.getMovingTiles());
+        this.movementLength = Math.abs(updatePlayerPacket.getMovingTiles());
         this.pos = updatePlayerPacket.getFromTile();
         this.timeMoved = System.currentTimeMillis();
         processMovement(System.currentTimeMillis());
 
         movedLastTick = true;
     }
-
 
     /**
      * Set the current entity location.
@@ -150,7 +148,7 @@ public class Robot extends Entity {
 
     @Override
     public void render(SpriteBatch batch) {
-        currentAnimation = Sprites.animations[colour][facing.ordinal()];
+        currentAnimation = Sprites.robotAnimations[colour][facing.ordinal()];
 
         stateTime += Gdx.graphics.getDeltaTime();
 

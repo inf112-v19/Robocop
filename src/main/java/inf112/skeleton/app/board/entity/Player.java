@@ -9,7 +9,7 @@ import inf112.skeleton.common.packet.data.CardHandPacket;
 import inf112.skeleton.common.packet.data.CardPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
-import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.Direction;
 import inf112.skeleton.common.utility.Tools;
 
 public class Player {
@@ -18,9 +18,10 @@ public class Player {
     Robot robot = null;
     Vector2 initialPos;
     int initalHp;
-    Directions initalDirection;
+    Direction initalDirection;
     public Card[] cards;
     public Card[] selectedCards;
+    public boolean[] cardPlayedByServer;
     int slot;
 
     /**
@@ -31,16 +32,18 @@ public class Player {
      * @param pos
      * @param hp
      * @param slot
-     * @param directions
+     * @param direction
      */
-    public Player(String uuid, String name, Vector2 pos, int hp, int slot, Directions directions) {
+    public Player(String uuid, String name, Vector2 pos, int hp, int slot, Direction direction) {
         this.uuid = uuid;
         this.name = name;
         this.initalHp = hp;
         this.slot = slot;
         this.initialPos = pos;
-        this.initalDirection = directions;
+        this.initalDirection = direction;
+        this.cards = new Card[hp];
         this.selectedCards = new Card[5];
+        this.cardPlayedByServer = new boolean[5];
     }
 
     /**
@@ -56,14 +59,15 @@ public class Player {
     }
 
     /**
-     * Fill in first empty slot in the players card-hand.
-     *
-     * @param packet A single card to be added to the hand.
+     * Updates the array that tells the client if a card has been played by the server.
+     * @param packet containing a card that has been played.
      */
     public void receiveCardPacket(CardPacket packet) {
-        for (int i = 0; i < cards.length; i++) {
-            if (cards[i] == null) {
-                cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packet.getPriority());
+        Card foo = Tools.CARD_RECONSTRUCTOR.reconstructCard(packet.getPriority());
+        for(int i = 0; i < selectedCards.length; i++) {
+            if (selectedCards[i].equals(foo)) {
+                cardPlayedByServer[i] = true;
+                Gdx.app.log("Player - receiveCardPacket", "Set bool-arr pos " + i + " to true.");
                 return;
             }
         }
@@ -75,12 +79,11 @@ public class Player {
      * @param packet An array of cards.
      */
     public void receiveCardHandPacket(CardHandPacket packet) {
+        selectedCards = new Card[5];
+        cardPlayedByServer = new boolean[5];
         int[] packetCardHand = packet.getHand();
-        if (cards == null) {
-            cards = new Card[9];
-        }
         if (packetCardHand.length != cards.length) {
-            return;
+            cards = new Card[packetCardHand.length];
         }
         for (int i = 0; i < packetCardHand.length; i++) {
             cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packetCardHand[i]);
@@ -114,6 +117,20 @@ public class Player {
         Gdx.app.log("Player clientside - sendBurntCardToServer", "No cards selected");
 
     }
+
+    public void sendSelectedCardsToServer() {
+        Card[] hand;
+        hand = new Card[selectedCards.length];
+
+        System.arraycopy(selectedCards, 0, hand, 0, hand.length);
+
+        CardHandPacket data = new CardHandPacket(hand);
+        Packet packet = new Packet(ToServer.CARD_HAND_PACKET.ordinal(), data);
+        packet.sendPacket(RoboRally.channel);
+
+        Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards sent to server.");
+    }
+
 
     /**
      * Accept packet related to any changes to this player, checks if its needed then applies changes.

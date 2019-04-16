@@ -3,7 +3,7 @@ package inf112.skeleton.server.WorldMap.entity;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
-import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.Direction;
 import inf112.skeleton.common.specs.TileDefinition;
 
 public abstract class TileEntity {
@@ -58,12 +58,12 @@ public abstract class TileEntity {
     public abstract boolean canContinueWalking();
 
 
-    public abstract boolean canEnter(Directions walkingDirection);
+    public abstract boolean canEnter(Direction walkingDirection);
 
-    public abstract boolean canLeave(Directions walkingDirection);
+    public abstract boolean canLeave(Direction walkingDirection);
 
-    public Directions getDirection() {
-        Directions tileDefault = tileType.getDefaultFace();
+    public Direction getDirection() {
+        Direction tileDefault = tileType.getDefaultFace();
         int rotation = 4 + tileDefault.ordinal();
         switch (tileDefault) {
             case NORTH:
@@ -80,7 +80,7 @@ public abstract class TileEntity {
                 break;
         }
         rotation -= cell.getRotation();
-        return Directions.values()[rotation % 4];
+        return Direction.values()[rotation % 4];
     }
 
 

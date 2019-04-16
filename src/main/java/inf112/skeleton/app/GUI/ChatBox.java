@@ -76,7 +76,7 @@ public class ChatBox extends Table {
 
         String username = "Username";
         try {
-            username = RoboRally.gameBoard.myPlayer.name;
+            username = RoboRally.username;
         } catch (Exception e) {}
         inputField.setMessageText(username + ": Press ENTER to chat.");
 

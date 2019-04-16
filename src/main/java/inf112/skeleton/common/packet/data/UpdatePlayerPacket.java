@@ -2,17 +2,17 @@ package inf112.skeleton.common.packet.data;
 
 import com.badlogic.gdx.math.Vector2;
 import com.google.gson.JsonObject;
-import inf112.skeleton.common.specs.Directions;
+import inf112.skeleton.common.specs.Direction;
 import inf112.skeleton.common.utility.Tools;
 
 public class UpdatePlayerPacket implements PacketData {
-    Directions direction;
+    Direction direction;
     int movingTiles;
     Vector2 fromTile;
     Vector2 toTile;
     String uuid;
 
-    public UpdatePlayerPacket(String uuid, Directions direction, int movingTiles, Vector2 fromTile, Vector2 toTile) {
+    public UpdatePlayerPacket(String uuid, Direction direction, int movingTiles, Vector2 fromTile, Vector2 toTile) {
         this.uuid = uuid;
         this.direction = direction;
         this.movingTiles = movingTiles;
@@ -25,7 +25,7 @@ public class UpdatePlayerPacket implements PacketData {
     }
 
 
-    public Directions getDirection() {
+    public Direction getDirection() {
         return direction;
     }
 

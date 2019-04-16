@@ -105,6 +105,10 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                     case FORCE_CARDS:
                         RoboRally.gameBoard.hud.getPlayerDeck().forceUpdateSelected();
 
+                        RoboRally.gameBoard.forceSelect();
+//                        if (RoboRally.gameBoard.hud.hasDeck()) {
+//                            RoboRally.gameBoard.hud.getPlayerDeck().removeDeck();
+//                        }
                         break;
                 }
                 break;
