@@ -345,12 +345,6 @@ public class Player {
                 this.direction = direction;
 
             }
-            /*
-            for (TileEntity wall : walls) {
-                if (!wall.canLeave(direction)) {
-                    amount = 0;
-                }
-            }*/
 
             switch (direction) {
                 case SOUTH:
@@ -371,6 +365,7 @@ public class Player {
             for (int i = 0; i <= amount; i++) {
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
                 walls = gameBoard.getWallsAtPosition(toCheck);
+
                 if (i == 0) {   //Our current tile. Check if we can leave.
                     for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
@@ -394,13 +389,13 @@ public class Player {
                         break;
                     }
 
-                /*TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                if (entity != null) {
-                    if (!entity.canContinueWalking()) {
-                        amount = i;
-                        break;
-                    }
-                }*/
+                    /*TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                    if (entity != null) {
+                       if (!entity.canContinueWalking()) {
+                            amount = i;
+                         break;
+                        }
+                    }*/
 
                     for (Player player : players) {
                         if (toCheck.dst(player.currentPos) == 0 && player != this) {
@@ -429,25 +424,12 @@ public class Player {
                             System.out.println("Moving " + movingTiles);
                             sendUpdate();
 
-                            //startMovement(direction,otherRobotMoved,false);
                             return amount;
-                            //amount = i - 1;
-                            //int robotCanMove = player.startMovement(direction, amount - i + 1, true);
-                            //System.out.println("Enemy robot can move " + robotCanMove);
-                        /*
-                        int foo = player.startMovement(direction, amount-i, true);
-                        amount = amount - foo;
-                        hitRobot = true;*/
                         }
                     }
 
                 }
             }
-            /*
-            if(hitRobot) {
-                startMovement(direction, amount, false);
-                return 0;
-            }*/
             this.movingTo.add(dx * amount, dy * amount);
             this.movingTiles = amount;
 
