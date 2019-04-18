@@ -397,10 +397,35 @@ public class Player {
                 }*/
 
                     for (Player player : players) {
-                        if (toCheck.x == player.currentPos.x && toCheck.y == player.currentPos.y) {
-                            int robotCanMove = player.startMovement(direction, amount - i + 1, true);
-                            amount = i - 1;
-                            System.out.println("Enemy robot can move " + robotCanMove);
+                        if (toCheck.dst(player.currentPos) == 0 && player != this) {
+                            int delta = (int)currentPos.dst(player.currentPos)-1;
+                            System.out.println("Delta: " + delta);
+                            //Move up next to robot.
+                            this.movingTo.add(dx*(delta),dy*(delta));
+                            this.movingTiles = delta;
+                            sendUpdate();
+                            //startMovement(direction,amount-1,false);
+
+                            //Move other robot the remaining required distance.
+                            System.out.println("Amount: " + amount);
+                            int otherRobotMoved = player.startMovement(direction,amount-delta,true);
+                            System.out.println("otherRobotMoved: " + otherRobotMoved);
+
+                            //Make our robot follow.
+                            if(delta == 0) {
+                                this.movingTo.add(dx*otherRobotMoved,dy*otherRobotMoved);
+                                this.movingTiles = otherRobotMoved;
+                            } else {
+                                this.movingTo.add(dx * (amount - otherRobotMoved), dy * (amount - otherRobotMoved));
+                                this.movingTiles = amount - otherRobotMoved;
+                            }
+                            sendUpdate();
+
+                            //startMovement(direction,otherRobotMoved,false);
+                            return amount;
+                            //amount = i - 1;
+                            //int robotCanMove = player.startMovement(direction, amount - i + 1, true);
+                            //System.out.println("Enemy robot can move " + robotCanMove);
                         /*
                         int foo = player.startMovement(direction, amount-i, true);
                         amount = amount - foo;
