@@ -214,7 +214,12 @@ public class PlayerDeck {
     private void do_check() {
         if (fromDeckHidden && checkCount < 5) {
             ImageTextButton btn = chooseToButtons.get(checkCount++);
-            btn.setStyle(RoboRally.graphics.styleFromDrawable(buttonToCardMap.get(btn).getDrawable(true), null, Color.RED));
+            //TODO Fix so we can debug ingame with move-commands without having a try-catch.
+            try {
+                btn.setStyle(RoboRally.graphics.styleFromDrawable(buttonToCardMap.get(btn).getDrawable(true), null, Color.RED));
+            } catch (NullPointerException e) {
+                System.out.println("whoop");
+            }
         }
     }
 

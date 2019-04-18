@@ -165,19 +165,19 @@ public class Player {
         System.out.println("[Player serverside - sendCardHandToClient] Sending packet " + packet.toString());
         owner.sendPacket(packet);
 
-        if(isArtificial()){
+        if (isArtificial()) {
             forceSelect();
         }
 
     }
 
-    public void createBackup () {
+    public void createBackup() {
         this.backup = null;
         this.backup = Tools.GSON.toJson(this);
 
     }
 
-    public void restoreBackup () {
+    public void restoreBackup() {
         Player toRestore = Tools.GSON.fromJson(this.backup, Player.class);
         this.currentPos = toRestore.currentPos.cpy();
         this.movingTo = toRestore.movingTo.cpy();
@@ -321,15 +321,16 @@ public class Player {
      * @param amount    to move
      * @param pushed    player is being pushed by robot or moved by conveyor-belt.
      */
-    public void startMovement(Direction direction, int amount, boolean pushed) {
+    public int startMovement(Direction direction, int amount, boolean pushed) {
         if (amount == 0) {
-            return;
+            return 0;
         }
         if (!processMovement(System.currentTimeMillis())) {
             int dx = 0;
             int dy = 0;
+            boolean hitRobot = false;
             Game game = owner.getLobby().getGame();
-            GameBoard gameBoard = ((Game) game).getGameBoard();
+            GameBoard gameBoard = game.getGameBoard();
             ArrayList<Player> players = game.getPlayers();
             ArrayList<TileEntity> walls = gameBoard.getWallsAtPosition(currentPos);
 
@@ -340,11 +341,12 @@ public class Player {
                 this.direction = direction;
 
             }
+            /*
             for (TileEntity wall : walls) {
                 if (!wall.canLeave(direction)) {
                     amount = 0;
                 }
-            }
+            }*/
 
             switch (direction) {
                 case SOUTH:
@@ -366,50 +368,59 @@ public class Player {
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
                 walls = gameBoard.getWallsAtPosition(toCheck);
 
-                for (TileEntity wall : walls) {
+                /*for (TileEntity wall : walls) {
                     if (!wall.canLeave(direction)) {
                         amount = i;
                         break outerloop;
                     }
-                }
+                    if (!wall.canEnter(direction)) {
+                        amount = i - 1;
+                        break outerloop;
+                    }
+                }*/
 
                 if (!gameBoard.isTileWalkable(toCheck)) {
                     amount = i - 1;
                     break;
                 }
 
-                TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                /*TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
                 if (entity != null) {
                     if (!entity.canContinueWalking()) {
                         amount = i;
                         break;
                     }
-                }
+                }/*
 
-                for (TileEntity wall : walls) {
+                /*for (TileEntity wall : walls) {
                     if (!wall.canEnter(direction)) {
                         amount = i - 1;
                         break outerloop;
                     }
 
-                }
+                }*/
 
                 for (Player player : players) {
-                    System.out.println(toCheck.toString() + " other player: " + player.currentPos.toString());
-                    System.out.println(toCheck.x == player.currentPos.x && toCheck.y == player.currentPos.y);
-                    if(toCheck.x == player.currentPos.x && toCheck.y == player.currentPos.y) {
-                        player.startMovement(direction, amount, true);
+                    if (toCheck.x == player.currentPos.x && toCheck.y == player.currentPos.y) {
+                        int foo = player.startMovement(direction, amount-i, true);
+                        amount = amount - foo;
+                        hitRobot = true;
                     }
                 }
 
+            }
+            if(hitRobot) {
+                startMovement(direction, amount, false);
+                return 0;
             }
             this.movingTo.add(dx * amount, dy * amount);
             this.movingTiles = amount;
 
             sendUpdate();
         }
-
+        return amount;
     }
+
 
     /**
      * Manually set the current selected cards
