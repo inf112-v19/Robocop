@@ -322,9 +322,9 @@ public class Player {
      * @param pushed    player is being pushed by robot or moved by conveyor-belt.
      */
     public int startMovement(Direction direction, int amount, boolean pushed) {
-        if (amount == 0) {
+        /*if (amount == 0) {
             return 0;
-        }
+        }*/
         if (!processMovement(System.currentTimeMillis())) {
             int dx = 0;
             int dy = 0;
@@ -364,25 +364,29 @@ public class Player {
             }
 
             outerloop:
-            for (int i = 1; i <= amount; i++) {
+            for (int i = 0; i <= amount; i++) {
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
                 walls = gameBoard.getWallsAtPosition(toCheck);
+                if (i == 0) {
+
+                } else {
+
 
                 /*for (TileEntity wall : walls) {
                     if (!wall.canLeave(direction)) {
                         amount = i;
                         break outerloop;
                     }
-                    if (!wall.canEnter(direction)) {
+                    if (!wall.canEnter(direction)) {|
                         amount = i - 1;
                         break outerloop;
                     }
                 }*/
 
-                if (!gameBoard.isTileWalkable(toCheck)) {
-                    amount = i - 1;
-                    break;
-                }
+                    if (!gameBoard.isTileWalkable(toCheck)) {
+                        amount = i - 1;
+                        break;
+                    }
 
                 /*TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
                 if (entity != null) {
@@ -390,29 +394,27 @@ public class Player {
                         amount = i;
                         break;
                     }
-                }/*
-
-                /*for (TileEntity wall : walls) {
-                    if (!wall.canEnter(direction)) {
-                        amount = i - 1;
-                        break outerloop;
-                    }
-
                 }*/
 
-                for (Player player : players) {
-                    if (toCheck.x == player.currentPos.x && toCheck.y == player.currentPos.y) {
+                    for (Player player : players) {
+                        if (toCheck.x == player.currentPos.x && toCheck.y == player.currentPos.y) {
+                            int robotCanMove = player.startMovement(direction, amount - i + 1, true);
+                            amount = i - 1;
+                            System.out.println("Enemy robot can move " + robotCanMove);
+                        /*
                         int foo = player.startMovement(direction, amount-i, true);
                         amount = amount - foo;
-                        hitRobot = true;
+                        hitRobot = true;*/
+                        }
                     }
-                }
 
+                }
             }
+            /*
             if(hitRobot) {
                 startMovement(direction, amount, false);
                 return 0;
-            }
+            }*/
             this.movingTo.add(dx * amount, dy * amount);
             this.movingTiles = amount;
 
