@@ -85,6 +85,14 @@ public class Player {
     }
 
     /**
+     * Get the current position of the player.
+     * @return Vector2 object with coordinates.
+     */
+    public Vector2 getCurrentPos() {
+        return this.currentPos;
+    }
+
+    /**
      * Check if the player is ready for turn
      *
      * @return true if player is ready
@@ -322,13 +330,9 @@ public class Player {
      * @param pushed    player is being pushed by robot or moved by conveyor-belt.
      */
     public int startMovement(Direction direction, int amount, boolean pushed) {
-        /*if (amount == 0) {
-            return 0;
-        }*/
         if (!processMovement(System.currentTimeMillis())) {
             int dx = 0;
             int dy = 0;
-            boolean hitRobot = false;
             Game game = owner.getLobby().getGame();
             GameBoard gameBoard = game.getGameBoard();
             ArrayList<Player> players = game.getPlayers();
@@ -367,23 +371,25 @@ public class Player {
             for (int i = 0; i <= amount; i++) {
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
                 walls = gameBoard.getWallsAtPosition(toCheck);
-                if (i == 0) {
-
-                } else {
-
-
-                /*for (TileEntity wall : walls) {
-                    if (!wall.canLeave(direction)) {
-                        amount = i;
-                        break outerloop;
+                if (i == 0) {   //Our current tile. Check if we can leave.
+                    for (TileEntity wall : walls) {
+                        if (!wall.canLeave(direction)) {
+                            return 0;
+                        }
                     }
-                    if (!wall.canEnter(direction)) {|
-                        amount = i - 1;
-                        break outerloop;
+                } else {        //All other tiles in our path.
+                    for (TileEntity wall : walls) {
+                        if (!wall.canLeave(direction)) {
+                            amount = i;
+                            break outerloop;
+                        }
+                        if (!wall.canEnter(direction)) {
+                            amount = i - 1;
+                            break outerloop;
+                        }
                     }
-                }*/
 
-                    if (!gameBoard.isTileWalkable(toCheck)) {
+                    if (!gameBoard.isTileWalkable(toCheck)) {   //This is currently used for the outside edges of the map if I'm not mistaken, should be removed "Soon"TM
                         amount = i - 1;
                         break;
                     }
@@ -398,27 +404,29 @@ public class Player {
 
                     for (Player player : players) {
                         if (toCheck.dst(player.currentPos) == 0 && player != this) {
-                            int delta = (int)currentPos.dst(player.currentPos)-1;
+                            int delta = i - 1;    //Open tiles between the two robots.
                             System.out.println("Delta: " + delta);
+
                             //Move up next to robot.
-                            this.movingTo.add(dx*(delta),dy*(delta));
+                            this.movingTo.add(dx * (delta), dy * (delta));
                             this.movingTiles = delta;
+                            System.out.println("Moving " + movingTiles);
                             sendUpdate();
-                            //startMovement(direction,amount-1,false);
 
                             //Move other robot the remaining required distance.
                             System.out.println("Amount: " + amount);
-                            int otherRobotMoved = player.startMovement(direction,amount-delta,true);
+                            int otherRobotMoved = player.startMovement(direction, amount - delta, true);
                             System.out.println("otherRobotMoved: " + otherRobotMoved);
 
                             //Make our robot follow.
-                            if(delta == 0) {
-                                this.movingTo.add(dx*otherRobotMoved,dy*otherRobotMoved);
+                            if (delta == 0) {
+                                this.movingTo.add(dx * otherRobotMoved, dy * otherRobotMoved);
                                 this.movingTiles = otherRobotMoved;
                             } else {
-                                this.movingTo.add(dx * (amount - otherRobotMoved), dy * (amount - otherRobotMoved));
-                                this.movingTiles = amount - otherRobotMoved;
+                                this.movingTo.add(dx * (amount - (otherRobotMoved - 1)), dy * (amount - (otherRobotMoved - 1)));
+                                this.movingTiles = amount - (otherRobotMoved - 1);
                             }
+                            System.out.println("Moving " + movingTiles);
                             sendUpdate();
 
                             //startMovement(direction,otherRobotMoved,false);

@@ -15,8 +15,10 @@ import inf112.skeleton.server.user.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import static inf112.skeleton.server.Instance.GameStage.*;
+import static inf112.skeleton.common.specs.Direction.values;
 
 
 public class Game {
@@ -26,11 +28,13 @@ public class Game {
     private HashMap<Player, Card> cardsForOneRound = new HashMap<>();
     private GameBoard gameBoard;
 
-    private int roundSelectTime = 30000; //The time the player will have to select their cards.
+    private int roundSelectTime = 30; //The time the player will have to select their cards.
     private int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
     private long timerStarted = 0;
     private long timerCountdownSeconds = 0;
     private int cardRound = 0;
+
+    private Random random = new Random();
 
     private GameStage gameStage = LOBBY;
 
@@ -288,7 +292,22 @@ public class Game {
         User[] users = lobby.getUsers();
         for (int i = 0; i < users.length; i++) {
             if (users[i] != null) {
-                Player player = new Player(users[i].getName(), new Vector2(10, 10), 9, i, Direction.SOUTH, users[i]);
+                Direction randomDir = values()[random.nextInt(values().length)];
+                boolean suitableLocation = false;
+                Vector2 loc = new Vector2(0,0);
+
+                whileloop:
+                while(!suitableLocation) {
+                    loc = new Vector2(random.nextInt(gameBoard.getWidth()), random.nextInt(gameBoard.getHeight()));
+                    for(Player player : players) {
+                        if(player.getCurrentPos().dst(loc) == 0) {
+                            break whileloop;
+                        }
+                    }
+                    suitableLocation = gameBoard.isTileWalkable(loc);
+                }
+
+                Player player = new Player(users[i].getName(), loc, 9, i, randomDir, users[i]);
                 this.players.add(player);
                 player.sendInit();
                 player.initAll(lobby);
