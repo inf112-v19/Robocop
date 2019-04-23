@@ -18,6 +18,9 @@ public class Flag extends Entity {
         this.flagNumber = flagNumber;
     }
 
+    /**
+     * Disable the flag
+     */
     public void disableFlag() {
         this.active = 0;
     }
@@ -41,10 +44,15 @@ public class Flag extends Entity {
         return;
     }
 
+    /**
+     * Render the flags number
+     *
+     * @param batch
+     */
     public void renderNumber(SpriteBatch batch) {
-        if(active == 1) {
+        if (active == 1) {
             final GlyphLayout layout = new GlyphLayout(font, "" + flagNumber);
-            final float fontX = (pos.x * 64) + 3 + ((64-layout.width) / 2);
+            final float fontX = (pos.x * 64) + 3 + ((64 - layout.width) / 2);
             final float fontY = (pos.y * 64) + 26;
             font.setColor(255, 0, 0, 255);
             font.draw(batch, "" + flagNumber, fontX, fontY);
