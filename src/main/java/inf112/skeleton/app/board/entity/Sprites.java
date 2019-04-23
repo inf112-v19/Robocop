@@ -5,6 +5,9 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import inf112.skeleton.common.specs.Direction;
 
+/**
+ * Static load sprites to avoid loading them multiple times
+ */
 public class Sprites {
     public static TextureAtlas[] textureAtlases;
     public static Animation[][] robotAnimations;
