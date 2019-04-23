@@ -101,7 +101,7 @@ public class Tab_CreateLobby extends MenuTab {
     public void lobby_create() {
         String selected = selectBox.getSelected();
         for (MapFile map : maps) {
-            if (map.name == selected) {
+            if (map.name.equals(selected)) {
                 Packet packet = new Packet(ToServer.CREATE_LOBBY.ordinal(), new CreateLobbyPacket(lobbyName.getText(), map));
                 channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
 

@@ -58,10 +58,8 @@ public abstract class GameBoard {
                 System.err.println("fatal error adding tile: " + TileDefinition.getTileById(tile.getId()).getName());
                 return;
         }
-        if (newTile != null) {
-            newTileEntities[x + getWidth() * y].add(newTile);
-            tileEntities.add(newTile);
-        }
+        newTileEntities[x + getWidth() * y].add(newTile);
+        tileEntities.add(newTile);
     }
 
     /**
