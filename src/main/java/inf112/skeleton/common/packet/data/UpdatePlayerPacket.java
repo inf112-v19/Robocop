@@ -11,13 +11,16 @@ public class UpdatePlayerPacket implements PacketData {
     Vector2 fromTile;
     Vector2 toTile;
     String uuid;
+    int currentHP;
 
-    public UpdatePlayerPacket(String uuid, Direction direction, int movingTiles, Vector2 fromTile, Vector2 toTile) {
+    public UpdatePlayerPacket(String uuid, Direction direction, int movingTiles, Vector2 fromTile, Vector2 toTile, int currentHP) {
         this.uuid = uuid;
         this.direction = direction;
         this.movingTiles = movingTiles;
         this.fromTile = fromTile;
         this.toTile = toTile;
+        this.currentHP = currentHP;
+
     }
 
     public String getUUID() {
@@ -43,6 +46,8 @@ public class UpdatePlayerPacket implements PacketData {
     public Vector2 getToTile() {
         return toTile;
     }
+
+    public int getCurrentHP() { return currentHP; }
 
 
     public static UpdatePlayerPacket parseJSON(JsonObject jsonObject) {

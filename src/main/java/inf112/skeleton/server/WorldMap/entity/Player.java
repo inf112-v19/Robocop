@@ -29,6 +29,7 @@ public class Player {
 
     private final int COUNT_CARDS = 5;
     private final int GIVEN_CARDS = 9;
+    private final int MAX_RESPAWNS = 3;
 
 
     private Card[] burnt;
@@ -38,6 +39,7 @@ public class Player {
 
     private int slot;
     private int currentHP;
+    private int respawns;
     private Direction direction;
     private int movingTiles = 0;
 
@@ -53,6 +55,7 @@ public class Player {
     public Player(String name, Vector2 pos, int hp, int slot, Direction direction, User owner) {
         this.name = name;
         this.currentHP = hp;
+        this.respawns = 0;
         this.currentPos = pos;
         this.movingTo = new Vector2(currentPos.x, currentPos.y);
         this.slot = slot;
@@ -170,12 +173,14 @@ public class Player {
         System.out.println("Sending card to " + owner.getName());
         System.arraycopy(hand, 0, cardsGiven, 0, hand.length);
 
+        if (isArtificial()) {
+            forceSelect();
+            return;
+        }
+
         System.out.println("[Player serverside - sendCardHandToClient] Sending packet " + packet.toString());
         owner.sendPacket(packet);
 
-        if (isArtificial()) {
-            forceSelect();
-        }
 
     }
 
@@ -186,10 +191,41 @@ public class Player {
     }
 
     public void restoreBackup() {
-        Player toRestore = Tools.GSON.fromJson(this.backup, Player.class);
-        this.currentPos = toRestore.currentPos.cpy();
-        this.movingTo = toRestore.movingTo.cpy();
-        this.direction = toRestore.direction;
+        if(this.respawns < MAX_RESPAWNS) {
+            Player toRestore = Tools.GSON.fromJson(this.backup, Player.class);
+            this.currentPos = toRestore.currentPos.cpy();
+            this.movingTo = toRestore.movingTo.cpy();
+            this.direction = toRestore.direction;
+            this.respawns ++;
+        } else {
+            //TODO GAME OVER.
+            owner.getLobby().getGame();
+        }
+    }
+
+    /**
+     * Player gets hit for one hit-point.
+     */
+    public void getHit() {
+        if(this.currentHP > 1) {
+            this.currentHP--;
+            sendUpdate();
+        } else {
+            restoreBackup();
+        }
+    }
+
+    /**
+     * Player gets hit for the given amount. Can be used for insta-kills (ie. falling off the board).
+     * @param amount of hit-points the player looses.
+     */
+    public void getHit(int amount) {
+        if(this.currentHP > amount) {
+            this.currentHP -= amount;
+            sendUpdate();
+        } else {
+            restoreBackup();
+        }
     }
 
     /**
@@ -220,6 +256,9 @@ public class Player {
         readyForTurn = true;
     }
 
+    /**
+     * Forcefully select a hand for the player.
+     */
     public void forceSelect() {
         System.out.println("[Player serverside - forceSelect] - selecting cards automatically.");
         System.arraycopy(cardsGiven, 0, cardsSelected, 0, 5);
@@ -315,7 +354,7 @@ public class Player {
      */
     public void sendUpdate() {
         FromServer pktId = FromServer.PLAYER_UPDATE;
-        UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo);
+        UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo, currentHP);
         Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
         owner.getLobby().broadcastPacket(updatePacket);
     }
@@ -391,9 +430,9 @@ public class Player {
 
                     TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
                     if (entity != null) {
-                       if (!entity.canContinueWalking()) {
+                        if (!entity.canContinueWalking()) {
                             actual = i;
-                         break;
+                            break;
                         }
                     }
 

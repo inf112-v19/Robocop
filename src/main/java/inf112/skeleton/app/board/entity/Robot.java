@@ -34,10 +34,10 @@ public class Robot extends Entity {
         this.position = new int[2];
         this.position[0] = (int) x * 64;
         this.position[1] = (int) y * 64;
-        this.health = player.initalHp;
+        this.health = player.initialHp;
         this.colour = slot;
         System.out.println("Robot constructor, slot = " + this.colour);
-        this.facing = player.initalDirection;
+        this.facing = player.initialDirection;
         this.player = player;
     }
 
@@ -47,6 +47,10 @@ public class Robot extends Entity {
      */
     public int getHealth() {
         return health;
+    }
+
+    public void updateHealth(UpdatePlayerPacket update) {
+        this.health = update.getCurrentHP();
     }
 
     /**

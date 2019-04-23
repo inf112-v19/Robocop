@@ -17,8 +17,8 @@ public class Player {
     public String name;
     Robot robot = null;
     Vector2 initialPos;
-    int initalHp;
-    Direction initalDirection;
+    int initialHp;
+    Direction initialDirection;
     public Card[] cards;
     public Card[] selectedCards;
     public boolean[] cardPlayedByServer;
@@ -37,10 +37,10 @@ public class Player {
     public Player(String uuid, String name, Vector2 pos, int hp, int slot, Direction direction) {
         this.uuid = uuid;
         this.name = name;
-        this.initalHp = hp;
+        this.initialHp = hp;
         this.slot = slot;
         this.initialPos = pos;
-        this.initalDirection = direction;
+        this.initialDirection = direction;
         this.cards = new Card[hp];
         this.selectedCards = new Card[5];
         this.cardPlayedByServer = new boolean[5];
@@ -126,6 +126,7 @@ public class Player {
      */
     public void updateRobot(UpdatePlayerPacket update) {
         robot.updateMovement(update);
+        robot.updateHealth(update);
         RoboRally.gameBoard.hud.getPlayerDeck().setFromDeckHidden(true);
         RoboRally.gameBoard.hud.turnTimer.reset();
     }
