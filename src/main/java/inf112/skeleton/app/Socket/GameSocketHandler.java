@@ -24,6 +24,11 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
     }
 
 
+    /**
+     * Read message from server and decide what to do with it
+     *
+     * @param jsonObject
+     */
     public void handleIncomingPacket(JsonObject jsonObject) {
         Gdx.app.log("GameSocketHandler clientside -  handleIncomingPacket", "Handling incoming packet...");
         FromServer packetId = FromServer.values()[jsonObject.get("id").getAsInt()];
@@ -129,6 +134,12 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
         }
     }
 
+    /**
+     * Read and incoming packet, check if it follows the correct specifications, parse and send it to the packet handler.
+     *
+     * @param arg0
+     * @param arg1
+     */
     @Override
     protected void channelRead0(ChannelHandlerContext arg0, String arg1) {
         System.out.println(arg1);

@@ -16,6 +16,10 @@ public class GameSocketInitializer extends ChannelInitializer<SocketChannel> {
         this.game = game;
     }
 
+    /**
+     * Set up Channel pipeline
+     * @param arg0
+     */
     @Override
     protected void initChannel(SocketChannel arg0) {
         ChannelPipeline pipeline = arg0.pipeline();

@@ -5,10 +5,14 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import inf112.skeleton.common.specs.Direction;
 
+/**
+ * Static load sprites to avoid loading them multiple times
+ */
 public class Sprites {
     public static TextureAtlas[] textureAtlases;
     public static Animation[][] robotAnimations;
     public static Animation[] animation_flag;
+    @SuppressWarnings("unchecked")
     public static void setup(){
         textureAtlases = new TextureAtlas[9];
         robotAnimations = new Animation[8][4];

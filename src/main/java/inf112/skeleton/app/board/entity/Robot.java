@@ -10,7 +10,6 @@ import inf112.skeleton.common.specs.Direction;
 
 
 public class Robot extends Entity {
-    // TODO: cleanup variable, collect animations to one array.
     private Direction facing;
     private int health;
     private int[] position;
@@ -19,18 +18,17 @@ public class Robot extends Entity {
     private Vector2 tileTo;
 
     private int movementLength = 1;
-    private Animation<TextureRegion> currentAnimation;
     private int colour;
 
-    private float stateTime;
+    private float stateTime = 0f;
     private Player player;
     private BitmapFont font = new BitmapFont();
 
     private int movementDirection = 1;
 
-    boolean movedLastTick;
+    private boolean movedLastTick;
 
-    public Robot(float x, float y,int slot, Player player) {
+    Robot(float x, float y, int slot, Player player) {
         super(x, y, EntityType.ROBOT);
         this.tileTo = new Vector2(x, y);
         this.position = new int[2];
@@ -40,7 +38,6 @@ public class Robot extends Entity {
         this.colour = slot;
         System.out.println("Robot constructor, slot = " + this.colour);
         this.facing = player.initalDirection;
-        stateTime = 0f;
         this.player = player;
     }
 
@@ -68,7 +65,7 @@ public class Robot extends Entity {
      * @param currentTime
      * @return true if currently moving, false if not moving.
      */
-    public boolean processMovement(long currentTime) {
+    private boolean processMovement(long currentTime) {
         if (this.pos.x == this.tileTo.x && this.pos.y == this.tileTo.y) {
             return false;
         }
@@ -114,7 +111,7 @@ public class Robot extends Entity {
      *
      * @param updatePlayerPacket
      */
-    public void updateMovement(UpdatePlayerPacket updatePlayerPacket) {
+    void updateMovement(UpdatePlayerPacket updatePlayerPacket) {
         this.tileTo = updatePlayerPacket.getToTile();
         this.facing = updatePlayerPacket.getDirection();
         this.movementDirection = updatePlayerPacket.getMovingTiles();
@@ -132,7 +129,7 @@ public class Robot extends Entity {
      * @param x
      * @param y
      */
-    public void placeAt(float x, float y) {
+    private void placeAt(float x, float y) {
         this.pos.x = x;
         this.pos.y = y;
         this.tileTo.x = x;
@@ -148,7 +145,7 @@ public class Robot extends Entity {
 
     @Override
     public void render(SpriteBatch batch) {
-        currentAnimation = Sprites.robotAnimations[colour][facing.ordinal()];
+        Animation<TextureRegion> currentAnimation = Sprites.robotAnimations[colour][facing.ordinal()];
 
         stateTime += Gdx.graphics.getDeltaTime();
 

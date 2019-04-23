@@ -214,9 +214,7 @@ public class Player {
 
     public void forceSelect() {
         System.out.println("[Player serverside - forceSelect] - selecting cards automatically.");
-        for (int i = 0; i < 5; i++) {
-            cardsSelected[i] = cardsGiven[i];
-        }
+        System.arraycopy(cardsGiven, 0, cardsSelected, 0, 5);
         currentCard = 0;
     }
 

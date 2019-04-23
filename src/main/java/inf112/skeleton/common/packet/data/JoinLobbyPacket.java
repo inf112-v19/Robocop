@@ -1,7 +1,6 @@
 package inf112.skeleton.common.packet.data;
 
 import com.google.gson.JsonObject;
-import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.utility.Tools;
 
 public class JoinLobbyPacket implements PacketData {

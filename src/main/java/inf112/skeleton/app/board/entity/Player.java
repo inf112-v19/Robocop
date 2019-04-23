@@ -27,7 +27,7 @@ public class Player {
     /**
      * Player has its own class, which owns a robot, to avoid rendring on socket thread.
      *
-     * @param uuid       Unique id of owner
+     * @param uuid      Unique id of owner
      * @param name
      * @param pos
      * @param hp
@@ -48,8 +48,6 @@ public class Player {
 
     /**
      * If robot is not yet created for player it should create it.
-     * <p>
-     * TODO: move packets related to player actions here.
      */
     public void update() {
         if (robot == null) {
@@ -60,11 +58,12 @@ public class Player {
 
     /**
      * Updates the array that tells the client if a card has been played by the server.
+     *
      * @param packet containing a card that has been played.
      */
     public void receiveCardPacket(CardPacket packet) {
         Card foo = Tools.CARD_RECONSTRUCTOR.reconstructCard(packet.getPriority());
-        for(int i = 0; i < selectedCards.length; i++) {
+        for (int i = 0; i < selectedCards.length; i++) {
             if (selectedCards[i].equals(foo)) {
                 cardPlayedByServer[i] = true;
                 Gdx.app.log("Player - receiveCardPacket", "Set bool-arr pos " + i + " to true.");
@@ -90,12 +89,13 @@ public class Player {
         }
         selectedCards = new Card[5];
 
-        while(true) {
+        while (true) {
             try {
                 RoboRally.gameBoard.hud.getPlayerDeck().resetDeck();
                 RoboRally.gameBoard.hud.turnTimer.start();
                 return;
-            } catch(NullPointerException npe) {}
+            } catch (NullPointerException npe) {
+            }
         }
     }
 
@@ -118,19 +118,6 @@ public class Player {
 
     }
 
-    public void sendSelectedCardsToServer() {
-        Card[] hand;
-        hand = new Card[selectedCards.length];
-
-        System.arraycopy(selectedCards, 0, hand, 0, hand.length);
-
-        CardHandPacket data = new CardHandPacket(hand);
-        Packet packet = new Packet(ToServer.CARD_HAND_PACKET.ordinal(), data);
-        packet.sendPacket(RoboRally.channel);
-
-        Gdx.app.log("Player - sendSelectedCardsToServer", "SelectedCards sent to server.");
-    }
-
 
     /**
      * Accept packet related to any changes to this player, checks if its needed then applies changes.
@@ -143,10 +130,18 @@ public class Player {
         RoboRally.gameBoard.hud.turnTimer.reset();
     }
 
+    /**
+     * Get the unique id of the player
+     * @return unique id
+     */
     public String getUUID() {
         return uuid;
     }
 
+    /**
+     * Get the robot owned by the player
+     * @return Robot
+     */
     public Robot getRobot() {
         return this.robot;
     }

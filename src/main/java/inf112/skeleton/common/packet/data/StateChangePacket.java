@@ -1,7 +1,6 @@
 package inf112.skeleton.common.packet.data;
 
 import com.google.gson.JsonObject;
-import inf112.skeleton.common.specs.DataRequest;
 import inf112.skeleton.common.specs.StateChange;
 import inf112.skeleton.common.utility.Tools;
 

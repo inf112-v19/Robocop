@@ -138,9 +138,11 @@ public class Game {
         Card card = cardsForOneRound.get(player);
         if (card == null) {
             System.out.println("CARD IS NULL!!!!!!!");
+            return;
         }
         if (player == null) {
             System.out.println("player IS NULL!!!!!!!");
+            return;
         }
         Gdx.app.log("Game - useCard", "Moving player " + player.toString() + " with card " + card.toString());
 

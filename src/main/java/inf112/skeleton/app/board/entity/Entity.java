@@ -6,10 +6,10 @@ import com.badlogic.gdx.math.Vector2;
 
 public abstract class Entity {
 
-    protected Vector2 pos;
-    protected EntityType type;
+    Vector2 pos;
+    private EntityType type;
 
-    public Entity(float x, float y, EntityType type) {
+    Entity(float x, float y, EntityType type) {
         this.pos = new Vector2(x, y);
         this.type = type;
     }
@@ -64,5 +64,11 @@ public abstract class Entity {
         return type.getHeight();
     }
 
+    /**
+     * Renders name last
+     *
+     * @param batch
+     * @param scale
+     */
     public abstract void renderName(SpriteBatch batch, float scale);
 }

@@ -1,14 +1,9 @@
 package inf112.skeleton.server;
 
 import com.badlogic.gdx.ApplicationListener;
-import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.server.Instance.Lobby;
-import inf112.skeleton.server.WorldMap.GameBoard;
-import inf112.skeleton.server.WorldMap.TiledMapLoader;
-import inf112.skeleton.server.card.CardDeck;
 import inf112.skeleton.server.user.User;
 
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 

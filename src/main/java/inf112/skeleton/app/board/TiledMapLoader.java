@@ -3,13 +3,11 @@ package inf112.skeleton.app.board;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import inf112.skeleton.app.board.entity.Flag;
 import inf112.skeleton.common.specs.MapFile;
-import inf112.skeleton.common.specs.TileDefinition;
 
 public class TiledMapLoader extends GameBoard {
 
