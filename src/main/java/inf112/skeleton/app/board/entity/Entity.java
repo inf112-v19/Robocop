@@ -66,6 +66,7 @@ public abstract class Entity {
 
     /**
      * Renders name last
+     *
      * @param batch
      * @param scale
      */
