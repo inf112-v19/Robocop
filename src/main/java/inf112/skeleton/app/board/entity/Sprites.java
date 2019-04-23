@@ -12,6 +12,7 @@ public class Sprites {
     public static TextureAtlas[] textureAtlases;
     public static Animation[][] robotAnimations;
     public static Animation[] animation_flag;
+    @SuppressWarnings("unchecked")
     public static void setup(){
         textureAtlases = new TextureAtlas[9];
         robotAnimations = new Animation[8][4];

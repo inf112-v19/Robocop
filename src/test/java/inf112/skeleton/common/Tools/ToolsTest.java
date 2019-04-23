@@ -4,8 +4,6 @@ import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.card.CardDeck;
 import org.junit.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ToolsTest {
 

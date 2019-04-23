@@ -1,6 +1,5 @@
 package inf112.skeleton.common.packet;
 
-import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.data.PacketData;
 import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;

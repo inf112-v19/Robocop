@@ -4,7 +4,6 @@ import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class CardDeck {

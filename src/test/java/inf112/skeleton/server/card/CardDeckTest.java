@@ -2,14 +2,11 @@ package inf112.skeleton.server.card;
 
 import inf112.skeleton.common.specs.Card;
 
-import inf112.skeleton.common.specs.CardType;
 import org.junit.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Random;
 
 public class CardDeckTest {
     CardDeck deck = new CardDeck();

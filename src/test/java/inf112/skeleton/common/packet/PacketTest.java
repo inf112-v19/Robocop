@@ -8,8 +8,6 @@ import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.card.CardDeck;
 import org.junit.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import java.util.Random;
 
 public class PacketTest {
