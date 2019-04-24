@@ -14,16 +14,19 @@ import inf112.skeleton.common.utility.Tools;
 
 public class Player {
     private final String uuid;
+    int slot;
     public String name;
     Robot robot = null;
     Vector2 initialPos;
     int initialHp;
     Direction initialDirection;
+
     public Card[] cards;
+    private Card[] burntCards;
+    private int burntAmount;
     public Card[] selectedCards;
     public boolean[] cardPlayedByServer;
-    private Card[] burntCards;
-    int slot;
+
 
     /**
      * Player has its own class, which owns a robot, to avoid rendring on socket thread.
@@ -46,6 +49,7 @@ public class Player {
         this.selectedCards = new Card[5];
         this.cardPlayedByServer = new boolean[5];
         this.burntCards = new Card[5];
+        this.burntAmount = 0;
     }
 
     /**
@@ -81,7 +85,29 @@ public class Player {
      * @param packet An array of cards.
      */
     public void receiveCardHandPacket(CardHandPacket packet) {
+        int[] givenCardHand = packet.getHand();
+        cards = new Card[givenCardHand.length];
+        for (int i = 0; i < cards.length; i++) {
+            cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(givenCardHand[i]);
+        }
+
         selectedCards = new Card[5];
+        cardPlayedByServer = new boolean[5];
+        for (int i = 0; i < burntAmount; i++) {
+            selectedCards[i] = burntCards[i];
+        }
+
+        while (true) {
+            try {
+                RoboRally.gameBoard.hud.getPlayerDeck().resetDeck();
+                RoboRally.gameBoard.hud.turnTimer.start();
+                return;
+            } catch (NullPointerException npe) {
+
+            }
+        }
+
+        /*selectedCards = new Card[5];
         cardPlayedByServer = new boolean[5];
         int[] packetCardHand = packet.getHand();
         if (packetCardHand.length < 5) {    // Less than 5 cards given means player-health <= 4, and player has burnt cards.
@@ -103,21 +129,35 @@ public class Player {
                 return;
             } catch (NullPointerException npe) {
             }
-        }
+        }*/
     }
 
     /**
      * Send one card to server where it will be used as a burnt card.
      * Call this when players hitpoints are below 5.
      */
-    public void sendBurntCardToServer() {
-        for (int i = 0; i < burntCards.length; i++) {
-            Gdx.app.log("Player clientside - sendBurntCardToServer", "Current i: " + i);
+    public void storeBurntCard() {
+        for (int i = 0; i < selectedCards.length; i++) {
+            if (!isInBurnt(selectedCards[i])) {                 //Not found in burnt.
+                for (int j = 0; j < burntCards.length; j++) {   //Find next open slot.
+                    if (burntCards[j] == null) {                //Burn card to slot.
+                        burntCards[j] = selectedCards[i];
+                        burntAmount++;
+                        return;
+                    }
+                }
+            }
+        }
+
+        Gdx.app.log("Player clientside - storeBurntCard", "No cards selected");
+        /*for (int i = 0; i < burntCards.length; i++) {
+
+            Gdx.app.log("Player clientside - storeBurntCard", "Current i: " + i);
             if(burntCards[i].equals(null)) {
                 burntCards[i] = selectedCards[i];
                 CardPacket data = new CardPacket(selectedCards[i]);
                 new Packet(ToServer.CARD_PACKET.ordinal(), data).sendPacket(RoboRally.channel);
-                Gdx.app.log("Player clientside - sendBurntCardToServer", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
+                Gdx.app.log("Player clientside - storeBurntCard", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
                 return;
             }
         }
@@ -126,12 +166,19 @@ public class Player {
                 burntCards[i] = selectedCards[i];
                 CardPacket data = new CardPacket(selectedCards[i]);
                 new Packet(ToServer.CARD_PACKET.ordinal(), data).sendPacket(RoboRally.channel);
-                Gdx.app.log("Player clientside - sendBurntCardToServer", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
+                Gdx.app.log("Player clientside - storeBurntCard", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
                 return;
             }
         }*/
-        Gdx.app.log("Player clientside - sendBurntCardToServer", "No cards selected");
+    }
 
+    private boolean isInBurnt(Card card) {
+        for (int i = 0; i < burntCards.length; i++) {
+            if (card == burntCards[i]) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -148,7 +195,10 @@ public class Player {
     }
 
     public void forceSelect() {
-        int numBurntCards = 0;
+        System.arraycopy(cards, 0, selectedCards, 0, 5);
+        System.arraycopy(burntCards, 0, selectedCards, 0, burntAmount);
+
+        /*int numBurntCards = 0;
         for (int i = 0; i < burntCards.length; i++) {
             if(burntCards[i].equals(null)) {    //TODO NPE
                 break;
@@ -158,7 +208,7 @@ public class Player {
         }
         for (int i = numBurntCards; i < selectedCards.length; i++) {
             selectedCards[i] = cards[i];
-        }
+        }*/
     }
 
     /**

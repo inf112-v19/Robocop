@@ -51,22 +51,25 @@ public class Robot extends Entity {
     }
 
     public void updateHealth(UpdatePlayerPacket update) {
-        int delta = health-update.getCurrentHP();
-        for (int i = 0; i < delta; i++) {
-            getHit();
+        if(health > update.getCurrentHP()) {
+            int delta = health-update.getCurrentHP();
+            for (int i = 0; i < delta; i++) {
+                getHit();
+            }
+        } else {
+            health = update.getCurrentHP();
         }
+
     }
 
     private void getHit() {
         if (health > 5) {
             health--;
+        } else if (health < 5 && health > 0){
+            health--;
+            player.storeBurntCard();
         } else {
-            if(health > 0) {
-                health--;
-                this.player.sendBurntCardToServer();
-            } else {
-                Gdx.app.log("Robot - getHit", "This was not supposed to happen.");
-            }
+            Gdx.app.log("Robot - getHit", "Health is below 0. This should not have happened.");
         }
     }
 

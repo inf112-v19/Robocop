@@ -78,7 +78,7 @@ public class IncomingPacketHandler {
             case CARD_PACKET:
                 CardPacket cardPacket = CardPacket.parseJSON(jsonObject);
                 User cardUser = handler.getEntityFromLoggedIn(incoming);
-                cardUser.getPlayer().storeBurntCard(Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority()));
+                //cardUser.getPlayer().storeBurntCard(Tools.CARD_RECONSTRUCTOR.reconstructCard(cardPacket.getPriority()));
                 break;
             case CARD_HAND_PACKET:
                 User cardHandUser = handler.getEntityFromLoggedIn(incoming);

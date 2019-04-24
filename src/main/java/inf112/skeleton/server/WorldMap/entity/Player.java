@@ -27,12 +27,13 @@ public class Player {
     private User owner;
     private String backup;
 
-    private final int COUNT_CARDS = 5;
+    private final int SELECTED_CARDS = 5;
     private final int GIVEN_CARDS = 9;
     private final int MAX_RESPAWNS = 3;
 
 
     private Card[] burnt;
+    private int burntAmount;
     private Card[] cardsSelected;
     private Card[] cardsGiven;
 
@@ -65,8 +66,9 @@ public class Player {
         owner.setPlayer(this);
         this.timeInit = System.currentTimeMillis();
         this.cardsGiven = new Card[GIVEN_CARDS];
-        this.cardsSelected = new Card[COUNT_CARDS];
-        this.burnt = new Card[COUNT_CARDS];
+        this.cardsSelected = new Card[SELECTED_CARDS];
+        this.burnt = new Card[SELECTED_CARDS];
+        this.burntAmount = 0;
     }
 
     /**
@@ -197,6 +199,7 @@ public class Player {
             this.currentPos = toRestore.currentPos.cpy();
             this.movingTo = toRestore.movingTo.cpy();
             this.direction = toRestore.direction;
+            this.currentHP = toRestore.currentHP;
             this.respawns++;
         } else {
             //TODO GAME OVER.
@@ -212,49 +215,46 @@ public class Player {
         if(this.currentHP == 0) {
             restoreBackup();
             return;
+        } else if (this.currentHP > 5) {
+            this.currentHP--;
+        } else {
+            this.currentHP--;
+            storeBurntCard();
         }
-        this.currentHP--;
         sendUpdate();
     }
 
     /**
      * Player gets hit for the given amount. Can be used for insta-kills (ie. falling off the board).
+     * If amount is greater than the players current health, the excess damage will not be counted.
      *
      * @param amount of hit-points the player looses.
      */
     public void getHit(int amount) {
-        if (this.currentHP > amount) {
-            this.currentHP -= amount;
-            sendUpdate();
-        } else {
-            restoreBackup();
+        if(amount > currentHP) {
+            amount = currentHP;
+        }
+        for (int i = 0; i < amount; i++) {
+            getHit();
         }
     }
 
     /**
-     * Store cards sent from client
+     * Store cards sent from client. Any burnt cards will be stored first, then the rest of the cards from the client.
      *
      * @param hand of cards
      */
     public void storeSelectedCards(Card[] hand) {
-        for (int i = 0; i < cardsSelected.length; i++) {
-            cardsSelected[i] = null;
+        cardsSelected = new Card[5];                                //Clear old data.
+        for (int i = 0; i < burntAmount; i++) {                     //Insert burnt cards front to back.
+            cardsSelected[i] = burnt[i];
         }
-        System.arraycopy(hand, 0, cardsSelected, cardsSelected.length - hand.length, hand.length);
-
-
-        if (!isSelectedSubsetOfDealt()) {    //Client have been naughty, overrule and give random hand (cards are dealt randomly in the first place).
-            System.out.println("[Player serverside - storeSelectedCards] - cards received from client is not a subset of cards dealt.");
+        for (int i = burntAmount; i < cardsSelected.length; i++) {  //Insert the rest of the cards.
+            cardsSelected[i] = hand[i];
+        }
+        if (!isSelectedSubsetOfDealt()) {                           //Client have been naughty, overrule and give random hand.
             forceSelect();
         }
-
-        //Handle burnt cards, if any.
-        for (int i = 0; i < burnt.length; i++) {
-            if (burnt[i] != null) {
-                cardsSelected[i] = burnt[i];
-            }
-        }
-
         currentCard = 0;
         readyForTurn = true;
     }
@@ -263,39 +263,36 @@ public class Player {
      * Forcefully select a hand for the player.
      */
     public void forceSelect() {
-        System.out.println("[Player serverside - forceSelect] - selecting cards automatically.");
-        System.arraycopy(cardsGiven, 0, cardsSelected, 0, 5);
+        System.out.println("[Player serverside - forceSelect] - selecting cards automatically for player " + this.owner.getUUID() + ".");
+        System.arraycopy(burnt, 0, cardsSelected, 0, burntAmount);
+        System.arraycopy(cardsGiven, 0, cardsSelected, burntAmount, 5-burntAmount);
         currentCard = 0;
     }
 
     /**
-     * Store burnt cards
-     * (burnt cards are always played first)
-     *
-     * @param card to be burnt
+     * Burn a card from players selection to first open slot in burnt array.
      */
-    public void storeBurntCard(Card card) {
-        for (int i = 0; i < burnt.length; i++) {
-            if (burnt[i] == null) {
-                burnt[i] = card;
-                return;
+    public void storeBurntCard() {
+        for (int i = 0; i < cardsSelected.length; i++) {
+            if(!isInBurnt(cardsSelected[i])) {              //Not found in burnt.
+                for (int j = 0; j < burnt.length; j++) {    //Find next open slot.
+                    if(burnt[j] == null) {                  //Burn card to slot.
+                        burnt[j] = cardsSelected[i];
+                        burntAmount++;
+                        return;
+                    }
+                }
             }
         }
     }
 
-    /**
-     * Get the next card to be played in a rogue-like system
-     *
-     * @return next card
-     */
-    public Card getNextFromSelected() {
-        if (currentCard == cardsSelected.length) {
-            return null;
+    private boolean isInBurnt(Card card) {
+        for (int i = 0; i < burnt.length; i++) {
+            if(card == burnt[i]) {
+                return true;
+            }
         }
-        if (currentCard == COUNT_CARDS - 1) {
-            readyForTurn = false;
-        }
-        return cardsSelected[currentCard++];
+        return false;
     }
 
     /**
@@ -333,6 +330,21 @@ public class Player {
     }
 
     /**
+     * Get the next card to be played in a rogue-like system
+     *
+     * @return next card
+     */
+    public Card getNextFromSelected() {
+        if (currentCard == cardsSelected.length) {
+            return null;
+        }
+        if (currentCard == SELECTED_CARDS - 1) {
+            readyForTurn = false;
+        }
+        return cardsSelected[currentCard++];
+    }
+
+    /**
      * Initialise the client who is linked to the player
      */
     public void sendInit() {
@@ -362,10 +374,12 @@ public class Player {
      * Send an update pack of all changes that needs to be reflected in the client
      */
     public void sendUpdate() {
-        FromServer pktId = FromServer.PLAYER_UPDATE;
-        UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo, currentHP);
-        Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
-        owner.getLobby().broadcastPacket(updatePacket);
+        if(owner.getLobby() != null) {
+            FromServer pktId = FromServer.PLAYER_UPDATE;
+            UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo, currentHP);
+            Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
+            owner.getLobby().broadcastPacket(updatePacket);
+        }
     }
 
     /**
@@ -497,6 +511,10 @@ public class Player {
      */
     void setCardsSelected(Card[] cardsSelected) {
         this.cardsSelected = cardsSelected;
+    }
+
+    public Card[] getBurnt() {
+        return this.burnt;
     }
 
     public User getOwner() {

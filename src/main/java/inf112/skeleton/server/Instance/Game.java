@@ -28,7 +28,7 @@ public class Game {
     private HashMap<Player, Card> cardsForOneRound = new HashMap<>();
     private GameBoard gameBoard;
 
-    private int roundSelectTime = 30; //The time the player will have to select their cards.
+    private int roundSelectTime = 5; //The time the player will have to select their cards.
     private int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
     private long timerStarted = 0;
     private long timerCountdownSeconds = 0;
@@ -61,13 +61,13 @@ public class Game {
                 deck = new CardDeck();
 
                 setTimer(roundSelectTime);
-                Gdx.app.log("Game - update - DEALING", "Moving to WAITING-stage.");
+                Gdx.app.log("Game - update - DEALING", "Moving to WAITING.");
                 gameStage = WAITING;
                 break;
 
             case WAITING:   //Wait for players to choose cards from their hand or send card after request.
                 if (checkTimer() || allPlayersReady()) {
-                    Gdx.app.log("Game - update - WAITING", "Moving to REQUEST-stage.");
+                    Gdx.app.log("Game - update - WAITING", "Moving to GET_CARDS.");
                     timerStarted = 0;
                     if (!allPlayersReady() && !players.isEmpty()) {
                         forcePlayersReady();
@@ -88,7 +88,7 @@ public class Game {
                     }
                     gameStage = DEALING;
                     cardRound = 0;
-                    Gdx.app.log("Game - update - WAITING", "Moving to MOVING-stage.");
+                    Gdx.app.log("Game - update - WAITING", "Moving to MOVING.");
                 }
                 break;
             case MOVING:    //Move the robots in correct order.
@@ -143,12 +143,12 @@ public class Game {
     private void useCard() {
         Player player = findUserWithHighestPriorityCard();
         Card card = cardsForOneRound.get(player);
-        if (card == null) {
-            System.out.println("CARD IS NULL!!!!!!!");
-            return;
-        }
         if (player == null) {
             System.out.println("player IS NULL!!!!!!!");
+            return;
+        }
+        if (card == null) {
+            System.out.println("CARD IS NULL!!!!!!!");
             return;
         }
         Gdx.app.log("Game - useCard", "Moving player " + player.toString() + " with card " + card.toString());
