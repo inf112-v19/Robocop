@@ -20,7 +20,7 @@ public class State_Playing extends GameState {
     private Viewport viewport;
     private InputMultiplexer inputMultiplexer;
     private InputContainer inputContainer;
-    private CameraHandler cameraHandler;
+    public CameraHandler cameraHandler;
     private static GameBoard gameBoard;
     private HUD hud;
     private boolean displayHUD = true;
@@ -52,7 +52,7 @@ public class State_Playing extends GameState {
             cameraHandler.handle();
 
         camera.update();
-        gameBoard.update();
+        gameBoard.update(this);
 
         // Whenever TAB is pressed, the HUD will be enabled/disabled.
         // TODO: Disable all input processors added by HUD.

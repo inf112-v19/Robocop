@@ -7,6 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import inf112.skeleton.app.board.entity.Flag;
+import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.common.specs.MapFile;
 
 public class TiledMapLoader extends GameBoard {
@@ -46,8 +47,8 @@ public class TiledMapLoader extends GameBoard {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void update(State_Playing playing) {
+        super.update(playing);
     }
 
     @Override
