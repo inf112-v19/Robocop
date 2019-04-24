@@ -71,4 +71,5 @@ public abstract class Entity {
      * @param scale
      */
     public abstract void renderName(SpriteBatch batch, float scale);
+
 }

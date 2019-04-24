@@ -2,6 +2,7 @@ package inf112.skeleton.app.gameStates.Playing;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.Action.InputContainer;
 
 import static java.lang.Math.max;
@@ -12,23 +13,24 @@ public class CameraHandler {
     private OrthographicCamera camera;
     private InputContainer inputContainer;
     private int baseCameraMovementSpeed = 10;
-    private float   scrollAmount        = 0.25f,
-                    zoomAmount          = 0.083f,
-                    zoomMin             = 0.5f,
-                    zoomMax             = 5.0f;
+    private float scrollAmount = 0.25f,
+            zoomAmount = 0.083f,
+            zoomMin = 0.5f,
+            zoomMax = 5.0f;
 
-    private static int  K_PLUS          = 70,
-                        K_MINUS         = 69,
-                        K_LEFT          = 21,
-                        K_UP            = 19,
-                        K_RIGHT         = 22,
-                        K_DOWN          = 20,
-                        K_SHIFT_LEFT    = 59;
+    private static int K_PLUS = 70,
+            K_MINUS = 69,
+            K_LEFT = 21,
+            K_UP = 19,
+            K_RIGHT = 22,
+            K_DOWN = 20,
+            K_SHIFT_LEFT = 59;
 
 
     /**
      * Initialize camera handler
-     * @param camera of game
+     *
+     * @param camera         of game
      * @param inputContainer storage of input-states (key-pressed, etc.)
      */
     public CameraHandler(OrthographicCamera camera, InputContainer inputContainer) {
@@ -38,6 +40,7 @@ public class CameraHandler {
 
     /**
      * Check whether a key is pressed
+     *
      * @param key specific key to check
      * @return true if key pressed
      */
@@ -52,6 +55,8 @@ public class CameraHandler {
         handleKeys();
         handleMouseMovement();
         handleScroll();
+        System.out.println(camera.position);
+
         camera.update();
     }
 
@@ -109,5 +114,12 @@ public class CameraHandler {
         if (Gdx.input.isTouched()) {
             camera.translate((-Gdx.input.getDeltaX()) * camera.zoom, (Gdx.input.getDeltaY()) * camera.zoom);
         }
+    }
+
+    public void updatePosition(Vector2 pos) {
+        float diffY = camera.position.y - (pos.y-128);
+        float diffX = camera.position.x - pos.x;
+        camera.translate(-diffX,-diffY);
+//        this.camera.translate(diffX, diffY);
     }
 }

@@ -7,6 +7,7 @@ import inf112.skeleton.common.specs.LobbyError;
 import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.specs.StateChange;
 import inf112.skeleton.server.GameWorldInstance;
+import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.user.User;
 
 import java.util.UUID;
@@ -198,6 +199,19 @@ public class Lobby {
                 userCount--;
                 usernames[i] = null;
                 user.setLobby(null);
+                if (gameStarted) {
+                    for (Player player :
+                            game.getPlayers()) {
+                        if (player.getOwner() == user) {
+                            game.getPlayers().remove(player);
+                            break;
+                        }
+                    }
+                    if(userCount == 0){
+                        kickAllAndDestroy();
+
+                    }
+                }
                 user.sendPacket(new Packet(FromServer.STATE_CHANGED, new StateChangePacket(StateChange.PLAYER_KICKED)));
 
                 if (user == host) {
@@ -217,7 +231,7 @@ public class Lobby {
      * Kick all users and destory the lobby
      */
     private void kickAllAndDestroy() {
-        if (gameStarted) {
+        if (gameStarted && userCount > 0) {
             return;
         }
         for (User user : users) {
@@ -355,7 +369,7 @@ public class Lobby {
     }
 
     public void addArtificial(User actionUser) {
-        if(actionUser == host){
+        if (actionUser == host) {
             User user = new User(
                     UUID.randomUUID().toString(),
                     "Computer-" + UUID.randomUUID().toString().substring(0, 5),

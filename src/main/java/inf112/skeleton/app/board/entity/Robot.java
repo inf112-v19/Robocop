@@ -191,4 +191,8 @@ public class Robot extends Entity {
         font.getData().setScale(scale);
         font.draw(batch, player.name, fontX, position[1] + (78+(10*scale-1)-10));
     }
+
+    public Vector2 getPos() {
+        return new Vector2(position[0], position[1]);
+    }
 }
