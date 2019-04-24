@@ -45,7 +45,6 @@ public class Wall extends TileEntity {
         System.out.printf("Rotation %d \n", cell.getRotation());
         System.out.println("Flip vert " + cell.getFlipHorizontally());
         System.out.println("Flip horiz " + cell.getFlipHorizontally());
-        System.out.println(getDirection().name());
         return false;
     }
 
@@ -66,6 +65,8 @@ public class Wall extends TileEntity {
                 return false;
             }
         }
+
+
         return walkingDirection != getDirection();
     }
 

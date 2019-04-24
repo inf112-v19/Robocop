@@ -27,7 +27,7 @@ public class GraphicsLoader {
                     folder_ChatBox = folder_ui + "ChatBox/",
                     folder_MessageBox = folder_ui + "MessageBox/",
                     folder_StatusBar = folder_ui + "StatusBar/",
-                    folder_Cards = folder_ui + "Cards/";
+                    folder_Cards = folder_ui + "cards/";
 
     public Skin     default_skin,
                     chatBox_skin,
