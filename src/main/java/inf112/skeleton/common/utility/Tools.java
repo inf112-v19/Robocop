@@ -40,4 +40,8 @@ public class Tools {
             return null;
         }
     }
+
+    public static int coordToIndex(int x, int y, int width){
+        return x + width * y;
+    }
 }
