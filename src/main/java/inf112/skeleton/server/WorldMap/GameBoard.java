@@ -4,6 +4,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.TileDefinition;
+import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.*;
 
@@ -43,7 +44,7 @@ public abstract class GameBoard {
                 break;
             case WALL:
             case LWALL:
-                walls[x + getWidth() * y].add(new Wall(tile, x, y, cell));
+                walls[Tools.coordToIndex(x, y, getWidth())].add(new Wall(tile, x, y, cell));
                 return;
             case DWRENCH:
             case WRENCH:
@@ -54,7 +55,7 @@ public abstract class GameBoard {
                 System.err.println("fatal error adding tile: " + TileDefinition.getTileById(tile.getId()).getName());
                 return;
         }
-        tileEntities[x + getWidth() * y].add(newTile);
+        tileEntities[Tools.coordToIndex(x, y, getWidth())].add(newTile);
     }
 
     /**

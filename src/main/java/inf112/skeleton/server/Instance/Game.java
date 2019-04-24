@@ -1,7 +1,6 @@
 package inf112.skeleton.server.Instance;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
@@ -39,6 +38,8 @@ public class Game {
     private long timerStarted = 0;
     private long timerCountdownSeconds = 0;
     private int cardRound = 0;
+
+    private Random random = new Random();
 
     private GameStage gameStage = LOBBY;
 
@@ -153,9 +154,11 @@ public class Game {
             return;
         }
         if (card == null) {
+
             System.out.println("CARD IS NULL!!!!!!!");
             return;
         }
+
         Gdx.app.log("Game - useCard", "Moving player " + player.toString() + " with card " + card.toString());
 
         CardPacket cardPacket = new CardPacket(card);

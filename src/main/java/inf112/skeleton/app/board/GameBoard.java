@@ -7,7 +7,11 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Entity;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.Playing.HUD;
-import inf112.skeleton.common.packet.data.*;
+import inf112.skeleton.app.gameStates.Playing.State_Playing;
+import inf112.skeleton.common.packet.data.CardHandPacket;
+import inf112.skeleton.common.packet.data.CardPacket;
+import inf112.skeleton.common.packet.data.PlayerInitPacket;
+import inf112.skeleton.common.packet.data.PlayerRemovePacket;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -41,7 +45,7 @@ public abstract class GameBoard {
         }
     }
 
-    public void update() {
+    public void update(State_Playing playing) {
         for (Player player : players.values()) {
             player.update();
 
@@ -54,6 +58,11 @@ public abstract class GameBoard {
             if (myPlayer.cards == null && foo != null) {
                 Gdx.app.log("Gameboard clientside - update", "Trying to receive lost cardHandPacket");
                 myPlayer.receiveCardHandPacket(foo);
+            }
+            if (myPlayer.getRobot() != null) {
+                if (playing.cameraHandler.isFollowing()) {
+                    playing.cameraHandler.updatePosition(myPlayer.getRobot().getPos());
+                }
             }
             myPlayer.update();
         }
@@ -94,9 +103,11 @@ public abstract class GameBoard {
     public abstract void dispose();
 
 
+
     public abstract int getWidth();
 
     public abstract int getHeight();
+
 
 
     public void addPlayer(PlayerInitPacket pkt) {
