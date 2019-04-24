@@ -24,7 +24,9 @@ public class CameraHandler {
             K_UP = 19,
             K_RIGHT = 22,
             K_DOWN = 20,
+            K_SPACE = 62,
             K_SHIFT_LEFT = 59;
+    private boolean following = true;
 
 
     /**
@@ -55,7 +57,6 @@ public class CameraHandler {
         handleKeys();
         handleMouseMovement();
         handleScroll();
-        System.out.println(camera.position);
 
         camera.update();
     }
@@ -84,15 +85,26 @@ public class CameraHandler {
         // Move camera based on keys (up, down, left, right) pressed
         if (isPressed(K_UP)) {
             camera.translate(0, baseCameraMovementSpeed * speedMultiplier);
+            setFollowing(false);
+
         }
         if (isPressed(K_DOWN)) {
             camera.translate(0, -baseCameraMovementSpeed * speedMultiplier);
+            setFollowing(false);
+
         }
         if (isPressed(K_LEFT)) {
             camera.translate(-baseCameraMovementSpeed * speedMultiplier, 0);
+            setFollowing(false);
+
         }
         if (isPressed(K_RIGHT)) {
             camera.translate(baseCameraMovementSpeed * speedMultiplier, 0);
+            setFollowing(false);
+
+        }
+        if (isPressed(K_SPACE)) {
+            setFollowing(true);
         }
     }
 
@@ -113,6 +125,11 @@ public class CameraHandler {
     private void handleMouseMovement() {
         if (Gdx.input.isTouched()) {
             camera.translate((-Gdx.input.getDeltaX()) * camera.zoom, (Gdx.input.getDeltaY()) * camera.zoom);
+            if(Math.abs((-Gdx.input.getDeltaX()) * camera.zoom) > 5){
+                if(Math.abs(((-Gdx.input.getDeltaY()) * camera.zoom)) > 5){
+                    setFollowing(false);
+                }
+            }
         }
     }
 
@@ -120,6 +137,13 @@ public class CameraHandler {
         float diffY = camera.position.y - (pos.y-128);
         float diffX = camera.position.x - pos.x;
         camera.translate(-diffX,-diffY);
-//        this.camera.translate(diffX, diffY);
+    }
+
+    public boolean isFollowing() {
+        return following;
+    }
+
+    public void setFollowing(boolean value) {
+        this.following = value;
     }
 }
