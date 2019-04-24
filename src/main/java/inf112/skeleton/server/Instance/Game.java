@@ -23,8 +23,9 @@ import static inf112.skeleton.common.specs.Direction.values;
 
 
 public class Game {
-    private final int ROUND_SELECT_TIMER = 5; //The time the player will have to select their cards.
+    private final int ROUND_SELECT_TIMER = 30; //The time the player will have to select their cards.
     private final int NUMBER_OF_FLAGS = 9;
+    private final int INITIAL_PLAYER_HP = 9;
     private Random random = new Random();
 
     private Lobby lobby;
@@ -87,9 +88,9 @@ public class Game {
                 cardRound++;
                 gameStage = MOVING;
                 if (cardRound > 5) {
-                    for (Player player : players) { //TESTING
+                    /*for (Player player : players) { //TESTING
                         player.getHit();
-                    }
+                    }*/
                     gameStage = DEALING;
                     cardRound = 0;
                     Gdx.app.log("Game - update - WAITING", "Moving to MOVING.");
@@ -318,7 +319,7 @@ public class Game {
                     suitableLocation = gameBoard.isTileWalkable(loc);
                 }
 
-                Player player = new Player(users[i].getName(), loc, 5, i, randomDir, users[i]);
+                Player player = new Player(users[i].getName(), loc, INITIAL_PLAYER_HP, i, randomDir, users[i]);
                 this.players.add(player);
                 player.sendInit();
                 player.initAll(lobby);
