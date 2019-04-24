@@ -451,13 +451,13 @@ public class Player {
                         break;
                     }
 
-                    TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                    /*TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
                     if (entity != null) {
                         if (!entity.canContinueWalking()) {
                             actual = i;
                             break;
                         }
-                    }
+                    }*/
 
                     for (Player player : players) {
                         if (toCheck.dst(player.currentPos) == 0 && player != this) {

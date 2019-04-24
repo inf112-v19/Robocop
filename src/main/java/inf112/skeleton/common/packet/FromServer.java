@@ -19,4 +19,5 @@ public enum FromServer {
     LOBBY_UPDATE,
     INIT_MAP,
     INIT_LOCALPLAYER,
+    SEND_FLAGS,
 }

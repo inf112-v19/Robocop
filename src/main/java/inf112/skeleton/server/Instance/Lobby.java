@@ -51,6 +51,15 @@ public class Lobby {
     }
 
     /**
+     * Sends the randomly placed flags to all players.
+     */
+    private void sendFlags() {
+        FlagsPacket data = new FlagsPacket(game.getFlags());
+        Packet packet = new Packet(FromServer.SEND_FLAGS.ordinal(), data);
+        broadcastPacket(packet);
+    }
+
+    /**
      * Start the 5 second countdown to game start
      *
      * @param user the user telling the game to start
@@ -97,6 +106,7 @@ public class Lobby {
                 break;
             case 3:
                 broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]2...");
+                sendFlags();
                 break;
             case 4:
                 broadcastChatMessage("[#FFFFFF]Game starting in [#FF0000]1...");

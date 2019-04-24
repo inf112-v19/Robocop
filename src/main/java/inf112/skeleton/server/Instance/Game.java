@@ -1,6 +1,7 @@
 package inf112.skeleton.server.Instance;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
@@ -9,6 +10,7 @@ import inf112.skeleton.common.packet.data.StateChangePacket;
 import inf112.skeleton.common.specs.*;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.TiledMapLoader;
+import inf112.skeleton.server.WorldMap.entity.Flag;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.card.CardDeck;
 import inf112.skeleton.server.user.User;
@@ -22,25 +24,28 @@ import static inf112.skeleton.common.specs.Direction.values;
 
 
 public class Game {
+    private final int ROUND_SELECT_TIMER = 5; //The time the player will have to select their cards.
+    private final int NUMBER_OF_FLAGS = 9;
+    private Random random = new Random();
+
     private Lobby lobby;
     private CardDeck deck = new CardDeck();
+    private Flag[] flags = new Flag[NUMBER_OF_FLAGS];
     private ArrayList<Player> players = new ArrayList<>();
     private HashMap<Player, Card> cardsForOneRound = new HashMap<>();
     private GameBoard gameBoard;
 
-    private int roundSelectTime = 5; //The time the player will have to select their cards.
-    private int tickCountdown = 0;  //Set amount of ticks where the server will not check or change game-status.
+    private int tickCountdown = 0;  //If greater than 0, the server will not check or perform any action other than count down this number.
     private long timerStarted = 0;
     private long timerCountdownSeconds = 0;
     private int cardRound = 0;
-
-    private Random random = new Random();
 
     private GameStage gameStage = LOBBY;
 
     Game(Lobby lobby, MapFile mapFile) {
         this.lobby = lobby;
         gameBoard = new TiledMapLoader(mapFile);
+        placeFlags();
     }
 
 
@@ -54,13 +59,13 @@ public class Game {
 
             case DEALING:   //Deal cards to players
                 Gdx.app.log("Game - update - DEALING", "Dealing cards to players.");
-                lobby.broadcastChatMessage("You have " + roundSelectTime + " seconds to choose cards or cards will be automatically chosen");
+                lobby.broadcastChatMessage("You have " + ROUND_SELECT_TIMER + " seconds to choose cards or cards will be automatically chosen");
                 for (Player player : players) {
                     player.sendCardHandToClient(createCardHand(player));
                 }
                 deck = new CardDeck();
 
-                setTimer(roundSelectTime);
+                setTimer(ROUND_SELECT_TIMER);
                 Gdx.app.log("Game - update - DEALING", "Moving to WAITING.");
                 gameStage = WAITING;
                 break;
@@ -130,7 +135,7 @@ public class Game {
             setTimerTicks(10 * card.getType().moveAmount);  // For other cards.
         }
         Direction moveDirection = player.getDirection();
-        if(card.getType() == CardType.BACKWARD1) {          // Special case for backward1.
+        if (card.getType() == CardType.BACKWARD1) {          // Special case for backward1.
             moveDirection = Direction.values()[(moveDirection.ordinal() + 2) % 4];
         }
         player.startMovement(moveDirection, card.getType().moveAmount, card.getPushed());
@@ -275,7 +280,7 @@ public class Game {
         for (Player player : players) {
             player.sendCardHandToClient(createCardHand(player));
         }
-        setTimer(roundSelectTime);
+        setTimer(ROUND_SELECT_TIMER);
         gameStage = WAITING;
         deck = new CardDeck();
     }
@@ -299,13 +304,13 @@ public class Game {
             if (users[i] != null) {
                 Direction randomDir = values()[random.nextInt(values().length)];
                 boolean suitableLocation = false;
-                Vector2 loc = new Vector2(0,0);
+                Vector2 loc = new Vector2(0, 0);
 
                 whileloop:
-                while(!suitableLocation) {
+                while (!suitableLocation) {
                     loc = new Vector2(random.nextInt(gameBoard.getWidth()), random.nextInt(gameBoard.getHeight()));
-                    for(Player player : players) {
-                        if(player.getCurrentPos().dst(loc) == 0) {
+                    for (Player player : players) {
+                        if (player.getCurrentPos().dst(loc) == 0) {
                             break whileloop;
                         }
                     }
@@ -318,5 +323,29 @@ public class Game {
                 player.initAll(lobby);
             }
         }
+    }
+
+    public void placeFlags() {
+        for (int i = 0; i < 9; i++) {
+            boolean suitableLocation = false;
+            Vector2 loc = new Vector2(0, 0);
+
+            whileloop:
+            while (!suitableLocation) {
+                loc = new Vector2(random.nextInt(gameBoard.getWidth()), random.nextInt(gameBoard.getHeight()));
+                for (Player player : players) {
+                    if (player.getCurrentPos().dst(loc) == 0) {
+                        break whileloop;
+                    }
+                }
+                suitableLocation = gameBoard.isTileWalkable(loc);
+            }
+            Flag flag = new Flag(loc,i+1);
+            flags[i] = flag;
+        }
+    }
+
+    public Flag[] getFlags() {
+        return flags;
     }
 }
