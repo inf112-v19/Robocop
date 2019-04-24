@@ -69,13 +69,13 @@ public abstract class TileEntity {
             case NORTH:
             case SOUTH:
                 if (cell.getFlipHorizontally()) {
-                    rotation = +2;
+                    rotation +=2;
                 }
                 break;
             case WEST:
             case EAST:
                 if (cell.getFlipVertically()) {
-                    rotation = +2;
+                    rotation +=2;
                 }
                 break;
         }

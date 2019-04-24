@@ -389,13 +389,17 @@ public class Player {
                         break;
                     }
 
-                    TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                    if (entity != null) {
-                       if (!entity.canContinueWalking()) {
-                            actual = i;
-                         break;
+                    ArrayList<TileEntity> entities = gameBoard.getTileEntityAtPosition(toCheck);
+                    for (TileEntity entity:
+                         entities) {
+                        if (entity != null) {
+                            if (!entity.canContinueWalking()) {
+                                actual = i;
+                                break outerloop;
+                            }
                         }
                     }
+
 
                     for (Player player : players) {
                         if (toCheck.dst(player.currentPos) == 0 && player != this) {
