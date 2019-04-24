@@ -14,9 +14,7 @@ public class FlagsPacket implements PacketData {
         }
     }
 
-    public Flag[] getFlags() { return this.flags; }
-
-    public static CardHandPacket parseJSON(JsonObject jsonObject) {
-        return Tools.GSON.fromJson(jsonObject.get("data"), CardHandPacket.class);
+    public static FlagsPacket parseJSON(JsonObject jsonObject) {
+        return Tools.GSON.fromJson(jsonObject.get("data"), FlagsPacket.class);
     }
 }

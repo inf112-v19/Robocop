@@ -5,13 +5,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Entity;
+import inf112.skeleton.app.board.entity.Flag;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.Playing.HUD;
 import inf112.skeleton.app.gameStates.Playing.State_Playing;
-import inf112.skeleton.common.packet.data.CardHandPacket;
-import inf112.skeleton.common.packet.data.CardPacket;
-import inf112.skeleton.common.packet.data.PlayerInitPacket;
-import inf112.skeleton.common.packet.data.PlayerRemovePacket;
+import inf112.skeleton.common.packet.data.*;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -82,6 +80,16 @@ public abstract class GameBoard {
         } else {
             foo = packet;
             Gdx.app.log("Gameboard clientside - receiveCardHand", "MyPlayer does not exist - saving packet for later");
+        }
+    }
+
+    public void receiveFlags(FlagsPacket packet) {
+        for (int i = 0; i < packet.flags.length; i++) {
+            float x = packet.flags[i].getPos().x;
+            float y = packet.flags[i].getPos().y;
+            int number = packet.flags[i].getNumber();
+            Flag flag = new Flag(x,y,number);
+            entities.add(flag);
         }
     }
 

@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 
 public class Flag extends Entity {
     private Animation<TextureRegion> currentAnimation;
-    private BitmapFont font = new BitmapFont();
+    private BitmapFont font;
     private float stateTime;
     private int active;
     private int flagNumber;
@@ -50,6 +50,9 @@ public class Flag extends Entity {
      * @param batch
      */
     public void renderNumber(SpriteBatch batch) {
+        if(this.font == null) {
+            font = new BitmapFont();
+        }
         if (active == 1) {
             final GlyphLayout layout = new GlyphLayout(font, "" + flagNumber);
             final float fontX = (pos.x * 64) + 3 + ((64 - layout.width) / 2);

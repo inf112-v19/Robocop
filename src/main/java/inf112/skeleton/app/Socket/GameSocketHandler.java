@@ -74,6 +74,11 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 CardHandPacket cardHandPacket = CardHandPacket.parseJSON(jsonObject);
                 RoboRally.gameBoard.receiveCardHand(cardHandPacket);
                 break;
+            case SEND_FLAGS:
+
+                FlagsPacket flags = FlagsPacket.parseJSON(jsonObject);
+                RoboRally.gameBoard.receiveFlags(flags);
+                break;
             case REMOVE_PLAYER:
                 PlayerRemovePacket playerRemovePacket = PlayerRemovePacket.parseJSON(jsonObject);
                 RoboRally.gameBoard.removePlayer(playerRemovePacket);
