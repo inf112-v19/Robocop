@@ -163,6 +163,9 @@ public class IncomingPacketHandler {
                 }
 
                 break;
+            case "gethit":
+                messagingUser.getPlayer().getHit();
+                break;
             case "move":
                 if (command.length > 2) {
                     if (Direction.fromString(command[1].toUpperCase()) != null) {

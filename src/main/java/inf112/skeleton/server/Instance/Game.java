@@ -83,6 +83,9 @@ public class Game {
                 cardRound++;
                 gameStage = MOVING;
                 if (cardRound > 5) {
+                    for (Player player : players) { //TESTING
+                        player.getHit();
+                    }
                     gameStage = DEALING;
                     cardRound = 0;
                     Gdx.app.log("Game - update - WAITING", "Moving to MOVING-stage.");
@@ -309,7 +312,7 @@ public class Game {
                     suitableLocation = gameBoard.isTileWalkable(loc);
                 }
 
-                Player player = new Player(users[i].getName(), loc, 9, i, randomDir, users[i]);
+                Player player = new Player(users[i].getName(), loc, 5, i, randomDir, users[i]);
                 this.players.add(player);
                 player.sendInit();
                 player.initAll(lobby);

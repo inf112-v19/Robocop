@@ -77,15 +77,16 @@ public abstract class GameBoard {
     }
 
     public void forceSelect() {
-        if(myPlayer != null) {
-            Gdx.app.log("GameBoard - forceSelect", "myPlayer is not null.");
+        if (myPlayer != null) {
+            myPlayer.forceSelect();
+            /*Gdx.app.log("GameBoard - forceSelect", "myPlayer is not null.");
             if(myPlayer.cards != null && myPlayer.selectedCards != null) {
                 Gdx.app.log("GameBoard - forceSelect", "cards and selectedCards are not null.");
                 for (int i = 0; i < 5; i++) {
                     Gdx.app.log("GameBoard - forceSelect", "Setting selected card " + i + " to " + myPlayer.cards[i].toString());
                     myPlayer.selectedCards[i] = myPlayer.cards[i];
                 }
-            }
+            }*/
         }
     }
 
@@ -93,11 +94,9 @@ public abstract class GameBoard {
     public abstract void dispose();
 
 
-
     public abstract int getWidth();
 
     public abstract int getHeight();
-
 
 
     public void addPlayer(PlayerInitPacket pkt) {
@@ -124,7 +123,8 @@ public abstract class GameBoard {
         }
         return this.players.get(uuid);
     }
-    public Map getPlayers(){
+
+    public Map getPlayers() {
         return players;
     }
 

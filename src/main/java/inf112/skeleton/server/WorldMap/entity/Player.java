@@ -89,6 +89,7 @@ public class Player {
 
     /**
      * Get the current position of the player.
+     *
      * @return Vector2 object with coordinates.
      */
     public Vector2 getCurrentPos() {
@@ -191,36 +192,38 @@ public class Player {
     }
 
     public void restoreBackup() {
-        if(this.respawns < MAX_RESPAWNS) {
+        if (this.respawns < MAX_RESPAWNS) {
             Player toRestore = Tools.GSON.fromJson(this.backup, Player.class);
             this.currentPos = toRestore.currentPos.cpy();
             this.movingTo = toRestore.movingTo.cpy();
             this.direction = toRestore.direction;
-            this.respawns ++;
+            this.respawns++;
         } else {
             //TODO GAME OVER.
             owner.getLobby().getGame();
         }
+        sendUpdate();
     }
 
     /**
      * Player gets hit for one hit-point.
      */
     public void getHit() {
-        if(this.currentHP > 1) {
-            this.currentHP--;
-            sendUpdate();
-        } else {
+        if(this.currentHP == 0) {
             restoreBackup();
+            return;
         }
+        this.currentHP--;
+        sendUpdate();
     }
 
     /**
      * Player gets hit for the given amount. Can be used for insta-kills (ie. falling off the board).
+     *
      * @param amount of hit-points the player looses.
      */
     public void getHit(int amount) {
-        if(this.currentHP > amount) {
+        if (this.currentHP > amount) {
             this.currentHP -= amount;
             sendUpdate();
         } else {
@@ -302,7 +305,13 @@ public class Player {
      */
     boolean isSelectedSubsetOfDealt() {
         boolean[] usedCards = new boolean[cardsGiven.length];
+        outer:
         for (Card card : cardsSelected) {
+            for (Card burntCard : burnt) {
+                if (card.equals(burntCard)) {
+                    continue outer;
+                }
+            }
             if (card == null) {
                 continue;
             }
@@ -362,9 +371,9 @@ public class Player {
     /**
      * Initialise movement for the player
      *
-     * @param direction to move in
-     * @param initialAmount    to move
-     * @param pushed    player is being pushed by robot or moved by conveyor-belt.
+     * @param direction     to move in
+     * @param initialAmount to move
+     * @param pushed        player is being pushed by robot or moved by conveyor-belt.
      * @return The amount of tiles the player moved.
      */
     public int startMovement(Direction direction, int initialAmount, boolean pushed) {
@@ -453,7 +462,7 @@ public class Player {
                             int otherRobotMoved = player.startMovement(direction, initialAmount - delta, true);
                             System.out.println("otherRobotMoved: " + otherRobotMoved);
 
-                            //Make our robot follow.
+                            //Make our robot follow. //TODO Use recursion in order to be able to check every tile that the player moves across. Otherwise, might be able to not register a flag if following a robot.
                             if (delta == 0) {
                                 this.movingTo.add(dx * otherRobotMoved, dy * otherRobotMoved);
                                 this.movingTiles = otherRobotMoved;

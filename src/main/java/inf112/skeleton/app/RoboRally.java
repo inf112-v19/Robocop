@@ -85,11 +85,6 @@ public class RoboRally extends ApplicationAdapter {
         }
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.PAGE_DOWN)) {
-            Gdx.app.log("RoboRally clientside - render", "Sending burnt card");
-            RoboRally.gameBoard.myPlayer.sendBurntCardToServer();
-        }
-
         gsm.update(0);
         gsm.render(batch);
     }

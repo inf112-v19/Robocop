@@ -43,6 +43,7 @@ public class Robot extends Entity {
 
     /**
      * Get the current health of the robot.
+     *
      * @return int health
      */
     public int getHealth() {
@@ -50,11 +51,28 @@ public class Robot extends Entity {
     }
 
     public void updateHealth(UpdatePlayerPacket update) {
-        this.health = update.getCurrentHP();
+        int delta = health-update.getCurrentHP();
+        for (int i = 0; i < delta; i++) {
+            getHit();
+        }
+    }
+
+    private void getHit() {
+        if (health > 5) {
+            health--;
+        } else {
+            if(health > 0) {
+                health--;
+                this.player.sendBurntCardToServer();
+            } else {
+                Gdx.app.log("Robot - getHit", "This was not supposed to happen.");
+            }
+        }
     }
 
     /**
      * Get the current direction the robot is facing.
+     *
      * @return A direction.
      */
     public Direction getFacingDirection() {
@@ -158,7 +176,7 @@ public class Robot extends Entity {
         //Is the robot currently moving
         if (isMoving) {
             //Yes it is moving, render animated frames.
-            if(movementDirection >= 0) {
+            if (movementDirection >= 0) {
                 currentAnimation.setPlayMode(Animation.PlayMode.NORMAL);
             } else {
                 currentAnimation.setPlayMode(Animation.PlayMode.REVERSED);
@@ -193,6 +211,6 @@ public class Robot extends Entity {
         final float fontX = position[0] + (64 - layout.width) / 2;
         font.setColor(Color.RED);
         font.getData().setScale(scale);
-        font.draw(batch, player.name, fontX, position[1] + (78+(10*scale-1)-10));
+        font.draw(batch, player.name, fontX, position[1] + (78 + (10 * scale - 1) - 10));
     }
 }

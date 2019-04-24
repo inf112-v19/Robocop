@@ -22,6 +22,7 @@ public class Player {
     public Card[] cards;
     public Card[] selectedCards;
     public boolean[] cardPlayedByServer;
+    private Card[] burntCards;
     int slot;
 
     /**
@@ -44,6 +45,7 @@ public class Player {
         this.cards = new Card[hp];
         this.selectedCards = new Card[5];
         this.cardPlayedByServer = new boolean[5];
+        this.burntCards = new Card[5];
     }
 
     /**
@@ -58,6 +60,7 @@ public class Player {
 
     /**
      * Updates the array that tells the client if a card has been played by the server.
+     * The server will never send a single card for any other reason.
      *
      * @param packet containing a card that has been played.
      */
@@ -73,7 +76,7 @@ public class Player {
     }
 
     /**
-     * Receive a fresh hand from the server. Overwrites anything the player had before.
+     * Receive a fresh hand from the server. Refreshes arrays, and automatically puts in burnt cards first (if any).
      *
      * @param packet An array of cards.
      */
@@ -81,13 +84,17 @@ public class Player {
         selectedCards = new Card[5];
         cardPlayedByServer = new boolean[5];
         int[] packetCardHand = packet.getHand();
-        if (packetCardHand.length != cards.length) {
-            cards = new Card[packetCardHand.length];
+        if (packetCardHand.length < 5) {    // Less than 5 cards given means player-health <= 4, and player has burnt cards.
+            for (int i = 0; i < 5 - packetCardHand.length; i++) {
+                selectedCards[i] = burntCards[i];
+            }
         }
+
+        cards = new Card[packetCardHand.length];
+
         for (int i = 0; i < packetCardHand.length; i++) {
             cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packetCardHand[i]);
         }
-        selectedCards = new Card[5];
 
         while (true) {
             try {
@@ -104,16 +111,25 @@ public class Player {
      * Call this when players hitpoints are below 5.
      */
     public void sendBurntCardToServer() {
-        for (int i = 0; i < selectedCards.length; i++) {
-            if (selectedCards[i] != null) {
+        for (int i = 0; i < burntCards.length; i++) {
+            Gdx.app.log("Player clientside - sendBurntCardToServer", "Current i: " + i);
+            if(burntCards[i].equals(null)) {
+                burntCards[i] = selectedCards[i];
                 CardPacket data = new CardPacket(selectedCards[i]);
                 new Packet(ToServer.CARD_PACKET.ordinal(), data).sendPacket(RoboRally.channel);
                 Gdx.app.log("Player clientside - sendBurntCardToServer", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
-                selectedCards[i] = null;
-
                 return;
             }
         }
+        /*for (int i = 0; i < selectedCards.length; i++) {
+            if (selectedCards[i] != null) {
+                burntCards[i] = selectedCards[i];
+                CardPacket data = new CardPacket(selectedCards[i]);
+                new Packet(ToServer.CARD_PACKET.ordinal(), data).sendPacket(RoboRally.channel);
+                Gdx.app.log("Player clientside - sendBurntCardToServer", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
+                return;
+            }
+        }*/
         Gdx.app.log("Player clientside - sendBurntCardToServer", "No cards selected");
 
     }
@@ -131,8 +147,23 @@ public class Player {
         RoboRally.gameBoard.hud.turnTimer.reset();
     }
 
+    public void forceSelect() {
+        int numBurntCards = 0;
+        for (int i = 0; i < burntCards.length; i++) {
+            if(burntCards[i].equals(null)) {    //TODO NPE
+                break;
+            }
+            selectedCards[i] = burntCards[i];
+            numBurntCards++;
+        }
+        for (int i = numBurntCards; i < selectedCards.length; i++) {
+            selectedCards[i] = cards[i];
+        }
+    }
+
     /**
      * Get the unique id of the player
+     *
      * @return unique id
      */
     public String getUUID() {
@@ -141,6 +172,7 @@ public class Player {
 
     /**
      * Get the robot owned by the player
+     *
      * @return Robot
      */
     public Robot getRobot() {
