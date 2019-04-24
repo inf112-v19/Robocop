@@ -11,13 +11,9 @@ import java.util.ArrayList;
 
 public abstract class GameBoard {
 
-    public ArrayList<TileEntity> tileEntities;
     public ArrayList<TileEntity>[] walls;
-    public ArrayList<TileEntity>[] newTileEntities;
+    public ArrayList<TileEntity>[] tileEntities;
 
-    public GameBoard() {
-        tileEntities = new ArrayList<>();
-    }
 
     /**
      * Register TileEntity to the board
@@ -58,8 +54,7 @@ public abstract class GameBoard {
                 System.err.println("fatal error adding tile: " + TileDefinition.getTileById(tile.getId()).getName());
                 return;
         }
-        newTileEntities[x + getWidth() * y].add(newTile);
-        tileEntities.add(newTile);
+        tileEntities[x + getWidth() * y].add(newTile);
     }
 
     /**
@@ -67,8 +62,11 @@ public abstract class GameBoard {
      */
     public void update() {
 
-        for (TileEntity obj : tileEntities) {
-            obj.update();
+        for (int i = 0; i < tileEntities.length; i++) {
+            for (TileEntity entity :
+                    tileEntities[i]) {
+                entity.update();
+            }
         }
     }
 
@@ -78,13 +76,10 @@ public abstract class GameBoard {
      * @param pos
      * @return TileEntity if found, null if not found
      */
-    public TileEntity getTileEntityAtPosition(Vector2 pos) {
-        for (TileEntity tileEntity : tileEntities) {
-            if (tileEntity.detectCollision(pos)) {
-                return tileEntity;
-            }
-        }
-        return null;
+    public ArrayList<TileEntity> getTileEntityAtPosition(Vector2 pos) {
+
+        int index = (int) (pos.x + getWidth() * pos.y);
+        return tileEntities[index];
     }
 
 
@@ -95,7 +90,7 @@ public abstract class GameBoard {
      * @return Arraylist of walls if found, empty arraylist if not
      */
     public ArrayList<TileEntity> getWallsAtPosition(Vector2 pos) {
-        int wallindex = (int)(pos.x + getWidth() *pos.y);
+        int wallindex = (int) (pos.x + getWidth() * pos.y);
         return walls[wallindex];
     }
 

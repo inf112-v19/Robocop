@@ -18,10 +18,10 @@ public class TiledMapLoader extends GameBoard {
         super();
         tiledMap = new TmxMapLoader().load(file.filename);
         walls = new ArrayList[getHeight() * getWidth()];
-        newTileEntities = new ArrayList[getHeight() * getWidth()];
+        tileEntities = new ArrayList[getHeight() * getWidth()];
         for (int i = 0; i < walls.length; i++) {
             walls[i] = new ArrayList<TileEntity>();
-            newTileEntities[i] = new ArrayList<TileEntity>();
+            tileEntities[i] = new ArrayList<TileEntity>();
         }
         // CHeck for tile entities like lasers and black holes
         for (int i = 0; i < tiledMap.getLayers().getCount(); i++) {
