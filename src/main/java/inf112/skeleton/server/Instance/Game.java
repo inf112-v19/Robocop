@@ -39,8 +39,6 @@ public class Game {
     private long timerCountdownSeconds = 0;
     private int cardRound = 0;
 
-    private Random random = new Random();
-
     private GameStage gameStage = LOBBY;
 
     Game(Lobby lobby, MapFile mapFile) {
