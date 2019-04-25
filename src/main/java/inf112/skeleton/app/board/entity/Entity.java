@@ -1,7 +1,10 @@
 package inf112.skeleton.app.board.entity;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import inf112.skeleton.common.specs.Direction;
+import inf112.skeleton.common.specs.TileDefinition;
 
 
 public abstract class Entity {
@@ -71,5 +74,26 @@ public abstract class Entity {
      * @param scale
      */
     public abstract void renderName(SpriteBatch batch, float scale);
+
+    public Direction getDirection(TileDefinition tileType, TiledMapTileLayer.Cell cell) {
+        Direction tileDefault = tileType.getDefaultFace();
+        int rotation = 4 + tileDefault.ordinal();
+        switch (tileDefault) {
+            case NORTH:
+            case SOUTH:
+                if (cell.getFlipHorizontally()) {
+                    rotation +=2;
+                }
+                break;
+            case WEST:
+            case EAST:
+                if (cell.getFlipVertically()) {
+                    rotation +=2;
+                }
+                break;
+        }
+        rotation -= cell.getRotation();
+        return Direction.values()[rotation % 4];
+    }
 
 }
