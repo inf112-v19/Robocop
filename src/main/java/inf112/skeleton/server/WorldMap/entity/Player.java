@@ -40,6 +40,7 @@ public class Player {
 
     private int slot;
     private int currentHP;
+    private int currentFlag;
     private int respawns;
     private Direction direction;
     private int movingTiles = 0;
@@ -56,6 +57,7 @@ public class Player {
     public Player(String name, Vector2 pos, int hp, int slot, Direction direction, User owner) {
         this.name = name;
         this.currentHP = hp;
+        this.currentFlag = 1;
         this.respawns = 0;
         this.currentPos = pos;
         this.movingTo = new Vector2(currentPos.x, currentPos.y);
@@ -459,6 +461,12 @@ public class Player {
                         }
                     }*/
 
+                    for (Flag flag : game.getFlags()) {
+                        if(flag.getNumber() == currentFlag) {
+
+                        }
+                    }
+
                     for (Player player : players) {
                         if (toCheck.dst(player.currentPos) == 0 && player != this) {
                             int delta = i - 1;    //Open tiles between the two robots.
@@ -478,10 +486,12 @@ public class Player {
 
                             //Make our robot follow. //TODO Use recursion in order to be able to check every tile that the player moves across. Otherwise, might be able to not register a flag if following a robot.
                             if (delta == 0) {
+                                //actual += startMovement(direction, otherRobotMoved, false);
                                 this.movingTo.add(dx * otherRobotMoved, dy * otherRobotMoved);
                                 this.movingTiles = otherRobotMoved;
                                 actual += otherRobotMoved;
                             } else {
+                                //actual += startMovement(direction, initialAmount-(otherRobotMoved-1), false);
                                 this.movingTo.add(dx * (initialAmount - (otherRobotMoved - 1)), dy * (initialAmount - (otherRobotMoved - 1)));
                                 this.movingTiles = initialAmount - (otherRobotMoved - 1);
                                 actual += otherRobotMoved - 1;
