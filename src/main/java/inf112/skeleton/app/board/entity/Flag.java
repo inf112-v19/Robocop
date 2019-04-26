@@ -61,4 +61,22 @@ public class Flag extends Entity {
             font.draw(batch, "" + flagNumber, fontX, fontY);
         }
     }
+
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Flag comparison = (Flag) obj;
+        return (this.pos.dst(comparison.pos) == 0 && this.flagNumber == comparison.flagNumber);
+    }
+
+    public String toString() {
+        return "[Flag number: " + flagNumber + " | x: " + getX() + ", y: " + getY() + "]";
+    }
 }

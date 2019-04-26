@@ -96,7 +96,7 @@ public class CameraHandler {
             setFollowing(false);
 
         }
-        if (isPressed(Keys.SPACE)) {
+        if (isPressed(Keys.COMMA)) {
             setFollowing(true);
         }
     }

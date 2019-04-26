@@ -23,7 +23,7 @@ import static inf112.skeleton.common.specs.Direction.values;
 
 
 public class Game {
-    private final int ROUND_SELECT_TIMER = 30; //The time the player will have to select their cards.
+    private final int ROUND_SELECT_TIMER = 3000; //The time in seconds the player will have to select their cards.
     private final int NUMBER_OF_FLAGS = 9;
     private final int INITIAL_PLAYER_HP = 9;
     private Random random = new Random();

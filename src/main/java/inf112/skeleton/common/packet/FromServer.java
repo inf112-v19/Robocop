@@ -20,4 +20,5 @@ public enum FromServer {
     INIT_MAP,
     INIT_LOCALPLAYER,
     SEND_FLAGS,
+    SEND_FLAG_UPDATE,
 }

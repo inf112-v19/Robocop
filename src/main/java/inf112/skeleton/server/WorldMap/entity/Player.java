@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.CardHandPacket;
+import inf112.skeleton.common.packet.data.FlagUpdatePacket;
 import inf112.skeleton.common.packet.data.PlayerInitPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
@@ -122,7 +123,7 @@ public class Player {
     }
 
     /**
-     * rotate the player with a card
+     * Rotate the player with a card
      *
      * @param cardType the rotation card
      */
@@ -132,7 +133,7 @@ public class Player {
     }
 
     /**
-     * check if the player is ready to move or has finished moving
+     * Check if the player is ready to move or has finished moving
      *
      * @param currentTime the current time
      * @return boolean false if no movement is occurring
@@ -214,7 +215,7 @@ public class Player {
      * Player gets hit for one hit-point.
      */
     public void getHit() {
-        if(this.currentHP == 0) {
+        if (this.currentHP == 0) {
             restoreBackup();
             return;
         } else if (this.currentHP > 5) {
@@ -233,7 +234,7 @@ public class Player {
      * @param amount of hit-points the player looses.
      */
     public void getHit(int amount) {
-        if(amount > currentHP) {
+        if (amount > currentHP) {
             amount = currentHP;
         }
         for (int i = 0; i < amount; i++) {
@@ -267,7 +268,7 @@ public class Player {
     public void forceSelect() {
         System.out.println("[Player serverside - forceSelect] - selecting cards automatically for player " + this.owner.getUUID() + ".");
         System.arraycopy(burnt, 0, cardsSelected, 0, burntAmount);
-        System.arraycopy(cardsGiven, 0, cardsSelected, burntAmount, 5-burntAmount);
+        System.arraycopy(cardsGiven, 0, cardsSelected, burntAmount, 5 - burntAmount);
         currentCard = 0;
     }
 
@@ -276,9 +277,9 @@ public class Player {
      */
     public void storeBurntCard() {
         for (int i = 0; i < cardsSelected.length; i++) {
-            if(!isInBurnt(cardsSelected[i])) {              //Not found in burnt.
+            if (!isInBurnt(cardsSelected[i])) {              //Not found in burnt.
                 for (int j = 0; j < burnt.length; j++) {    //Find next open slot.
-                    if(burnt[j] == null) {                  //Burn card to slot.
+                    if (burnt[j] == null) {                  //Burn card to slot.
                         burnt[j] = cardsSelected[i];
                         burntAmount++;
                         return;
@@ -290,7 +291,7 @@ public class Player {
 
     private boolean isInBurnt(Card card) {
         for (int i = 0; i < burnt.length; i++) {
-            if(card == burnt[i]) {
+            if (card == burnt[i]) {
                 return true;
             }
         }
@@ -376,7 +377,7 @@ public class Player {
      * Send an update pack of all changes that needs to be reflected in the client
      */
     public void sendUpdate() {
-        if(owner.getLobby() != null) {
+        if (owner.getLobby() != null) {
             FromServer pktId = FromServer.PLAYER_UPDATE;
             UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo, currentHP);
             Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
@@ -401,7 +402,6 @@ public class Player {
             GameBoard gameBoard = game.getGameBoard();
             ArrayList<Player> players = game.getPlayers();
             ArrayList<TileEntity> walls;
-
 
             this.timeMoved = System.currentTimeMillis();
 
@@ -429,13 +429,14 @@ public class Player {
             for (int i = 0; i <= initialAmount; i++) {
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
                 walls = gameBoard.getWallsAtPosition(toCheck);
-
                 if (i == 0) {   //Our current tile. Check if we can leave.
                     for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
-                            return 0;
+                            actual = i;
+                            break outerloop;
                         }
                     }
+
                 } else {        //All other tiles in our path.
                     for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
@@ -462,8 +463,8 @@ public class Player {
                     }*/
 
                     for (Flag flag : game.getFlags()) {
-                        if(flag.getNumber() == currentFlag) {
-
+                        if (flag.getPos().dst(toCheck) == 0 && flag.getNumber() == currentFlag) {
+                            sendFlagRegistered(flag);
                         }
                     }
 
@@ -495,10 +496,10 @@ public class Player {
                                 this.movingTo.add(dx * (initialAmount - (otherRobotMoved - 1)), dy * (initialAmount - (otherRobotMoved - 1)));
                                 this.movingTiles = initialAmount - (otherRobotMoved - 1);
                                 actual += otherRobotMoved - 1;
+
                             }
                             System.out.println("Moving " + movingTiles);
                             sendUpdate();
-
                             return actual;
                         }
                     }
@@ -512,6 +513,16 @@ public class Player {
         return initialAmount;
     }
 
+    private void sendFlagRegistered(Flag flag) {
+        System.out.println("Disabling current flag: " + currentFlag);
+        FlagUpdatePacket flagUpdatePacket = new FlagUpdatePacket(flag);
+        this.owner.sendPacket(new Packet(FromServer.SEND_FLAG_UPDATE.ordinal(), flagUpdatePacket));
+        this.currentFlag++;
+    }
+
+    public int getCurrentFlag() {
+        return this.currentFlag;
+    }
 
     /**
      * Manually set the current selected cards
