@@ -111,6 +111,7 @@ public class Game {
             case VICTORY:
                 // Unreachable at the moment
                 lobby.broadcastChatMessage("Winner winner chicken dinner.");
+                gameStage = LOBBY;
                 break;
         }
 
@@ -207,6 +208,17 @@ public class Game {
         if (timerStarted == 0)
             return true;
         return System.currentTimeMillis() >= timerStarted + timerCountdownSeconds;
+    }
+
+    public void checkWinCondition() {
+        for(Player player : players) {
+            System.out.println("Player " + player.getOwner().getName() + " is currently at flag " + player.getFlagsVisited());
+            System.out.println("Number of flags in game: " + NUMBER_OF_FLAGS);
+            if(player.getFlagsVisited() == NUMBER_OF_FLAGS) {
+                lobby.broadcastChatMessage("Player " + player.getOwner().getName() + " has won!");
+                gameStage = VICTORY;
+            }
+        }
     }
 
     /**
@@ -328,7 +340,7 @@ public class Game {
     }
 
     public void placeFlags() {
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < NUMBER_OF_FLAGS; i++) {
             boolean suitableLocation = false;
             Vector2 loc = new Vector2(0, 0);
 

@@ -41,7 +41,7 @@ public class Player {
 
     private int slot;
     private int currentHP;
-    private int currentFlag;
+    private int flagsVisited;
     private int respawns;
     private Direction direction;
     private int movingTiles = 0;
@@ -58,7 +58,7 @@ public class Player {
     public Player(String name, Vector2 pos, int hp, int slot, Direction direction, User owner) {
         this.name = name;
         this.currentHP = hp;
-        this.currentFlag = 1;
+        this.flagsVisited = 0;
         this.respawns = 0;
         this.currentPos = pos;
         this.movingTo = new Vector2(currentPos.x, currentPos.y);
@@ -463,7 +463,7 @@ public class Player {
                     }*/
 
                     for (Flag flag : game.getFlags()) {
-                        if (flag.getPos().dst(toCheck) == 0 && flag.getNumber() == currentFlag) {
+                        if (flag.getPos().dst(toCheck) == 0 && flag.getNumber() == flagsVisited+1) {
                             sendFlagRegistered(flag);
                         }
                     }
@@ -514,14 +514,15 @@ public class Player {
     }
 
     private void sendFlagRegistered(Flag flag) {
-        System.out.println("Disabling current flag: " + currentFlag);
+        System.out.println("Disabling current flag: " + flagsVisited);
         FlagUpdatePacket flagUpdatePacket = new FlagUpdatePacket(flag);
         this.owner.sendPacket(new Packet(FromServer.SEND_FLAG_UPDATE.ordinal(), flagUpdatePacket));
-        this.currentFlag++;
+        this.flagsVisited++;
+        this.owner.getLobby().getGame().checkWinCondition();
     }
 
-    public int getCurrentFlag() {
-        return this.currentFlag;
+    public int getFlagsVisited() {
+        return this.flagsVisited;
     }
 
     /**
