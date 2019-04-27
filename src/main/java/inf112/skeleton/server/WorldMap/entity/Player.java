@@ -429,15 +429,15 @@ public class Player {
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
                 walls = gameBoard.getWallsAtPosition(toCheck);
                 if (i == 0) {   //Our current tile. Check if we can leave.
-                    for (TileEntity wall : walls) {
+                    /*for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
                             actual = i;
                             break outerloop;
                         }
-                    }
+                    }*/
 
                 } else {        //All other tiles in our path.
-                    for (TileEntity wall : walls) {
+                    /*for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
                             actual = i;
                             break outerloop;
@@ -453,7 +453,7 @@ public class Player {
                         break;
                     }
 
-                    /*TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                    TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
                     if (entity != null) {
                         if (!entity.canContinueWalking()) {
                             actual = i;
@@ -462,7 +462,7 @@ public class Player {
                     }*/
 
                     for (Flag flag : game.getFlags()) {
-                        if (flag.getPos().dst(toCheck) == 0 && flag.getNumber() == flagsVisited+1) {
+                        if (flag.getPos().dst(toCheck) == 0 && flag.getNumber() == flagsVisited + 1) {
                             sendFlagRegistered(flag);
                         }
                     }
@@ -478,6 +478,12 @@ public class Player {
                             System.out.println("Moving " + movingTiles);
                             actual = delta;
                             sendUpdate();
+                            try {
+                                Thread.sleep(actual * 667);     //Don't delay, sleep today!
+
+                            } catch (InterruptedException e) {
+                                System.out.println("Oopsie woopsie I mad a fuckie wuckie.");
+                            }
 
                             //Move other robot the remaining required distance.
                             System.out.println("Amount: " + initialAmount);
@@ -485,18 +491,17 @@ public class Player {
                             System.out.println("otherRobotMoved: " + otherRobotMoved);
 
                             //Make our robot follow. //TODO Use recursion in order to be able to check every tile that the player moves across. Otherwise, might be able to not register a flag if following a robot.
-                            if (delta == 0) {
-                                //actual += startMovement(direction, otherRobotMoved, false);
-                                this.movingTo.add(dx * otherRobotMoved, dy * otherRobotMoved);
-                                this.movingTiles = otherRobotMoved;
-                                actual += otherRobotMoved;
-                            } else {
-                                //actual += startMovement(direction, initialAmount-(otherRobotMoved-1), false);
-                                this.movingTo.add(dx * (initialAmount - (otherRobotMoved - 1)), dy * (initialAmount - (otherRobotMoved - 1)));
-                                this.movingTiles = initialAmount - (otherRobotMoved - 1);
-                                actual += otherRobotMoved - 1;
+                            try {
+                                Thread.sleep(otherRobotMoved * 667);     //Don't delay, sleep today!
 
+                            } catch (InterruptedException e) {
+                                System.out.println("Oopsie woopsie I mad a fuckie wuckie.");
                             }
+                            actual += startMovement(direction, otherRobotMoved, false);
+                            //this.movingTo.add(dx * otherRobotMoved, dy * otherRobotMoved);
+                            //this.movingTiles = otherRobotMoved;
+                            //actual += otherRobotMoved;
+
                             System.out.println("Moving " + movingTiles);
                             sendUpdate();
                             return actual;
