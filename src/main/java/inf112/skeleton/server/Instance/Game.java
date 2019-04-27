@@ -352,6 +352,14 @@ public class Game {
                         break whileloop;
                     }
                 }
+                for (Flag flag : flags) {
+                    if( flag == null) {
+                        break;
+                    }
+                    if (flag.getPos().dst(loc) == 0) {
+                        break whileloop;
+                    }
+                }
                 suitableLocation = gameBoard.isTileWalkable(loc);
             }
             Flag flag = new Flag(loc,i+1);
