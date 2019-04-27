@@ -29,7 +29,6 @@ public class Player {
     private String backup;
 
     private final int SELECTED_CARDS = 5;
-    private final int GIVEN_CARDS = 9;
     private final int MAX_RESPAWNS = 3;
 
 
@@ -68,7 +67,7 @@ public class Player {
 
         owner.setPlayer(this);
         this.timeInit = System.currentTimeMillis();
-        this.cardsGiven = new Card[GIVEN_CARDS];
+        this.cardsGiven = new Card[hp];
         this.cardsSelected = new Card[SELECTED_CARDS];
         this.burnt = new Card[SELECTED_CARDS];
         this.burntAmount = 0;
@@ -114,7 +113,7 @@ public class Player {
      * Run tick based actions
      */
     public void update() {
-        processMovement(System.currentTimeMillis());
+        processingMovement(System.currentTimeMillis());
         if ((System.currentTimeMillis() - this.timeInit) >= this.delayMessage && shouldSendCards) {
             this.timeInit = System.currentTimeMillis();
             shouldSendCards = false;
@@ -138,7 +137,7 @@ public class Player {
      * @param currentTime the current time
      * @return boolean false if no movement is occurring
      */
-    private boolean processMovement(long currentTime) {
+    private boolean processingMovement(long currentTime) {
         if (this.currentPos.x == this.movingTo.x && this.currentPos.y == this.movingTo.y) {
             return false;
         }
@@ -176,7 +175,7 @@ public class Player {
         for (int i = 0; i < cardsGiven.length; i++) {
             cardsGiven[i] = null;
         }
-        System.out.println("Sending card to " + owner.getName());
+        System.out.println("Sending card to " + this.name);
         System.arraycopy(hand, 0, cardsGiven, 0, hand.length);
 
         if (isArtificial()) {
@@ -277,9 +276,9 @@ public class Player {
      */
     public void storeBurntCard() {
         for (int i = 0; i < cardsSelected.length; i++) {
-            if (!isInBurnt(cardsSelected[i])) {              //Not found in burnt.
+            if (!isInBurnt(cardsSelected[i])) {             //Not found in burnt.
                 for (int j = 0; j < burnt.length; j++) {    //Find next open slot.
-                    if (burnt[j] == null) {                  //Burn card to slot.
+                    if (burnt[j] == null) {                 //Burn card to slot.
                         burnt[j] = cardsSelected[i];
                         burntAmount++;
                         return;
@@ -394,7 +393,7 @@ public class Player {
      * @return The amount of tiles the player moved.
      */
     public int startMovement(Direction direction, int initialAmount, boolean pushed) {
-        if (!processMovement(System.currentTimeMillis())) {
+        if (!processingMovement(System.currentTimeMillis())) {
             int dx = 0;
             int dy = 0;
             int actual = initialAmount;     // The actual amount the player moved.

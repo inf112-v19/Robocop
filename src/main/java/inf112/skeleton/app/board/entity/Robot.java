@@ -90,7 +90,7 @@ public class Robot extends Entity {
      * @param currentTime
      * @return true if currently moving, false if not moving.
      */
-    private boolean processMovement(long currentTime) {
+    private boolean processingMovement(long currentTime) {
         if (this.pos.x == this.tileTo.x && this.pos.y == this.tileTo.y) {
             return false;
         }
@@ -143,7 +143,7 @@ public class Robot extends Entity {
         this.movementLength = Math.abs(updatePlayerPacket.getMovingTiles());
         this.pos = updatePlayerPacket.getFromTile();
         this.timeMoved = System.currentTimeMillis();
-        processMovement(System.currentTimeMillis());
+        processingMovement(System.currentTimeMillis());
 
         movedLastTick = true;
     }
@@ -174,7 +174,7 @@ public class Robot extends Entity {
 
         stateTime += Gdx.graphics.getDeltaTime();
 
-        boolean isMoving = processMovement(System.currentTimeMillis());
+        boolean isMoving = processingMovement(System.currentTimeMillis());
 
         //Is the robot currently moving
         if (isMoving) {
