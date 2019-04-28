@@ -188,7 +188,7 @@ public class Player {
 
 
     }
-
+    //TODO This method crashes the server.
     public void createBackup() {
         this.backup = null;
         this.backup = Tools.GSON.toJson(this);
@@ -428,6 +428,7 @@ public class Player {
             for (int i = 0; i <= initialAmount; i++) {
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
                 walls = gameBoard.getWallsAtPosition(toCheck);
+
                 if (i == 0) {   //Our current tile. Check if we can leave.
                     for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
@@ -435,16 +436,11 @@ public class Player {
                             break outerloop;
                         }
                     }
-
                 } else {        //All other tiles in our path.
                     for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
                             actual = i;
-                            for (Flag flag : game.getFlags()) {
-                                if (flag.getPos().dst(toCheck) == 0 && flag.getNumber() == flagsVisited + 1) {
-                                    sendFlagRegistered(flag);
-                                }
-                            }
+                            checkForFlag(toCheck);
                             break outerloop;
                         }
                         if (!wall.canEnter(direction)) {
@@ -458,19 +454,7 @@ public class Player {
                         break;
                     }
 
-                    /*TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                    if (entity != null) {
-                        if (!entity.canContinueWalking()) {
-                            actual = i;
-                            break;
-                        }
-                    }*/
-
-                    for (Flag flag : game.getFlags()) {
-                        if (flag.getPos().dst(toCheck) == 0 && flag.getNumber() == flagsVisited + 1) {
-                            sendFlagRegistered(flag);
-                        }
-                    }
+                    checkForFlag(toCheck);
 
                     for (Player player : players) {
                         if (toCheck.dst(player.currentPos) == 0 && player != this) {
@@ -482,7 +466,7 @@ public class Player {
                             actual = delta;
                             sendUpdate();
                             try {
-                                Thread.sleep(actual * 667);     //Don't delay, sleep today!
+                                Thread.sleep((actual + 1) * 500);     //Don't delay, sleep today!
 
                             } catch (InterruptedException e) {
                                 System.out.println("Quoth the Raven 'Nevermore.'");
@@ -493,7 +477,7 @@ public class Player {
 
                             //Make our robot follow.
                             try {
-                                Thread.sleep(otherRobotMoved * 667);     //Don't delay, sleep today!
+                                Thread.sleep((otherRobotMoved + 1) * 500);     //Don't delay, sleep today!
 
                             } catch (InterruptedException e) {
                                 System.out.println("Quoth the Raven 'Nevermore.'");
@@ -514,13 +498,27 @@ public class Player {
         return 0;
     }
 
-    private void sendFlagRegistered(Flag flag) {
-        FlagUpdatePacket flagUpdatePacket = new FlagUpdatePacket(flag);
-        this.owner.sendPacket(new Packet(FromServer.SEND_FLAG_UPDATE.ordinal(), flagUpdatePacket));
-        this.flagsVisited++;
-        this.owner.getLobby().getGame().checkWinCondition();
+    /**
+     * Checks if the given tile contains a flag. If a flag exists, the robot creates a backup, increases
+     * flag-count, and sends a flag-packet to the client so that it can be marked visually as disabled in the client.
+     *
+     * @param pos
+     */
+    private void checkForFlag(Vector2 pos) {
+        for (Flag flag : owner.getLobby().getGame().getFlags()) {
+            if (flag.getPos().dst(pos) == 0 && flag.getNumber() == flagsVisited + 1) {
+                this.flagsVisited++;
+                FlagUpdatePacket flagUpdatePacket = new FlagUpdatePacket(flag);
+                this.owner.sendPacket(new Packet(FromServer.SEND_FLAG_UPDATE.ordinal(), flagUpdatePacket));
+                this.owner.getLobby().getGame().checkWinCondition();
+            }
+        }
     }
 
+    /**
+     * Get the number of flags visited by the player.
+     * @return  int
+     */
     public int getFlagsVisited() {
         return this.flagsVisited;
     }
@@ -533,10 +531,6 @@ public class Player {
      */
     void setCardsSelected(Card[] cardsSelected) {
         this.cardsSelected = cardsSelected;
-    }
-
-    public Card[] getBurnt() {
-        return this.burnt;
     }
 
     public User getOwner() {
