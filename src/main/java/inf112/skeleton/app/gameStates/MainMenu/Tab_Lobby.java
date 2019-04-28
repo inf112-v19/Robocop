@@ -13,16 +13,17 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.ToServer;
+import inf112.skeleton.common.packet.data.ChatMessagePacket;
 import inf112.skeleton.common.packet.data.DataRequestPacket;
 import inf112.skeleton.common.packet.data.LobbyUpdatePacket;
 import inf112.skeleton.common.specs.DataRequest;
 import inf112.skeleton.common.utility.Tools;
 import io.netty.channel.Channel;
 
-public class Tab_Lobby extends MenuTab{
-    private String[]            playerNames;
-    private ImageTextButton[]   playerButtons;
-    private Table               players_display;
+public class Tab_Lobby extends MenuTab {
+    private String[] playerNames;
+    private ImageTextButton[] playerButtons;
+    private Table players_display;
 
     private boolean isHost;
     private MapInfo mapInfo;
@@ -30,17 +31,18 @@ public class Tab_Lobby extends MenuTab{
     private ImageTextButton.ImageTextButtonStyle fl_StyleOpen;
 
     // pl = Player-buttons, mp = mini-map
-    private final int   pl_width        = 600,
-                        pl_tabHeight    = 45,
-                        mp_width        = 250,
-                        mp_height       = 150;
+    private final int pl_width = 600,
+            pl_tabHeight = 45,
+            mp_width = 250,
+            mp_height = 150;
 
     /**
      * Initialize lobby system containing preview of map, player list and buttons to start game or leave lobby
+     *
      * @param gameStateManager to manage game-states
-     * @param ch to communicate with server
-     * @param mapinfo to display preview of map
-     * @param isHost whether the player was the one who created the lobby
+     * @param ch               to communicate with server
+     * @param mapinfo          to display preview of map
+     * @param isHost           whether the player was the one who created the lobby
      */
     public Tab_Lobby(GameStateManager gameStateManager, Channel ch, MapInfo mapinfo, boolean isHost) {
         super(gameStateManager, ch);
@@ -109,6 +111,18 @@ public class Tab_Lobby extends MenuTab{
         else btn_start.setDisabled(true);
         rightHalf_display.add(btn_start).padTop(20).size(100, 45).align(Align.right).row();
 
+        // Button "Add bot"
+        ImageTextButton btn_addAi = new ImageTextButton("Add AI", RoboRally.graphics.btnStyle_rounded_focused);
+        btn_addAi.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                ChatMessagePacket data = new ChatMessagePacket("!addai");
+                Packet packet = new Packet(ToServer.CHAT_MESSAGE.ordinal(), data);
+                channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+            }
+        });
+        rightHalf_display.add(btn_addAi).padTop(5).size(100,45).align(Align.right).row();
+
         // Button "Leave"
         ImageTextButton btn_leave = new ImageTextButton("Leave", RoboRally.graphics.btnStyle_rounded_focused);
         btn_leave.addListener(new ChangeListener() {
@@ -120,9 +134,7 @@ public class Tab_Lobby extends MenuTab{
                 channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
             }
         });
-        rightHalf_display.add(btn_leave).size(100, 45).padTop(2).padBottom(30).align(Align.right).row();
-
-
+        rightHalf_display.add(btn_leave).padTop(100).size(100, 45).align(Align.right).row();
 
         display.add(leftHalf_display);
         display.top();
@@ -131,8 +143,9 @@ public class Tab_Lobby extends MenuTab{
 
     /**
      * Add a player to the lobby
+     *
      * @param index player-array position
-     * @param name of player
+     * @param name  of player
      */
     public void addPlayer(int index, String name) {
         playerButtons[index] = new ImageTextButton(name, RoboRally.graphics.btnStyle_players[index]);
@@ -151,6 +164,7 @@ public class Tab_Lobby extends MenuTab{
 
     /**
      * Update player list in lobby
+     *
      * @param packet containing players in lobby
      */
     public void update(LobbyUpdatePacket packet) {
