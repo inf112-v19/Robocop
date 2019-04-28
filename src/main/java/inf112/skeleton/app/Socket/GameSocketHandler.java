@@ -53,13 +53,19 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
             case INIT_LOCALPLAYER:
                 RoboRally.gameBoard.setupPlayer(PlayerInitPacket.parseJSON(jsonObject));
                 break;
+            case TIME_TO_SELECT:
+                TimeToSelectCardsPacket ttsc = TimeToSelectCardsPacket.parseJSON(jsonObject);
+                if (RoboRally.gameBoard.hud != null) {
+                    RoboRally.gameBoard.hud.roundSelectTime = ttsc.timeToSelect;
+                }
+                //TODO no idea when the hud is actually initialized, figure out so that feature #82 works.
+                break;
             case CHATMESSAGE:
                 if (ChatBox.chatBox != null) {
                     ChatMessagePacket chatMessagePacket = ChatMessagePacket.parseJSON(jsonObject);
                     ChatBox.chatBox.addMessage(chatMessagePacket);
                 }
                 break;
-
             case PLAYER_UPDATE:
                 UpdatePlayerPacket playerUpdate = UpdatePlayerPacket.parseJSON(jsonObject);
                 Player toUpdate = RoboRally.gameBoard.getPlayer(playerUpdate.getUUID());

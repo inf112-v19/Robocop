@@ -27,6 +27,7 @@ public class HUD {
     public ChatBox gameChat;
     public boolean gameChatIsTouched;
     public Timer turnTimer;
+    public int roundSelectTime;
     private StatusBar statusBar;
     private Label fpsLabel;
 
@@ -47,7 +48,7 @@ public class HUD {
 
         setupGameChatAndPushWelcome();
 
-        turnTimer = new Timer("Time to choose cards: ", 30000, 1);
+        turnTimer = new Timer("Time to choose cards: ", roundSelectTime, 1);
         turnTimer.setSize(turnTimer.getMinWidth(), turnTimer.getMinHeight());
         turnTimer.start();
 
@@ -130,7 +131,7 @@ public class HUD {
      */
     private void setupGameChatAndPushWelcome() {
         gameChat = new ChatBox(channel);
-        gameChat.addMessage(new ChatMessagePacket("Welcome to RoboCop. You have 30 seconds to choose cards"));
+        gameChat.addMessage(new ChatMessagePacket("Welcome to RoboCop."));
         gameChat.addMessage(new ChatMessagePacket("[INFO]: Available commands: "));
         gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
         gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!players\""));

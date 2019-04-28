@@ -380,7 +380,7 @@ public class Lobby {
 
     public void kickArtificial(User actionUser) {
         if (actionUser == host) {
-            for (int i = users.length-1; i > 0; i--) {
+            for (int i = users.length - 1; i > 0; i--) {
                 if (users[i] != null) {
                     if (users[i].getChannel() == null) {
                         actionUser.sendServerMessage("Kicking AI: " + users[i].getName());
