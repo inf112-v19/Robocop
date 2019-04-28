@@ -123,6 +123,18 @@ public class Tab_Lobby extends MenuTab {
         });
         rightHalf_display.add(btn_addAi).padTop(5).size(100,45).align(Align.right).row();
 
+        // Button "Kick bot"
+        ImageTextButton btn_kickAi = new ImageTextButton("Kick AI", RoboRally.graphics.btnStyle_rounded_focused);
+        btn_kickAi.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                ChatMessagePacket data = new ChatMessagePacket("!kickai");
+                Packet packet = new Packet(ToServer.CHAT_MESSAGE.ordinal(), data);
+                channel.writeAndFlush(Tools.GSON.toJson(packet) + "\r\n");
+            }
+        });
+        rightHalf_display.add(btn_kickAi).padTop(5).size(100,45).align(Align.right).row();
+
         // Button "Leave"
         ImageTextButton btn_leave = new ImageTextButton("Leave", RoboRally.graphics.btnStyle_rounded_focused);
         btn_leave.addListener(new ChangeListener() {

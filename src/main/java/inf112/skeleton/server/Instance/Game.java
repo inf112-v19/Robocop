@@ -370,4 +370,8 @@ public class Game {
     public Flag[] getFlags() {
         return flags;
     }
+
+    public int getTimeToSelect() {
+        return ROUND_SELECT_TIMER;
+    }
 }
