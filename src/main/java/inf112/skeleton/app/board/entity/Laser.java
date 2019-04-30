@@ -76,7 +76,6 @@ public class Laser extends Entity {
             }
             ArrayList<Wall> wallsAtLoc = RoboRally.gameBoard.walls[Tools.coordToIndex(toCheck.x, toCheck.y, RoboRally.gameBoard.getWidth())];
             for (Wall wall : wallsAtLoc) {
-                System.out.println("foundwall");
                 if (!wall.canEnter(Direction.values()[(direction.ordinal() + 1) % 4])) {
                     break outerloop;
                 }
