@@ -62,11 +62,28 @@ public class Robot extends Entity {
 
     }
 
+    /**
+     * Method for running tests easily.
+     * @param newHealth
+     */
+    public void updateHealth(int newHealth) {
+        if(health > newHealth) {
+            for (int i = 0; i < health - newHealth; i++) {
+                getHit();
+            }
+        } else {
+            health = newHealth;
+        }
+    }
+
     private void getHit() {
+        System.out.println("Robot - getHit: before getting hit, health is " + health);
         if (health > 5) {
             health--;
-        } else if (health < 5 && health > 0){
+            System.out.println("Robot - getHit: health is now " + health);
+        } else if (health <= 5 && health > 0){
             health--;
+            System.out.println("Robot - getHit: health is now " + health + ", burning one card.");
             player.storeBurntCard();
         } else {
             Gdx.app.log("Robot - getHit", "Health is below 0. This should not have happened.");

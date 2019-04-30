@@ -58,7 +58,9 @@ public class Player {
     public void update() {
         if (robot == null) {
             this.robot = new Robot(initialPos.x, initialPos.y, slot, this);
-            RoboRally.gameBoard.addEntity(robot);
+            try {
+                RoboRally.gameBoard.addEntity(robot);
+            } catch (NullPointerException e) {};
         }
     }
 
@@ -148,28 +150,7 @@ public class Player {
                 }
             }
         }
-
         Gdx.app.log("Player clientside - storeBurntCard", "No cards selected");
-        /*for (int i = 0; i < burntCards.length; i++) {
-
-            Gdx.app.log("Player clientside - storeBurntCard", "Current i: " + i);
-            if(burntCards[i].equals(null)) {
-                burntCards[i] = selectedCards[i];
-                CardPacket data = new CardPacket(selectedCards[i]);
-                new Packet(ToServer.CARD_PACKET.ordinal(), data).sendPacket(RoboRally.channel);
-                Gdx.app.log("Player clientside - storeBurntCard", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
-                return;
-            }
-        }
-        /*for (int i = 0; i < selectedCards.length; i++) {
-            if (selectedCards[i] != null) {
-                burntCards[i] = selectedCards[i];
-                CardPacket data = new CardPacket(selectedCards[i]);
-                new Packet(ToServer.CARD_PACKET.ordinal(), data).sendPacket(RoboRally.channel);
-                Gdx.app.log("Player clientside - storeBurntCard", "Constructed cardpacket: " + Tools.CARD_RECONSTRUCTOR.reconstructCard(data.getPriority()).toString());
-                return;
-            }
-        }*/
     }
 
     private boolean isInBurnt(Card card) {
@@ -195,20 +176,15 @@ public class Player {
     }
 
     public void forceSelect() {
-        System.arraycopy(cards, 0, selectedCards, 0, 5);
-        System.arraycopy(burntCards, 0, selectedCards, 0, burntAmount);
-
-        /*int numBurntCards = 0;
-        for (int i = 0; i < burntCards.length; i++) {
-            if(burntCards[i].equals(null)) {    //TODO NPE
-                break;
-            }
+        for (int i = 0; i < burntAmount; i++) {
             selectedCards[i] = burntCards[i];
-            numBurntCards++;
+            System.out.println("Force select: burnt i " + i);
+            System.out.println("Burning cards: " + burntCards[i]);
         }
-        for (int i = numBurntCards; i < selectedCards.length; i++) {
-            selectedCards[i] = cards[i];
-        }*/
+        for (int i = burntAmount; i < selectedCards.length; i++) {
+            System.out.println("Force select: normal i " + i);
+            selectedCards[i] = cards[i-burntAmount];
+        }
     }
 
     /**

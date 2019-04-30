@@ -1,7 +1,5 @@
 package inf112.skeleton.common.specs;
 
-import inf112.skeleton.common.specs.Card;
-import inf112.skeleton.common.specs.CardType;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.util.Random;
