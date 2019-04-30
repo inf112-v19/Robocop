@@ -120,4 +120,5 @@ public abstract class Entity {
     }
 
 
+    protected abstract boolean isBlocking();
 }

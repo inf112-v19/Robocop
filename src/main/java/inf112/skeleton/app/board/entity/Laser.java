@@ -7,6 +7,9 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.specs.Direction;
 import inf112.skeleton.common.specs.TileDefinition;
+import inf112.skeleton.common.utility.Tools;
+
+import java.util.ArrayList;
 
 public class Laser extends Entity {
     TiledMapTile tile;
@@ -15,7 +18,7 @@ public class Laser extends Entity {
     TileDefinition def;
     Direction direction;
 
-    int lenght = 0;
+    int length = 0;
 
     public Laser(TiledMapTile tile, int x, int y, TiledMapTileLayer.Cell cell) {
         super(x, y, EntityType.LASER);
@@ -37,7 +40,8 @@ public class Laser extends Entity {
         if (laserTile == null) {
             laserTile = RoboRally.gameBoard.getTile(TileDefinition.getTileById(tile.getId() + 1));
         }
-        for (int i = 0; i < 3; i++) {
+        checkLength();
+        for (int i = 0; i < length; i++) {
             Vector2 todraw = getTileInDirection(Direction.values()[(direction.ordinal() + 1) % 4], i + 1);
             batch.draw(
                     laserTile.getTextureRegion(),
@@ -59,19 +63,49 @@ public class Laser extends Entity {
 
     }
 
-//    public void checkLenght() {
-//        int lenght = 0;
-//        while(true) {
-//            Vector2 toCheck = getTileInDirection(Direction.values()[(direction.ordinal() + 1) % 4], lenght + 1);
-//            if()
-//            break;
-//        }
-//    }
+    public void checkLength() {
+        int length = 0;
+        outerloop:
+        while (true) {
+            Vector2 toCheck = getTileInDirection(Direction.values()[(direction.ordinal() + 1) % 4], length + 1);
+            if ((int) toCheck.y >= RoboRally.gameBoard.getHeight() ||
+                    (int) toCheck.y <= 1 ||
+                    (int) toCheck.x >= RoboRally.gameBoard.getWidth() ||
+                    (int) toCheck.x <= 1) {
+                break;
+            }
+            ArrayList<Wall> wallsAtLoc = RoboRally.gameBoard.walls[Tools.coordToIndex(toCheck.x, toCheck.y, RoboRally.gameBoard.getWidth())];
+            for (Wall wall : wallsAtLoc) {
+                System.out.println("foundwall");
+                if (!wall.canEnter(Direction.values()[(direction.ordinal() + 1) % 4])) {
+                    break outerloop;
+                }
+                if (!wall.canLeave(Direction.values()[(direction.ordinal() + 1) % 4])) {
+                    length++;
+                    break outerloop;
+                }
+            }
+            ArrayList<Entity> entities = RoboRally.gameBoard.entityLocations[Tools.coordToIndex(toCheck.x, toCheck.y, RoboRally.gameBoard.getWidth())];
+            for (Entity entity : entities) {
+                if(entity.isBlocking()){
+                    break outerloop;
+                }
+            }
+
+            length++;
+        }
+        this.length = length;
+    }
 
 
     @Override
     public void renderName(SpriteBatch batch, float scale) {
 
+    }
+
+    @Override
+    protected boolean isBlocking() {
+        return false;
     }
 
 
