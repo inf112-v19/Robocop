@@ -26,13 +26,12 @@ public abstract class GameBoard {
     private CardHandPacket foo = null;
     public ArrayList<Laser> laserSources;
     public ArrayList<Entity>[] entityLocations;
-    public ArrayList<Wall>[] walls; // FUUUUCK need to render these last :SS :SS :SSS
-    public ArrayList<Wall> renderWalls;
+    public ArrayList<Wall>[] walls;
+    public ArrayList<Entity> renderWalls;
 
 
     public GameBoard() {
         entities = new ArrayList<>();
-        renderWalls = new ArrayList<>();
         players = new ConcurrentHashMap<>();
     }
 
@@ -54,8 +53,8 @@ public abstract class GameBoard {
             case WALL:
             case LWALL:
                 Wall wall = new Wall(tile, x, y, cell);
-                renderWalls.add(wall);
                 walls[Tools.coordToIndex(x, y, getWidth())].add(wall);
+                renderWalls.add(wall);
                 break;
 
 
@@ -77,8 +76,8 @@ public abstract class GameBoard {
         for (Entity entity : entities) {
             entity.renderName(batch, camera.zoom);
         }
-        for (Wall entity : renderWalls) {
-            entity.renderName(batch, camera.zoom);
+        for (Entity wall : renderWalls) {
+            wall.render(batch);
         }
 
     }

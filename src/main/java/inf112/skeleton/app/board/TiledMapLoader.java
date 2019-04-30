@@ -41,6 +41,7 @@ public class TiledMapLoader extends GameBoard {
 //        Flag foo = new Flag(11,11,11);
 //        foo.disableFlag();
 //        this.addEntity(foo);
+        renderWalls = new ArrayList<>();
 
         laserSources = new ArrayList<>();
         entityLocations = new ArrayList[getHeight() * getWidth()];
@@ -74,8 +75,8 @@ public class TiledMapLoader extends GameBoard {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         super.render(camera, batch);
-        TiledMapTile test = getTile(TileDefinition.LASER);
-        batch.draw(test.getTextureRegion(), 10, 10, 32, 32,64,64,1,1,rotaation++);
+//        TiledMapTile test = getTile(TileDefinition.LASER);
+//        batch.draw(test.getTextureRegion(), 10, 10, 32, 32,64,64,1,1,rotaation++);
 
 
         batch.end();

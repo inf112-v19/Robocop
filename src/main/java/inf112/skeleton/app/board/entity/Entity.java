@@ -82,18 +82,42 @@ public abstract class Entity {
             case NORTH:
             case SOUTH:
                 if (cell.getFlipHorizontally()) {
-                    rotation +=2;
+                    rotation += 2;
                 }
                 break;
             case WEST:
             case EAST:
                 if (cell.getFlipVertically()) {
-                    rotation +=2;
+                    rotation += 2;
                 }
                 break;
         }
         rotation -= cell.getRotation();
         return Direction.values()[rotation % 4];
     }
+
+    public Vector2 getTileInDirection(Direction direction, int steps) {
+        Vector2 tile = new Vector2(pos.x, pos.y);
+        switch (direction) {
+            case NORTH:
+                tile.add(0, steps);
+                break;
+            case SOUTH:
+                tile.add(0, -steps);
+                break;
+            case WEST:
+                tile.add(-steps, 0);
+                break;
+            case EAST:
+                tile.add(steps, 0);
+                break;
+        }
+        return tile;
+    }
+
+    public Vector2 getTileInDirection(Direction direction) {
+        return getTileInDirection(direction, 1);
+    }
+
 
 }
