@@ -3,7 +3,10 @@ package inf112.skeleton.app.board;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.app.board.entity.*;
 import inf112.skeleton.app.board.entity.Entity;
 import inf112.skeleton.app.board.entity.Flag;
 import inf112.skeleton.app.board.entity.Player;
@@ -11,6 +14,8 @@ import inf112.skeleton.app.board.entity.Robot;
 import inf112.skeleton.app.gameStates.Playing.HUD;
 import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.common.packet.data.*;
+import inf112.skeleton.common.specs.TileDefinition;
+import inf112.skeleton.common.utility.Tools;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -23,11 +28,42 @@ public abstract class GameBoard {
     protected Map<String, Player> players;
     public Player myPlayer = null;
     private CardHandPacket foo = null;
+    public ArrayList<Laser> laserSources;
+    public ArrayList<Entity>[] entityLocations;
+    public ArrayList<Wall>[] walls;
+    public ArrayList<Entity> renderWalls;
 
 
     public GameBoard() {
         entities = new ArrayList<>();
         players = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * Register TileEntity to the board
+     *
+     * @param tile
+     * @param x
+     * @param y
+     */
+    void addTileEntity(TiledMapTile tile, int x, int y, TiledMapTileLayer.Cell cell) {
+
+        switch (TileDefinition.getTileById(tile.getId())) {
+            case LASERSOURCE:
+            case DLASERSOURCE:
+                laserSources.add(new Laser(tile, x, y, cell));
+                break;
+
+            case WALL:
+            case LWALL:
+                Wall wall = new Wall(tile, x, y, cell);
+                walls[Tools.coordToIndex(x, y, getWidth())].add(wall);
+                renderWalls.add(wall);
+                break;
+
+
+
+        }
     }
 
     public void addEntity(Entity e) {
@@ -37,11 +73,17 @@ public abstract class GameBoard {
     public void render(OrthographicCamera camera, SpriteBatch batch) {
         for (Entity entity : entities) {
             entity.render(batch);
-
+        }
+        for (Entity entity: laserSources){
+            entity.render(batch);
         }
         for (Entity entity : entities) {
             entity.renderName(batch, camera.zoom);
         }
+        for (Entity wall : renderWalls) {
+            wall.render(batch);
+        }
+
     }
 
     public void update(State_Playing playing) {
@@ -52,6 +94,9 @@ public abstract class GameBoard {
         for (Entity entity : entities) {
             entity.update();
 
+        }
+        for (Entity entity: laserSources){
+            entity.update();
         }
         if (myPlayer != null) {
             if (myPlayer.cards == null && foo != null) {
@@ -130,6 +175,7 @@ public abstract class GameBoard {
 
     public abstract int getHeight();
 
+    public abstract TiledMapTile getTile(TileDefinition definition);
 
     public void addPlayer(PlayerInitPacket pkt) {
         if (pkt.getUUID().equalsIgnoreCase(RoboRally.clientInfo)) {

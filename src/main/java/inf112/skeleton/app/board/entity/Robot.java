@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Direction;
+import inf112.skeleton.common.utility.Tools;
 
 
 public class Robot extends Entity {
@@ -27,6 +28,7 @@ public class Robot extends Entity {
     private int movementDirection = 1;
 
     private boolean movedLastTick;
+    private int index;
 
     Robot(float x, float y, int slot, Player player) {
         super(x, y, EntityType.ROBOT);
@@ -39,6 +41,8 @@ public class Robot extends Entity {
         System.out.println("Robot constructor, slot = " + this.colour);
         this.facing = player.initialDirection;
         this.player = player;
+        this.index = Tools.coordToIndex(pos.x, pos.y, RoboRally.gameBoard.getWidth());
+        RoboRally.gameBoard.entityLocations[index].add(this);
     }
 
     /**
@@ -51,8 +55,8 @@ public class Robot extends Entity {
     }
 
     public void updateHealth(UpdatePlayerPacket update) {
-        if(health > update.getCurrentHP()) {
-            int delta = health-update.getCurrentHP();
+        if (health > update.getCurrentHP()) {
+            int delta = health - update.getCurrentHP();
             for (int i = 0; i < delta; i++) {
                 getHit();
             }
@@ -102,7 +106,7 @@ public class Robot extends Entity {
 
     /**
      * Calculate current pixel to render entity at, based on time started moving, currenttime, location to and from,
-     * the lenght of the movement, and the time it should take to move from a tile to another.
+     * the length of the movement, and the time it should take to move from a tile to another.
      *
      * @param currentTime
      * @return true if currently moving, false if not moving.
@@ -159,6 +163,10 @@ public class Robot extends Entity {
         this.movementDirection = updatePlayerPacket.getMovingTiles();
         this.movementLength = Math.abs(updatePlayerPacket.getMovingTiles());
         this.pos = updatePlayerPacket.getFromTile();
+        int oldindex = index;
+        index = Tools.coordToIndex(pos.x, pos.y, RoboRally.gameBoard.getWidth());
+        RoboRally.gameBoard.entityLocations[oldindex].remove(this);
+        RoboRally.gameBoard.entityLocations[index].add(this);
         this.timeMoved = System.currentTimeMillis();
         processingMovement(System.currentTimeMillis());
 
@@ -174,6 +182,10 @@ public class Robot extends Entity {
     private void placeAt(float x, float y) {
         this.pos.x = x;
         this.pos.y = y;
+        int oldindex = index;
+        index = Tools.coordToIndex(pos.x, pos.y, RoboRally.gameBoard.getWidth());
+        RoboRally.gameBoard.entityLocations[oldindex].remove(this);
+        RoboRally.gameBoard.entityLocations[index].add(this);
         this.tileTo.x = x;
         this.tileTo.y = y;
         this.position[0] = (int) (this.pos.x * 64);
@@ -232,6 +244,11 @@ public class Robot extends Entity {
         font.setColor(Color.RED);
         font.getData().setScale(scale);
         font.draw(batch, player.name, fontX, position[1] + (78 + (10 * scale - 1) - 10));
+    }
+
+    @Override
+    protected boolean isBlocking() {
+        return true;
     }
 
     public Vector2 getPos() {

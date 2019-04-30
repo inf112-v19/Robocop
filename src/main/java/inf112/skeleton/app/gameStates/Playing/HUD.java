@@ -133,7 +133,7 @@ public class HUD {
         gameChat = new ChatBox(channel);
         gameChat.addMessage(new ChatMessagePacket("Welcome to RoboCop."));
         gameChat.addMessage(new ChatMessagePacket("[INFO]: Available commands: "));
-        gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!move <direction> <lenght>\" (north,south,east,west)"));
+        gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!move <direction> <length>\" (north,south,east,west)"));
         gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!players\""));
         gameChat.setSize(600,200);
 

@@ -44,6 +44,11 @@ public class Flag extends Entity {
         return;
     }
 
+    @Override
+    protected boolean isBlocking() {
+        return false;
+    }
+
     /**
      * Render the flags number
      *
