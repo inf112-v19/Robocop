@@ -26,7 +26,8 @@ public class Player {
     private Vector2 currentPos;
     private Vector2 movingTo;
     private User owner;
-    private String backup;
+    //private String backup;
+    private PlayerBackup backup;
 
     private final int SELECTED_CARDS = 5;
     private final int MAX_RESPAWNS = 3;
@@ -71,6 +72,7 @@ public class Player {
         this.cardsSelected = new Card[SELECTED_CARDS];
         this.burnt = new Card[SELECTED_CARDS];
         this.burntAmount = 0;
+        createBackup();
     }
 
     /**
@@ -190,19 +192,31 @@ public class Player {
     }
     //TODO This method crashes the server.
     public void createBackup() {
+        //this.backup = null;
+        //this.backup = Tools.GSON.toJson(this);
+        this.owner.sendChatMessage("Creating backup.");
         this.backup = null;
-        this.backup = Tools.GSON.toJson(this);
+        this.backup = new PlayerBackup(this);
 
     }
 
     public void restoreBackup() {
         if (this.respawns < MAX_RESPAWNS) {
+            /*
             Player toRestore = Tools.GSON.fromJson(this.backup, Player.class);
             this.currentPos = toRestore.currentPos.cpy();
             this.movingTo = toRestore.movingTo.cpy();
             this.direction = toRestore.direction;
             this.currentHP = toRestore.currentHP;
+            */
+            this.owner.sendChatMessage("Restoring backup.");
+            this.currentPos = backup.currentPos;
+            this.movingTo = backup.currentPos;
+            this.movingTiles = 0;
+            this.direction = backup.direction;
+            this.currentHP = backup.currentHP;
             this.respawns++;
+            sendUpdate();
         } else {
             //TODO GAME OVER.
             owner.getLobby().getGame();
@@ -508,6 +522,7 @@ public class Player {
         for (Flag flag : owner.getLobby().getGame().getFlags()) {
             if (flag.getPos().dst(pos) == 0 && flag.getNumber() == flagsVisited + 1) {
                 this.flagsVisited++;
+                createBackup();
                 FlagUpdatePacket flagUpdatePacket = new FlagUpdatePacket(flag);
                 this.owner.sendPacket(new Packet(FromServer.SEND_FLAG_UPDATE.ordinal(), flagUpdatePacket));
                 this.owner.getLobby().getGame().checkWinCondition();
