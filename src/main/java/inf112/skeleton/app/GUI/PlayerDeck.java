@@ -218,7 +218,7 @@ public class PlayerDeck {
             try {
                 btn.setStyle(RoboRally.graphics.styleFromDrawable(buttonToCardMap.get(btn).getDrawable(true), null, Color.RED));
             } catch (NullPointerException e) {
-                System.out.println("whoop");
+                System.out.println("PlayerDeck do_check npe");
             }
         }
     }

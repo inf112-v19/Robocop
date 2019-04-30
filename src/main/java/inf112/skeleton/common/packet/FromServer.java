@@ -7,6 +7,7 @@ public enum FromServer {
     INIT_ALLPLAYERS,
     INIT_LOBBY,
     INIT_GAME,
+    TIME_TO_SELECT,
     REMOVE_PLAYER,
     CHATMESSAGE,
     PLAYER_UPDATE,
@@ -20,4 +21,5 @@ public enum FromServer {
     INIT_MAP,
     INIT_LOCALPLAYER,
     SEND_FLAGS,
+    SEND_FLAG_UPDATE,
 }

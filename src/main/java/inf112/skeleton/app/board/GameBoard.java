@@ -7,6 +7,10 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.*;
+import inf112.skeleton.app.board.entity.Entity;
+import inf112.skeleton.app.board.entity.Flag;
+import inf112.skeleton.app.board.entity.Player;
+import inf112.skeleton.app.board.entity.Robot;
 import inf112.skeleton.app.gameStates.Playing.HUD;
 import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.common.packet.data.*;
@@ -135,6 +139,20 @@ public abstract class GameBoard {
         }
     }
 
+    public void updateFlag(FlagUpdatePacket packet) {
+        float x = packet.flag.getPos().x;
+        float y = packet.flag.getPos().y;
+        int number = packet.flag.getNumber();
+        Flag flag = new Flag(x, y, number);
+        for (Entity entity : entities) {
+            if (flag.equals(entity)) {
+                ((Flag) entity).disableFlag();
+                return;
+            }
+
+        }
+    }
+
     public void forceSelect() {
         if (myPlayer != null) {
             myPlayer.forceSelect();
@@ -158,7 +176,6 @@ public abstract class GameBoard {
     public abstract int getHeight();
 
     public abstract TiledMapTile getTile(TileDefinition definition);
-
 
     public void addPlayer(PlayerInitPacket pkt) {
         if (pkt.getUUID().equalsIgnoreCase(RoboRally.clientInfo)) {

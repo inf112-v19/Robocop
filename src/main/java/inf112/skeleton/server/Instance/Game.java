@@ -23,7 +23,7 @@ import static inf112.skeleton.common.specs.Direction.values;
 
 
 public class Game {
-    private final int ROUND_SELECT_TIMER = 30; //The time the player will have to select their cards.
+    private final int ROUND_SELECT_TIMER = 3000; //The time in seconds the player will have to select their cards.
     private final int NUMBER_OF_FLAGS = 9;
     private final int INITIAL_PLAYER_HP = 9;
     private Random random = new Random();
@@ -111,6 +111,7 @@ public class Game {
             case VICTORY:
                 // Unreachable at the moment
                 lobby.broadcastChatMessage("Winner winner chicken dinner.");
+                gameStage = LOBBY;
                 break;
         }
 
@@ -207,6 +208,17 @@ public class Game {
         if (timerStarted == 0)
             return true;
         return System.currentTimeMillis() >= timerStarted + timerCountdownSeconds;
+    }
+
+    public void checkWinCondition() {
+        for(Player player : players) {
+            System.out.println("Player " + player.getOwner().getName() + " is currently at flag " + player.getFlagsVisited());
+            System.out.println("Number of flags in game: " + NUMBER_OF_FLAGS);
+            if(player.getFlagsVisited() == NUMBER_OF_FLAGS) {
+                lobby.broadcastChatMessage("Player " + player.getOwner().getName() + " has won!");
+                gameStage = VICTORY;
+            }
+        }
     }
 
     /**
@@ -328,7 +340,7 @@ public class Game {
     }
 
     public void placeFlags() {
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < NUMBER_OF_FLAGS; i++) {
             boolean suitableLocation = false;
             Vector2 loc = new Vector2(0, 0);
 
@@ -337,6 +349,14 @@ public class Game {
                 loc = new Vector2(random.nextInt(gameBoard.getWidth()), random.nextInt(gameBoard.getHeight()));
                 for (Player player : players) {
                     if (player.getCurrentPos().dst(loc) == 0) {
+                        break whileloop;
+                    }
+                }
+                for (Flag flag : flags) {
+                    if( flag == null) {
+                        break;
+                    }
+                    if (flag.getPos().dst(loc) == 0) {
                         break whileloop;
                     }
                 }
@@ -349,5 +369,9 @@ public class Game {
 
     public Flag[] getFlags() {
         return flags;
+    }
+
+    public int getTimeToSelect() {
+        return ROUND_SELECT_TIMER;
     }
 }

@@ -163,6 +163,10 @@ public class IncomingPacketHandler {
                 }
 
                 break;
+            case "kickai":
+            case "kickcpu":
+                messagingUser.getLobby().kickArtificial(messagingUser);
+                break;
             case "gethit":
                 messagingUser.getPlayer().getHit();
                 break;

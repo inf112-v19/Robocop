@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.CardHandPacket;
+import inf112.skeleton.common.packet.data.FlagUpdatePacket;
 import inf112.skeleton.common.packet.data.PlayerInitPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
@@ -28,7 +29,6 @@ public class Player {
     private String backup;
 
     private final int SELECTED_CARDS = 5;
-    private final int GIVEN_CARDS = 9;
     private final int MAX_RESPAWNS = 3;
 
 
@@ -40,7 +40,7 @@ public class Player {
 
     private int slot;
     private int currentHP;
-    private int currentFlag;
+    private int flagsVisited;
     private int respawns;
     private Direction direction;
     private int movingTiles = 0;
@@ -57,7 +57,7 @@ public class Player {
     public Player(String name, Vector2 pos, int hp, int slot, Direction direction, User owner) {
         this.name = name;
         this.currentHP = hp;
-        this.currentFlag = 1;
+        this.flagsVisited = 0;
         this.respawns = 0;
         this.currentPos = pos;
         this.movingTo = new Vector2(currentPos.x, currentPos.y);
@@ -67,7 +67,7 @@ public class Player {
 
         owner.setPlayer(this);
         this.timeInit = System.currentTimeMillis();
-        this.cardsGiven = new Card[GIVEN_CARDS];
+        this.cardsGiven = new Card[hp];
         this.cardsSelected = new Card[SELECTED_CARDS];
         this.burnt = new Card[SELECTED_CARDS];
         this.burntAmount = 0;
@@ -113,7 +113,7 @@ public class Player {
      * Run tick based actions
      */
     public void update() {
-        processMovement(System.currentTimeMillis());
+        processingMovement(System.currentTimeMillis());
         if ((System.currentTimeMillis() - this.timeInit) >= this.delayMessage && shouldSendCards) {
             this.timeInit = System.currentTimeMillis();
             shouldSendCards = false;
@@ -122,7 +122,7 @@ public class Player {
     }
 
     /**
-     * rotate the player with a card
+     * Rotate the player with a card
      *
      * @param cardType the rotation card
      */
@@ -132,12 +132,12 @@ public class Player {
     }
 
     /**
-     * check if the player is ready to move or has finished moving
+     * Check if the player is ready to move or has finished moving
      *
      * @param currentTime the current time
      * @return boolean false if no movement is occurring
      */
-    private boolean processMovement(long currentTime) {
+    private boolean processingMovement(long currentTime) {
         if (this.currentPos.x == this.movingTo.x && this.currentPos.y == this.movingTo.y) {
             return false;
         }
@@ -175,7 +175,7 @@ public class Player {
         for (int i = 0; i < cardsGiven.length; i++) {
             cardsGiven[i] = null;
         }
-        System.out.println("Sending card to " + owner.getName());
+        System.out.println("Sending card to " + this.name);
         System.arraycopy(hand, 0, cardsGiven, 0, hand.length);
 
         if (isArtificial()) {
@@ -188,7 +188,7 @@ public class Player {
 
 
     }
-
+    //TODO This method crashes the server.
     public void createBackup() {
         this.backup = null;
         this.backup = Tools.GSON.toJson(this);
@@ -214,7 +214,7 @@ public class Player {
      * Player gets hit for one hit-point.
      */
     public void getHit() {
-        if(this.currentHP == 0) {
+        if (this.currentHP == 0) {
             restoreBackup();
             return;
         } else if (this.currentHP > 5) {
@@ -233,7 +233,7 @@ public class Player {
      * @param amount of hit-points the player looses.
      */
     public void getHit(int amount) {
-        if(amount > currentHP) {
+        if (amount > currentHP) {
             amount = currentHP;
         }
         for (int i = 0; i < amount; i++) {
@@ -267,7 +267,7 @@ public class Player {
     public void forceSelect() {
         System.out.println("[Player serverside - forceSelect] - selecting cards automatically for player " + this.owner.getUUID() + ".");
         System.arraycopy(burnt, 0, cardsSelected, 0, burntAmount);
-        System.arraycopy(cardsGiven, 0, cardsSelected, burntAmount, 5-burntAmount);
+        System.arraycopy(cardsGiven, 0, cardsSelected, burntAmount, 5 - burntAmount);
         currentCard = 0;
     }
 
@@ -276,9 +276,9 @@ public class Player {
      */
     public void storeBurntCard() {
         for (int i = 0; i < cardsSelected.length; i++) {
-            if(!isInBurnt(cardsSelected[i])) {              //Not found in burnt.
+            if (!isInBurnt(cardsSelected[i])) {             //Not found in burnt.
                 for (int j = 0; j < burnt.length; j++) {    //Find next open slot.
-                    if(burnt[j] == null) {                  //Burn card to slot.
+                    if (burnt[j] == null) {                 //Burn card to slot.
                         burnt[j] = cardsSelected[i];
                         burntAmount++;
                         return;
@@ -290,7 +290,7 @@ public class Player {
 
     private boolean isInBurnt(Card card) {
         for (int i = 0; i < burnt.length; i++) {
-            if(card == burnt[i]) {
+            if (card == burnt[i]) {
                 return true;
             }
         }
@@ -376,7 +376,7 @@ public class Player {
      * Send an update pack of all changes that needs to be reflected in the client
      */
     public void sendUpdate() {
-        if(owner.getLobby() != null) {
+        if (owner.getLobby() != null) {
             FromServer pktId = FromServer.PLAYER_UPDATE;
             UpdatePlayerPacket updatePlayerPacket = new UpdatePlayerPacket(owner.getUUID(), direction, movingTiles, currentPos, movingTo, currentHP);
             Packet updatePacket = new Packet(pktId.ordinal(), updatePlayerPacket);
@@ -393,7 +393,7 @@ public class Player {
      * @return The amount of tiles the player moved.
      */
     public int startMovement(Direction direction, int initialAmount, boolean pushed) {
-        if (!processMovement(System.currentTimeMillis())) {
+        if (!processingMovement(System.currentTimeMillis())) {
             int dx = 0;
             int dy = 0;
             int actual = initialAmount;     // The actual amount the player moved.
@@ -401,7 +401,6 @@ public class Player {
             GameBoard gameBoard = game.getGameBoard();
             ArrayList<Player> players = game.getPlayers();
             ArrayList<TileEntity> walls;
-
 
             this.timeMoved = System.currentTimeMillis();
 
@@ -433,13 +432,15 @@ public class Player {
                 if (i == 0) {   //Our current tile. Check if we can leave.
                     for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
-                            return 0;
+                            actual = i;
+                            break outerloop;
                         }
                     }
                 } else {        //All other tiles in our path.
                     for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
                             actual = i;
+                            checkForFlag(toCheck);
                             break outerloop;
                         }
                         if (!wall.canEnter(direction)) {
@@ -453,52 +454,37 @@ public class Player {
                         break;
                     }
 
-                    /*TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                    if (entity != null) {
-                        if (!entity.canContinueWalking()) {
-                            actual = i;
-                            break;
-                        }
-                    }*/
-
-                    for (Flag flag : game.getFlags()) {
-                        if(flag.getNumber() == currentFlag) {
-
-                        }
-                    }
+                    checkForFlag(toCheck);
 
                     for (Player player : players) {
                         if (toCheck.dst(player.currentPos) == 0 && player != this) {
                             int delta = i - 1;    //Open tiles between the two robots.
-                            System.out.println("Delta: " + delta);
 
                             //Move up next to robot.
                             this.movingTo.add(dx * delta, dy * delta);
                             this.movingTiles = delta;
-                            System.out.println("Moving " + movingTiles);
                             actual = delta;
                             sendUpdate();
+                            try {
+                                Thread.sleep((actual + 1) * 500);     //Don't delay, sleep today!
+
+                            } catch (InterruptedException e) {
+                                System.out.println("Quoth the Raven 'Nevermore.'");
+                            }
 
                             //Move other robot the remaining required distance.
-                            System.out.println("Amount: " + initialAmount);
                             int otherRobotMoved = player.startMovement(direction, initialAmount - delta, true);
-                            System.out.println("otherRobotMoved: " + otherRobotMoved);
 
-                            //Make our robot follow. //TODO Use recursion in order to be able to check every tile that the player moves across. Otherwise, might be able to not register a flag if following a robot.
-                            if (delta == 0) {
-                                //actual += startMovement(direction, otherRobotMoved, false);
-                                this.movingTo.add(dx * otherRobotMoved, dy * otherRobotMoved);
-                                this.movingTiles = otherRobotMoved;
-                                actual += otherRobotMoved;
-                            } else {
-                                //actual += startMovement(direction, initialAmount-(otherRobotMoved-1), false);
-                                this.movingTo.add(dx * (initialAmount - (otherRobotMoved - 1)), dy * (initialAmount - (otherRobotMoved - 1)));
-                                this.movingTiles = initialAmount - (otherRobotMoved - 1);
-                                actual += otherRobotMoved - 1;
+                            //Make our robot follow.
+                            try {
+                                Thread.sleep((otherRobotMoved + 1) * 500);     //Don't delay, sleep today!
+
+                            } catch (InterruptedException e) {
+                                System.out.println("Quoth the Raven 'Nevermore.'");
                             }
-                            System.out.println("Moving " + movingTiles);
-                            sendUpdate();
 
+                            actual += startMovement(direction, otherRobotMoved, false);
+                            sendUpdate();
                             return actual;
                         }
                     }
@@ -509,9 +495,33 @@ public class Player {
             sendUpdate();
             return actual;
         }
-        return initialAmount;
+        return 0;
     }
 
+    /**
+     * Checks if the given tile contains a flag. If a flag exists, the robot creates a backup, increases
+     * flag-count, and sends a flag-packet to the client so that it can be marked visually as disabled in the client.
+     *
+     * @param pos
+     */
+    private void checkForFlag(Vector2 pos) {
+        for (Flag flag : owner.getLobby().getGame().getFlags()) {
+            if (flag.getPos().dst(pos) == 0 && flag.getNumber() == flagsVisited + 1) {
+                this.flagsVisited++;
+                FlagUpdatePacket flagUpdatePacket = new FlagUpdatePacket(flag);
+                this.owner.sendPacket(new Packet(FromServer.SEND_FLAG_UPDATE.ordinal(), flagUpdatePacket));
+                this.owner.getLobby().getGame().checkWinCondition();
+            }
+        }
+    }
+
+    /**
+     * Get the number of flags visited by the player.
+     * @return  int
+     */
+    public int getFlagsVisited() {
+        return this.flagsVisited;
+    }
 
     /**
      * Manually set the current selected cards
@@ -521,10 +531,6 @@ public class Player {
      */
     void setCardsSelected(Card[] cardsSelected) {
         this.cardsSelected = cardsSelected;
-    }
-
-    public Card[] getBurnt() {
-        return this.burnt;
     }
 
     public User getOwner() {

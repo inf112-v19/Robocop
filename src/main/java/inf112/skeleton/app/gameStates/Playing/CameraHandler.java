@@ -1,6 +1,7 @@
 package inf112.skeleton.app.gameStates.Playing;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.Action.InputContainer;
@@ -18,14 +19,6 @@ public class CameraHandler {
             zoomMin = 0.5f,
             zoomMax = 5.0f;
 
-    private static int K_PLUS = 70,
-            K_MINUS = 69,
-            K_LEFT = 21,
-            K_UP = 19,
-            K_RIGHT = 22,
-            K_DOWN = 20,
-            K_SPACE = 62,
-            K_SHIFT_LEFT = 59;
     private boolean following = true;
 
 
@@ -66,44 +59,44 @@ public class CameraHandler {
      * Whenever a key is pressed, handle what happens
      */
     private void handleKeys() {
-        int speedMultiplier = isPressed(K_SHIFT_LEFT) ? 3 : 1;
+        int speedMultiplier = isPressed(Keys.SHIFT_LEFT) ? 3 : 1;
 
         // Misc camera functions
 
         // Zoom in (plus-key)
-        if (isPressed(K_PLUS)) {
+        if (isPressed(Keys.PLUS)) {
             camera.zoom = max(camera.zoom - zoomAmount, zoomMin);
         }
 
         // Zoom out (minus key)
-        if (isPressed(K_MINUS)) {
+        if (isPressed(Keys.MINUS)) {
             camera.zoom = min(camera.zoom + zoomAmount, zoomMax);
         }
 
         // Camera movement
 
         // Move camera based on keys (up, down, left, right) pressed
-        if (isPressed(K_UP)) {
+        if (isPressed(Keys.UP)) {
             camera.translate(0, baseCameraMovementSpeed * speedMultiplier);
             setFollowing(false);
 
         }
-        if (isPressed(K_DOWN)) {
+        if (isPressed(Keys.DOWN)) {
             camera.translate(0, -baseCameraMovementSpeed * speedMultiplier);
             setFollowing(false);
 
         }
-        if (isPressed(K_LEFT)) {
+        if (isPressed(Keys.LEFT)) {
             camera.translate(-baseCameraMovementSpeed * speedMultiplier, 0);
             setFollowing(false);
 
         }
-        if (isPressed(K_RIGHT)) {
+        if (isPressed(Keys.RIGHT)) {
             camera.translate(baseCameraMovementSpeed * speedMultiplier, 0);
             setFollowing(false);
 
         }
-        if (isPressed(K_SPACE)) {
+        if (isPressed(Keys.COMMA)) {
             setFollowing(true);
         }
     }
