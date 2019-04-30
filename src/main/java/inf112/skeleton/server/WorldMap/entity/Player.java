@@ -274,7 +274,7 @@ public class Player {
     /**
      * Burn a card from players selection to first open slot in burnt array.
      */
-    public void storeBurntCard() {
+    private void storeBurntCard() {
         for (int i = 0; i < cardsSelected.length; i++) {
             if (!isInBurnt(cardsSelected[i])) {             //Not found in burnt.
                 for (int j = 0; j < burnt.length; j++) {    //Find next open slot.
@@ -531,6 +531,15 @@ public class Player {
      */
     void setCardsSelected(Card[] cardsSelected) {
         this.cardsSelected = cardsSelected;
+    }
+
+    /**
+     * Get the cardsSelected-array.
+     * Used in testing.
+     * @return cardsSelected
+     */
+    Card[] getCardsSelected() {
+        return cardsSelected;
     }
 
     public User getOwner() {

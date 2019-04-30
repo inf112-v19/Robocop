@@ -44,10 +44,6 @@ public class Robot extends Entity {
         this.index = Tools.coordToIndex(pos.x, pos.y, RoboRally.gameBoard.getWidth());
         RoboRally.gameBoard.entityLocations[index].add(this);
     }
-    @Override
-    Robot(float x, float y, int slot, Player player, boolean noGraphics) {
-
-    }
 
     /**
      * Get the current health of the robot.
