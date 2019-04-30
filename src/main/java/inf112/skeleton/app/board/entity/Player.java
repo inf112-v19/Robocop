@@ -108,30 +108,6 @@ public class Player {
 
             }
         }
-
-        /*selectedCards = new Card[5];
-        cardPlayedByServer = new boolean[5];
-        int[] packetCardHand = packet.getHand();
-        if (packetCardHand.length < 5) {    // Less than 5 cards given means player-health <= 4, and player has burnt cards.
-            for (int i = 0; i < 5 - packetCardHand.length; i++) {
-                selectedCards[i] = burntCards[i];
-            }
-        }
-
-        cards = new Card[packetCardHand.length];
-
-        for (int i = 0; i < packetCardHand.length; i++) {
-            cards[i] = Tools.CARD_RECONSTRUCTOR.reconstructCard(packetCardHand[i]);
-        }
-
-        while (true) {
-            try {
-                RoboRally.gameBoard.hud.getPlayerDeck().resetDeck();
-                RoboRally.gameBoard.hud.turnTimer.start();
-                return;
-            } catch (NullPointerException npe) {
-            }
-        }*/
     }
 
     /**
