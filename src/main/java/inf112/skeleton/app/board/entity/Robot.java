@@ -113,6 +113,7 @@ public class Robot extends Entity {
      */
     private boolean processingMovement(long currentTime) {
         if (this.pos.x == this.tileTo.x && this.pos.y == this.tileTo.y) {
+            placeAt(this.pos.x, this.pos.y);
             return false;
         }
         int movementDelay = this.delayMove * movementLength;
@@ -168,8 +169,7 @@ public class Robot extends Entity {
         RoboRally.gameBoard.entityLocations[oldindex].remove(this);
         RoboRally.gameBoard.entityLocations[index].add(this);
         this.timeMoved = System.currentTimeMillis();
-        placeAt(tileTo.x, tileTo.y);
-        //processingMovement(System.currentTimeMillis());
+        processingMovement(System.currentTimeMillis());
 
         movedLastTick = true;
     }
