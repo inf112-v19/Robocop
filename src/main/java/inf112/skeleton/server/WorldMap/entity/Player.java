@@ -9,7 +9,6 @@ import inf112.skeleton.common.packet.data.PlayerInitPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
 import inf112.skeleton.common.specs.Card;
 import inf112.skeleton.common.specs.CardType;
-import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.common.specs.Direction;
 import inf112.skeleton.server.Instance.Game;
 import inf112.skeleton.server.Instance.Lobby;
@@ -26,7 +25,6 @@ public class Player {
     private Vector2 currentPos;
     private Vector2 movingTo;
     private User owner;
-    //private String backup;
     private PlayerBackup backup;
 
     private final int SELECTED_CARDS = 5;
@@ -72,7 +70,7 @@ public class Player {
         this.cardsSelected = new Card[SELECTED_CARDS];
         this.burnt = new Card[SELECTED_CARDS];
         this.burntAmount = 0;
-        createBackup();
+        createBackup(currentPos);
     }
 
     /**
@@ -190,38 +188,25 @@ public class Player {
 
 
     }
-    //TODO This method crashes the server.
-    public void createBackup() {
-        //this.backup = null;
-        //this.backup = Tools.GSON.toJson(this);
+
+    public void createBackup(Vector2 pos) {
         this.owner.sendChatMessage("Creating backup.");
-        this.backup = null;
-        this.backup = new PlayerBackup(this);
+        this.backup = new PlayerBackup(this, pos);
 
     }
 
     public void restoreBackup() {
         if (this.respawns < MAX_RESPAWNS) {
-            /*
-            Player toRestore = Tools.GSON.fromJson(this.backup, Player.class);
-            this.currentPos = toRestore.currentPos.cpy();
-            this.movingTo = toRestore.movingTo.cpy();
-            this.direction = toRestore.direction;
-            this.currentHP = toRestore.currentHP;
-            */
             this.owner.sendChatMessage("Restoring backup.");
-            this.currentPos = backup.currentPos;
-            this.movingTo = backup.currentPos;
-            this.movingTiles = 0;
+            this.placeAt(backup.currentPos.x,backup.currentPos.y);
             this.direction = backup.direction;
             this.currentHP = backup.currentHP;
             this.respawns++;
             sendUpdate();
         } else {
             //TODO GAME OVER.
-            owner.getLobby().getGame();
+            owner.getLobby().kickBySlot(slot, owner);
         }
-        sendUpdate();
     }
 
     /**
@@ -231,7 +216,7 @@ public class Player {
         if (this.currentHP == 0) {
             restoreBackup();
             return;
-        } else if (this.currentHP > 5) {
+        } else if (this.currentHP > SELECTED_CARDS) {
             this.currentHP--;
         } else {
             this.currentHP--;
@@ -261,7 +246,7 @@ public class Player {
      * @param hand of cards
      */
     public void storeSelectedCards(Card[] hand) {
-        cardsSelected = new Card[5];                                //Clear old data.
+        cardsSelected = new Card[SELECTED_CARDS];                                //Clear old data.
         for (int i = 0; i < burntAmount; i++) {                     //Insert burnt cards front to back.
             cardsSelected[i] = burnt[i];
         }
@@ -281,7 +266,7 @@ public class Player {
     public void forceSelect() {
         System.out.println("[Player serverside - forceSelect] - selecting cards automatically for player " + this.owner.getUUID() + ".");
         System.arraycopy(burnt, 0, cardsSelected, 0, burntAmount);
-        System.arraycopy(cardsGiven, 0, cardsSelected, burntAmount, 5 - burntAmount);
+        System.arraycopy(cardsGiven, 0, cardsSelected, burntAmount, SELECTED_CARDS - burntAmount);
         currentCard = 0;
     }
 
@@ -522,7 +507,7 @@ public class Player {
         for (Flag flag : owner.getLobby().getGame().getFlags()) {
             if (flag.getPos().dst(pos) == 0 && flag.getNumber() == flagsVisited + 1) {
                 this.flagsVisited++;
-                createBackup();
+                createBackup(flag.getPos());
                 FlagUpdatePacket flagUpdatePacket = new FlagUpdatePacket(flag);
                 this.owner.sendPacket(new Packet(FromServer.SEND_FLAG_UPDATE.ordinal(), flagUpdatePacket));
                 this.owner.getLobby().getGame().checkWinCondition();

@@ -162,13 +162,14 @@ public class Robot extends Entity {
         this.facing = updatePlayerPacket.getDirection();
         this.movementDirection = updatePlayerPacket.getMovingTiles();
         this.movementLength = Math.abs(updatePlayerPacket.getMovingTiles());
-        this.pos = updatePlayerPacket.getFromTile();
+        this.pos = updatePlayerPacket.getFromTile().cpy();
         int oldindex = index;
         index = Tools.coordToIndex(pos.x, pos.y, RoboRally.gameBoard.getWidth());
         RoboRally.gameBoard.entityLocations[oldindex].remove(this);
         RoboRally.gameBoard.entityLocations[index].add(this);
         this.timeMoved = System.currentTimeMillis();
-        processingMovement(System.currentTimeMillis());
+        placeAt(tileTo.x, tileTo.y);
+        //processingMovement(System.currentTimeMillis());
 
         movedLastTick = true;
     }

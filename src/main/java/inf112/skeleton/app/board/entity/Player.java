@@ -60,7 +60,7 @@ public class Player {
             this.robot = new Robot(initialPos.x, initialPos.y, slot, this);
             try {
                 RoboRally.gameBoard.addEntity(robot);
-            } catch (NullPointerException e) {};
+            } catch (NullPointerException e) {}
         }
     }
 
