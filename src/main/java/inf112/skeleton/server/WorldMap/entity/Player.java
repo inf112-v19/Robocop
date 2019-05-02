@@ -474,6 +474,9 @@ public class Player {
                             System.out.println("OTHER ROBOT MOVED: " + otherRobotMoved);
 
                             //Make our robot follow.
+                            try {
+                                Thread.sleep(500*otherRobotMoved);
+                            } catch (InterruptedException e) {}
                             actual += startMovement(direction, otherRobotMoved, false);
                             System.out.println("ACTUAL AFTER CALLING RECURSIVELY: " + actual);
                             sendUpdate();
