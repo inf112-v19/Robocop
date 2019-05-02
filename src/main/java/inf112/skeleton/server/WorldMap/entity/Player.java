@@ -205,7 +205,7 @@ public class Player {
             sendUpdate();
         } else {
             //TODO GAME OVER.
-            owner.getLobby().kickBySlot(slot, owner);
+            owner.leaveLobby();
         }
     }
 

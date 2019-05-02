@@ -1,14 +1,10 @@
 package inf112.skeleton.server;
 
 import com.google.gson.JsonObject;
-import inf112.skeleton.common.packet.FromServer;
-import inf112.skeleton.common.packet.Packet;
-import inf112.skeleton.common.packet.data.PlayerRemovePacket;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.login.UserLogging;
 import inf112.skeleton.server.packet.IncomingPacketHandler;
 import inf112.skeleton.server.user.User;
-import inf112.skeleton.common.utility.StringUtilities;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -75,16 +71,8 @@ public class RoboCopServerHandler extends SimpleChannelInboundHandler<String> {
     }
 
     private void cleanupLeavingUser(User requestUser) {
-        FromServer pktId = FromServer.REMOVE_PLAYER;
-        PlayerRemovePacket data = new PlayerRemovePacket(requestUser.getUUID());
-        Packet pkt = new Packet(pktId, data);
-        String message = "[SERVER] - " + StringUtilities.formatPlayerName(requestUser.getName()) + " has left the channel!";
 
-        if (requestUser.isInLobby()) {
-            requestUser.getLobby().broadcastChatMessage(message);
-            requestUser.getLobby().broadcastPacket(pkt);
-            requestUser.leaveLobby();
-        }
+        requestUser.leaveLobby();
 
         UserLogging.logout(requestUser); //Save the user in a json file
     }

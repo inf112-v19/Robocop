@@ -5,6 +5,7 @@ import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.*;
 import inf112.skeleton.common.specs.LobbyError;
 import inf112.skeleton.common.specs.LobbyInfo;
+import inf112.skeleton.common.utility.StringUtilities;
 import inf112.skeleton.server.GameWorldInstance;
 import inf112.skeleton.server.Instance.Lobby;
 import inf112.skeleton.server.WorldMap.entity.Player;
@@ -113,6 +114,12 @@ public class User {
      */
     public void leaveLobby() {
         if (isInLobby()) {
+            FromServer pktId = FromServer.REMOVE_PLAYER;
+            PlayerRemovePacket data = new PlayerRemovePacket(this.getUUID());
+            Packet pkt = new Packet(pktId, data);
+            String message = "[SERVER] - " + StringUtilities.formatPlayerName(this.getName()) + " has left the channel!";
+            this.getLobby().broadcastChatMessage(message);
+            this.getLobby().broadcastPacket(pkt);
             lobby.removeUser(this);
         }
     }

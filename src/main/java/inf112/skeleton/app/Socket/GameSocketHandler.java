@@ -9,6 +9,7 @@ import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
+import inf112.skeleton.app.gameStates.Playing.State_Playing;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.data.*;
 import inf112.skeleton.common.status.LoginResponseStatus;
@@ -113,6 +114,10 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                         if (RoboRally.roboRally.gsm.peek() instanceof State_MainMenu) {
                             ((State_MainMenu) RoboRally.roboRally.gsm.peek()).leaveLobby();
                             ((State_MainMenu) RoboRally.roboRally.gsm.peek()).setFreeze(false);
+                        }
+                        if (RoboRally.roboRally.gsm.peek() instanceof State_Playing) {
+                            ((State_Playing) RoboRally.roboRally.gsm.peek()).stateChange = stateChangePacket.getState();
+
                         }
                         break;
                     case GAME_START:
