@@ -1,12 +1,20 @@
 package inf112.skeleton.app.GUI;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import inf112.skeleton.app.RoboRally;
+import inf112.skeleton.app.board.entity.Player;
+import inf112.skeleton.common.specs.Card;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static inf112.skeleton.common.specs.CardType.GREY;
 
 public class StatusBar extends Table {
 
@@ -15,21 +23,27 @@ public class StatusBar extends Table {
     private HashMap<String, Image[]> lifeButtons;
     private HashMap<String, Image[]> damageButtons;
     private HashMap<String, Image> powerDownButtons;
+    private HashMap<String, ImageTextButton[]> cards;
     private HashMap<String, int[]> ldp;
 
+    private ImageTextButton.ImageTextButtonStyle greyCard = RoboRally.graphics.styleFromDrawable(RoboRally.graphics.card_drawables.get(GREY), null, Color.RED);;
+
     private static final int    username_width = 150,
-                                iconSize = 20,
+                                iconSize = 40,
                                 pad = 5,
-                                height = 26,
+                                height = 46,
 
                                 numLives = 3,
                                 numDamage = 9,
+                                numCards = 5,
 
-                                width = username_width + pad + (pad + iconSize) * (numLives + numDamage + 1);
+                                cardHeight = iconSize,
+                                cardWidth = (int)(128f/192f * iconSize), // Card width / card height * scale
+
+                                width = username_width + pad + (pad + iconSize) * (numLives + numDamage + 1) + (pad + cardWidth) * numCards;
 
     public StatusBar() {
         super();
-
         clear();
     }
 
@@ -74,6 +88,14 @@ public class StatusBar extends Table {
         }
         damageButtons.put(name, damageTakenButtons);
 
+        // Cards
+        ImageTextButton[] pCards = new ImageTextButton[numCards];
+        for (int i = 0 ; i < numCards ; i++) {
+            pCards[i] = new ImageTextButton("",greyCard);
+            userRow.add(pCards[i]).size(cardWidth, cardHeight).padRight(pad);
+        }
+        cards.put(name, pCards);
+
         // Set initial life/damage/powerdown count.
         ldp.put(name, new int[]{3,0,0});
 
@@ -114,6 +136,38 @@ public class StatusBar extends Table {
         ldp.get(name)[2] = powerDown ? 1 : 0;
     }
 
+    /**
+     * Replace all cards in status bar with grey cards.
+     */
+    public void hideCards() {
+        for (ImageTextButton[] pCards : cards.values()) {
+            for (int i = 0 ; i < numCards ; i++) {
+                if (!pCards[i].getStyle().equals(greyCard)) {
+                    pCards[i].setStyle(greyCard);
+                }
+            }
+        }
+    }
+
+    public void displayCards() {
+        for (Object player : RoboRally.gameBoard.getPlayers().values()) {
+            String name = ((Player)player).name;
+            ImageTextButton[] pCards = cards.get(name);
+            if (pCards == null) {
+                Gdx.app.error("pCards not set for user with name <" + name + ">","");
+                continue;
+            }
+
+            for (int i = 0 ; i < numCards ; i++) {
+                Card card = ((Player) player).selectedCards[i];
+                pCards[i].setStyle( (card == null) ? greyCard : RoboRally.graphics.styleFromDrawable(card.getDrawable(false), null, Color.RED));
+                if (card == null) {
+                    System.out.println("No cards for player <" + ((Player)player).name + ">.");
+                }
+            }
+        }
+    }
+
     public int size() {
         return rows.size();
     }
@@ -126,5 +180,6 @@ public class StatusBar extends Table {
         lifeButtons = new HashMap<>();
         damageButtons = new HashMap<>();
         powerDownButtons = new HashMap<>();
+        cards = new HashMap<>();
     }
 }
