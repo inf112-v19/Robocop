@@ -546,6 +546,11 @@ public class Player {
         return this.owner;
     }
 
+    @Override
+    public String toString() {
+        return owner.getName();
+    }
+
     public boolean isArtificial() {
         return owner.getChannel() == null;
     }
