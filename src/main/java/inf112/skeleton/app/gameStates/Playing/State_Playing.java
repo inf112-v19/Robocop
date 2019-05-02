@@ -11,12 +11,15 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
+import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
+import inf112.skeleton.common.specs.StateChange;
 import io.netty.channel.Channel;
 
 import static inf112.skeleton.app.RoboRally.height;
 import static inf112.skeleton.app.RoboRally.width;
 
 public class State_Playing extends GameState {
+    public StateChange stateChange = null;
     private Viewport viewport;
     private InputMultiplexer inputMultiplexer;
     private InputContainer inputContainer;
@@ -27,7 +30,8 @@ public class State_Playing extends GameState {
 
     /**
      * Initialize the display seen while playing the game.
-     * @param gsm game-state manager, lets you switch between and manage game-states more easily
+     *
+     * @param gsm     game-state manager, lets you switch between and manage game-states more easily
      * @param channel lets you communicate with server
      */
     public State_Playing(GameStateManager gsm, Channel channel) {
@@ -48,6 +52,14 @@ public class State_Playing extends GameState {
 
     @Override
     public void update(float dt) {
+        if (stateChange != null){
+            switch (stateChange){
+                case PLAYER_KICKED:
+                    dispose();
+                    gsm.set(new State_MainMenu(gsm, channel));
+                return;
+            }
+        }
         if (!hud.gameChat.scrollPane.isDragging() && !hud.gameChatIsTouched)
             cameraHandler.handle();
 
