@@ -205,7 +205,7 @@ public class Player {
             sendUpdate();
         } else {
             //TODO GAME OVER.
-            owner.getLobby().kickBySlot(slot, owner);
+            owner.leaveLobby();
         }
     }
 
@@ -544,6 +544,11 @@ public class Player {
 
     public User getOwner() {
         return this.owner;
+    }
+
+    @Override
+    public String toString() {
+        return owner.getName();
     }
 
     public boolean isArtificial() {

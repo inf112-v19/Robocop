@@ -174,6 +174,7 @@ public class Lobby {
                         sendUpdate(user1);
                     }
                 }
+                broadcastChatMessage(user.getName()+ " - Has joined the game.");
                 return;
             }
         }
@@ -224,7 +225,7 @@ public class Lobby {
                 }
                 user.sendPacket(new Packet(FromServer.STATE_CHANGED, new StateChangePacket(StateChange.PLAYER_KICKED)));
 
-                if (user == host) {
+                if (user == host && !gameStarted) {
                     kickAllAndDestroy();
                     return;
                 }
@@ -246,10 +247,11 @@ public class Lobby {
         }
         for (User user : users) {
             if (user != null) {
-                removeUser(user);
+                user.leaveLobby();
             }
         }
         gwi.removeLobby(this.getName());
+        System.out.printf("[%s] Closing lobby as no players are left.\n", this.getName());
     }
 
     /**
@@ -354,7 +356,7 @@ public class Lobby {
                 if (users[i] != null) {
                     if (users[i].getName().equalsIgnoreCase(toKick)) {
                         actionUser.sendServerMessage("Successfully kicked: " + users[i].getName());
-                        removeUser(users[i]);
+                        users[i].leaveLobby();
                         return;
                     }
                 }
@@ -372,7 +374,8 @@ public class Lobby {
         if (actionUser == host) {
             if (users[slot] != null) {
                 actionUser.sendServerMessage("Successfully kicked: " + users[slot].getName());
-                removeUser(users[slot]);
+                users[slot].leaveLobby();
+
             }
         }
 
@@ -384,7 +387,7 @@ public class Lobby {
                 if (users[i] != null) {
                     if (users[i].getChannel() == null) {
                         actionUser.sendServerMessage("Kicking AI: " + users[i].getName());
-                        removeUser(users[i]);
+                        users[i].leaveLobby();
                         return;
                     }
                 }

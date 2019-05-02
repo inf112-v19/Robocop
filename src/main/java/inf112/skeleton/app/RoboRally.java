@@ -9,6 +9,7 @@ import inf112.skeleton.app.GUI.GraphicsLoader;
 import inf112.skeleton.app.board.GameBoard;
 import inf112.skeleton.app.board.TiledMapLoader;
 import inf112.skeleton.app.board.entity.Sprites;
+import inf112.skeleton.app.gameStates.GameMessage.State_Message;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
 import inf112.skeleton.common.packet.data.ClientInitPacket;
