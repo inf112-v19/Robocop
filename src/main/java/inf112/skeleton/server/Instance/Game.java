@@ -58,7 +58,6 @@ public class Game {
         switch (gameStage) {
             case LOBBY:
                 break;
-
             case DEALING:   //Deal cards to players
                 Gdx.app.log("Game - update - DEALING", "Dealing cards to players.");
                 lobby.broadcastChatMessage("You have " + ROUND_SELECT_TIMER + " seconds to choose cards or cards will be automatically chosen");
@@ -83,22 +82,19 @@ public class Game {
                 }
 
                 break;
-            case GET_CARDS:
+            case GET_CARDS: //Get one card from each player, until all the selected cards have been played (5 cards per player).
                 for (Player player : players) {
                     cardsForOneRound.put(player, player.getNextFromSelected());
                 }
                 cardRound++;
                 gameStage = MOVING;
                 if (cardRound > 5) {
-                    /*for (Player player : players) { //TESTING
-                        player.getHit();
-                    }*/
                     gameStage = DEALING;
                     cardRound = 0;
                     Gdx.app.log("Game - update - WAITING", "Moving to MOVING.");
                 }
                 break;
-            case MOVING:    //Move the robots in correct order.
+            case MOVING:    //Play cards in descending priority.
                 if (!cardsForOneRound.isEmpty()) {
                     if (tickCountdown > 0) {
                         tickCountdown--;
@@ -121,7 +117,6 @@ public class Game {
                 break;
 
             case VICTORY:
-                // Unreachable at the moment
                 lobby.broadcastChatMessage("Winner winner chicken dinner.");
                 gameStage = LOBBY;
                 break;
@@ -166,7 +161,6 @@ public class Game {
             return;
         }
         if (card == null) {
-
             System.out.println("CARD IS NULL!!!!!!!");
             return;
         }

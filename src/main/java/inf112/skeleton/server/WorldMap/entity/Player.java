@@ -149,6 +149,13 @@ public class Player {
 
     }
 
+    private boolean delayForMovement(long targetTime) {
+        if(System.currentTimeMillis() < targetTime) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Force place the player at a specific location
      *
@@ -427,7 +434,6 @@ public class Player {
             for (int i = 0; i <= initialAmount; i++) {
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
                 walls = gameBoard.getWallsAtPosition(toCheck);
-
                 if (i == 0) {   //Our current tile. Check if we can leave.
                     for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
@@ -435,11 +441,11 @@ public class Player {
                             break outerloop;
                         }
                     }
+
                 } else {        //All other tiles in our path.
                     for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
                             actual = i;
-                            checkForFlag(toCheck);
                             break outerloop;
                         }
                         if (!wall.canEnter(direction)) {
@@ -453,36 +459,47 @@ public class Player {
                         break;
                     }
 
+                    /*TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
+                    if (entity != null) {
+                        if (!entity.canContinueWalking()) {
+                            actual = i;
+                            break;
+                        }
+                    }*/
+
                     checkForFlag(toCheck);
 
                     for (Player player : players) {
                         if (toCheck.dst(player.currentPos) == 0 && player != this) {
                             int delta = i - 1;    //Open tiles between the two robots.
+                            System.out.println("Delta: " + delta);
 
                             //Move up next to robot.
                             this.movingTo.add(dx * delta, dy * delta);
                             this.movingTiles = delta;
+                            System.out.println("Moving " + movingTiles);
                             actual = delta;
                             sendUpdate();
-                            try {
-                                Thread.sleep((actual + 1) * 500);     //Don't delay, sleep today!
-
-                            } catch (InterruptedException e) {
-                                System.out.println("Quoth the Raven 'Nevermore.'");
-                            }
 
                             //Move other robot the remaining required distance.
+                            System.out.println("Amount: " + initialAmount);
                             int otherRobotMoved = player.startMovement(direction, initialAmount - delta, true);
+                            System.out.println("otherRobotMoved: " + otherRobotMoved);
 
-                            //Make our robot follow.
-                            try {
-                                Thread.sleep((otherRobotMoved + 1) * 500);     //Don't delay, sleep today!
+                            //Make our robot follow. //TODO Use recursion in order to be able to check every tile that the player moves across. Otherwise, might be able to not register a flag if following a robot.
+                            if (delta == 0) {
+                                //actual += startMovement(direction, otherRobotMoved, false);
+                                this.movingTo.add(dx * otherRobotMoved, dy * otherRobotMoved);
+                                this.movingTiles = otherRobotMoved;
+                                actual += otherRobotMoved;
+                            } else {
+                                //actual += startMovement(direction, initialAmount-(otherRobotMoved-1), false);
+                                this.movingTo.add(dx * (initialAmount - (otherRobotMoved - 1)), dy * (initialAmount - (otherRobotMoved - 1)));
+                                this.movingTiles = initialAmount - (otherRobotMoved - 1);
+                                actual += otherRobotMoved - 1;
 
-                            } catch (InterruptedException e) {
-                                System.out.println("Quoth the Raven 'Nevermore.'");
                             }
-
-                            actual += startMovement(direction, otherRobotMoved, false);
+                            System.out.println("Moving " + movingTiles);
                             sendUpdate();
                             return actual;
                         }
@@ -494,7 +511,7 @@ public class Player {
             sendUpdate();
             return actual;
         }
-        return 0;
+        return initialAmount;
     }
 
     /**
