@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import inf112.skeleton.app.Action.InputContainer;
 import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.GameBoard;
+import inf112.skeleton.app.gameStates.GameMessage.State_Message;
 import inf112.skeleton.app.gameStates.GameState;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.MainMenu.State_MainMenu;
@@ -56,7 +57,8 @@ public class State_Playing extends GameState {
             switch (stateChange){
                 case PLAYER_KICKED:
                     dispose();
-                    gsm.set(new State_MainMenu(gsm, channel));
+                    gsm.set(new State_Message(gsm, channel));
+                    ((State_Message) gsm.peek()).displayMessage("You have lost the game.");
                 return;
             }
         }

@@ -174,6 +174,7 @@ public class Lobby {
                         sendUpdate(user1);
                     }
                 }
+                broadcastChatMessage(user.getName()+ " - Has joined the game.");
                 return;
             }
         }

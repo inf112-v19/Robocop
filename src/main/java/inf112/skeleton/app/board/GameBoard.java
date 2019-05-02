@@ -190,7 +190,7 @@ public abstract class GameBoard {
         this.myPlayer = new Player(pkt.getUUID(), pkt.getName(), pkt.getPos(), pkt.getHealth(), pkt.getSlot(), pkt.getFacing());
     }
 
-    public void removePlayer(PlayerRemovePacket pkt) {
+    public void diawojdjremovePlayer(PlayerRemovePacket pkt) {
         Player leavingPlayer = this.getPlayer(pkt.getUUID());
         this.entities.remove(leavingPlayer.getRobot());
         this.players.remove(pkt.getUUID());

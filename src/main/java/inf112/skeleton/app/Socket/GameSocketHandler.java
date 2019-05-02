@@ -90,7 +90,9 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 break;
             case REMOVE_PLAYER:
                 PlayerRemovePacket playerRemovePacket = PlayerRemovePacket.parseJSON(jsonObject);
-                RoboRally.gameBoard.removePlayer(playerRemovePacket);
+                if(RoboRally.gameBoard != null) {
+                    RoboRally.gameBoard.removePlayer(playerRemovePacket);
+                }
                 break;
             case JOIN_LOBBY_RESPONSE:
                 LobbyJoinResponsePacket lobbyJoinResponsePacket = LobbyJoinResponsePacket.parseJSON(jsonObject);
