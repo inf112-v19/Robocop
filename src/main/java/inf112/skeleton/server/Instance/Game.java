@@ -7,10 +7,12 @@ import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.CardPacket;
 import inf112.skeleton.common.packet.data.StateChangePacket;
 import inf112.skeleton.common.specs.*;
+import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.WorldMap.entity.Flag;
 import inf112.skeleton.server.WorldMap.entity.Player;
+import inf112.skeleton.server.WorldMap.entity.TileEntity;
 import inf112.skeleton.server.card.CardDeck;
 import inf112.skeleton.server.user.User;
 
@@ -18,8 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-import static inf112.skeleton.server.Instance.GameStage.*;
 import static inf112.skeleton.common.specs.Direction.values;
+import static inf112.skeleton.server.Instance.GameStage.*;
 
 
 public class Game {
@@ -104,6 +106,16 @@ public class Game {
                         useCard();
                     }
                     return;
+                }
+                gameStage = DO_TILES;
+                break;
+            case DO_TILES:
+                for (Player player : players) {
+                    Vector2 pos = player.getCurrentPos();
+                    for (TileEntity tileEntity :
+                            gameBoard.tileEntities[Tools.coordToIndex(pos.x, pos.y, gameBoard.getWidth())]) {
+                        tileEntity.walkOn(player);
+                    }
                 }
                 gameStage = GET_CARDS;
                 break;
@@ -211,10 +223,10 @@ public class Game {
     }
 
     public void checkWinCondition() {
-        for(Player player : players) {
+        for (Player player : players) {
             System.out.println("Player " + player.getOwner().getName() + " is currently at flag " + player.getFlagsVisited());
             System.out.println("Number of flags in game: " + NUMBER_OF_FLAGS);
-            if(player.getFlagsVisited() == NUMBER_OF_FLAGS) {
+            if (player.getFlagsVisited() == NUMBER_OF_FLAGS) {
                 lobby.broadcastChatMessage("Player " + player.getOwner().getName() + " has won!");
                 gameStage = VICTORY;
             }
@@ -353,7 +365,7 @@ public class Game {
                     }
                 }
                 for (Flag flag : flags) {
-                    if( flag == null) {
+                    if (flag == null) {
                         break;
                     }
                     if (flag.getPos().dst(loc) == 0) {
@@ -362,7 +374,7 @@ public class Game {
                 }
                 suitableLocation = gameBoard.isTileWalkable(loc);
             }
-            Flag flag = new Flag(loc,i+1);
+            Flag flag = new Flag(loc, i + 1);
             flags[i] = flag;
         }
     }
