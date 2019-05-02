@@ -88,9 +88,6 @@ public class Game {
                 cardRound++;
                 gameStage = MOVING;
                 if (cardRound > 5) {
-                    /*for (Player player : players) { //TESTING
-                        player.getHit();
-                    }*/
                     gameStage = DEALING;
                     cardRound = 0;
                     Gdx.app.log("Game - update - WAITING", "Moving to MOVING.");
@@ -109,7 +106,6 @@ public class Game {
                 break;
 
             case VICTORY:
-                // Unreachable at the moment
                 lobby.broadcastChatMessage("Winner winner chicken dinner.");
                 gameStage = LOBBY;
                 break;
@@ -154,7 +150,6 @@ public class Game {
             return;
         }
         if (card == null) {
-
             System.out.println("CARD IS NULL!!!!!!!");
             return;
         }

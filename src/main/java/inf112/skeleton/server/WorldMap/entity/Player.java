@@ -429,14 +429,14 @@ public class Player {
                 walls = gameBoard.getWallsAtPosition(toCheck);
 
                 if (i == 0) {   //Our current tile. Check if we can leave.
-                    for (TileEntity wall : walls) {
+                    /*for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
                             actual = i;
                             break outerloop;
                         }
-                    }
+                    }*/
                 } else {        //All other tiles in our path.
-                    for (TileEntity wall : walls) {
+                    /*for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
                             actual = i;
                             checkForFlag(toCheck);
@@ -451,7 +451,7 @@ public class Player {
                     if (!gameBoard.isTileWalkable(toCheck)) {   //This is currently used for the outside edges of the map if I'm not mistaken, should be removed "Soon"TM
                         actual = i - 1;
                         break;
-                    }
+                    }*/
 
                     checkForFlag(toCheck);
 
@@ -464,25 +464,18 @@ public class Player {
                             this.movingTiles = delta;
                             actual = delta;
                             sendUpdate();
-                            try {
-                                Thread.sleep((actual + 1) * 500);     //Don't delay, sleep today!
-
-                            } catch (InterruptedException e) {
-                                System.out.println("Quoth the Raven 'Nevermore.'");
+                            while(processingMovement(System.currentTimeMillis())) {
+                                //Don't delay, "sleep" today!
                             }
 
                             //Move other robot the remaining required distance.
                             int otherRobotMoved = player.startMovement(direction, initialAmount - delta, true);
+                            System.out.println("ACTUAL: " + actual);
+                            System.out.println("OTHER ROBOT MOVED: " + otherRobotMoved);
 
                             //Make our robot follow.
-                            try {
-                                Thread.sleep((otherRobotMoved + 1) * 500);     //Don't delay, sleep today!
-
-                            } catch (InterruptedException e) {
-                                System.out.println("Quoth the Raven 'Nevermore.'");
-                            }
-
                             actual += startMovement(direction, otherRobotMoved, false);
+                            System.out.println("ACTUAL AFTER CALLING RECURSIVELY: " + actual);
                             sendUpdate();
                             return actual;
                         }
