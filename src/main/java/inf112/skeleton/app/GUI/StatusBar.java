@@ -10,6 +10,7 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.common.specs.Card;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -149,23 +150,27 @@ public class StatusBar extends Table {
         }
     }
 
-    public void displayCards() {
-        for (Object player : RoboRally.gameBoard.getPlayers().values()) {
-            String name = ((Player)player).name;
-            ImageTextButton[] pCards = cards.get(name);
-            if (pCards == null) {
-                Gdx.app.error("pCards not set for user with name <" + name + ">","");
-                continue;
-            }
+    private void displayCards(Player player) {
+        ImageTextButton[] pCards = cards.get(player.name);
+        if (pCards == null) {
+            Gdx.app.error("pCards not set for user with name <" + player.name + ">","");
+            return;
+        }
 
-            for (int i = 0 ; i < numCards ; i++) {
-                Card card = ((Player) player).selectedCards[i];
-                pCards[i].setStyle( (card == null) ? greyCard : RoboRally.graphics.styleFromDrawable(card.getDrawable(false), null, Color.RED));
-                if (card == null) {
-                    System.out.println("No cards for player <" + ((Player)player).name + ">.");
-                }
+        for (int i = 0 ; i < numCards ; i++) {
+            Card card = player.selectedCards[i];
+            pCards[i].setStyle( (card == null) ? greyCard : RoboRally.graphics.styleFromDrawable(card.getDrawable(false), null, Color.RED));
+            if (card == null) {
+                System.out.println("No cards for player <" + player.name + ">.");
             }
         }
+    }
+
+    public void displayCards() {
+        for (Player player : (Collection<Player>)RoboRally.gameBoard.getPlayers().values()) {
+            displayCards(player);
+        }
+        displayCards(RoboRally.gameBoard.myPlayer);
     }
 
     public int size() {
