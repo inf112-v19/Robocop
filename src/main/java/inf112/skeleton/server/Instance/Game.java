@@ -159,7 +159,7 @@ public class Game {
             return;
         }
 
-        Gdx.app.log("Game - useCard", "Moving player " + player.toString() + " with card " + card.toString());
+        Gdx.app.log("Game - useCard", "Moving player " + player.getOwner().getName() + " with card " + card.toString());
 
         CardPacket cardPacket = new CardPacket(card);
         player.getOwner().sendPacket(new Packet(FromServer.CARD_PACKET.ordinal(), cardPacket));

@@ -77,12 +77,13 @@ public abstract class GameBoard {
         for (Entity entity: laserSources){
             entity.render(batch);
         }
-        for (Entity entity : entities) {
-            entity.renderName(batch, camera.zoom);
-        }
         for (Entity wall : renderWalls) {
             wall.render(batch);
         }
+        for (Entity entity : entities) {
+            entity.renderName(batch, camera.zoom);
+        }
+
 
     }
 
