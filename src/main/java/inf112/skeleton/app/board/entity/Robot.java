@@ -38,7 +38,6 @@ public class Robot extends Entity {
         this.position[1] = (int) y * 64;
         this.health = player.initialHp;
         this.colour = slot;
-        System.out.println("Robot constructor, slot = " + this.colour);
         this.facing = player.initialDirection;
         this.player = player;
         this.index = Tools.coordToIndex(pos.x, pos.y, RoboRally.gameBoard.getWidth());
@@ -81,16 +80,12 @@ public class Robot extends Entity {
     }
 
     private void getHit() {
-        System.out.println("Robot - getHit: before getting hit, health is " + health);
         if (health > 5) {
             health--;
-            System.out.println("Robot - getHit: health is now " + health);
         } else if (health <= 5 && health > 0){
             health--;
-            System.out.println("Robot - getHit: health is now " + health + ", burning one card.");
             player.storeBurntCard();
         } else {
-            Gdx.app.log("Robot - getHit", "Health is below 0. This should not have happened.");
         }
     }
 

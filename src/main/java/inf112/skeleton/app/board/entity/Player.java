@@ -75,7 +75,6 @@ public class Player {
         for (int i = 0; i < selectedCards.length; i++) {
             if (selectedCards[i].equals(foo)) {
                 cardPlayedByServer[i] = true;
-                Gdx.app.log("Player - receiveCardPacket", "Set bool-arr pos " + i + " to true.");
                 return;
             }
         }

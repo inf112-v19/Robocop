@@ -31,7 +31,6 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
      * @param jsonObject
      */
     public void handleIncomingPacket(JsonObject jsonObject) {
-        Gdx.app.log("GameSocketHandler clientside -  handleIncomingPacket", "Handling incoming packet...");
         FromServer packetId = FromServer.values()[jsonObject.get("id").getAsInt()];
         switch (packetId) {
             case LOGINRESPONSE:
@@ -116,6 +115,7 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
 
                 switch (stateChangePacket.getState()) {
                     case PLAYER_KICKED:
+                    case PLAYER_WINNER:
                         if (RoboRally.roboRally.gsm.peek() instanceof State_MainMenu) {
                             ((State_MainMenu) RoboRally.roboRally.gsm.peek()).leaveLobby();
                             ((State_MainMenu) RoboRally.roboRally.gsm.peek()).setFreeze(false);
@@ -170,7 +170,6 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
      */
     @Override
     protected void channelRead0(ChannelHandlerContext arg0, String arg1) {
-        System.out.println(arg1);
         if (arg1.startsWith("{")) {
             JsonObject jsonObject = Tools.GSON.fromJson(arg1, JsonObject.class);
             handleIncomingPacket(jsonObject);

@@ -56,7 +56,6 @@ public abstract class GameBoard {
                 break;
 
             default:
-                System.err.println("fatal error adding tile: " + TileDefinition.getTileById(tile.getId()).getName());
                 return;
         }
         tileEntities[Tools.coordToIndex(x, y, getWidth())].add(newTile);

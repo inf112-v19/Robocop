@@ -62,6 +62,11 @@ public class State_Playing extends GameState {
                     gsm.set(new State_Message(gsm, channel));
                     ((State_Message) gsm.peek()).displayMessage("You have lost the game.");
                 return;
+                case PLAYER_WINNER:
+                    dispose();
+                    gsm.set(new State_Message(gsm, channel));
+                    ((State_Message) gsm.peek()).displayMessage("You have won the game!");
+                    return;
             }
         }
         if (!hud.gameChat.scrollPane.isDragging() && !hud.gameChatIsTouched)

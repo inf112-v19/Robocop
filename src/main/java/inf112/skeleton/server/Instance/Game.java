@@ -270,8 +270,20 @@ public class Game {
             System.out.println("Player " + player.getOwner().getName() + " is currently at flag " + player.getFlagsVisited());
             System.out.println("Number of flags in game: " + NUMBER_OF_FLAGS);
             if (player.getFlagsVisited() == NUMBER_OF_FLAGS) {
+
+                for (Player pl :
+                        players) {
+                    if(pl == player){
+                        player.getOwner().sendPacket(new Packet(FromServer.STATE_CHANGED, new StateChangePacket(StateChange.PLAYER_WINNER)));
+
+                    } else {
+                        player.getOwner().sendPacket(new Packet(FromServer.STATE_CHANGED, new StateChangePacket(StateChange.PLAYER_KICKED)));
+
+                    }
+                }
                 lobby.broadcastChatMessage("Player " + player.getOwner().getName() + " has won!");
                 gameStage = VICTORY;
+                return;
             }
         }
     }

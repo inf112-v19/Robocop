@@ -24,10 +24,8 @@ public class Laser extends Entity {
         super(x, y, EntityType.LASER);
         this.cell = cell;
         this.tile = tile;
-        System.out.println("added laser");
         def = TileDefinition.getTileById(tile.getId());
         this.direction = getDirection(def, cell);
-        System.out.println(direction);
     }
 
     @Override

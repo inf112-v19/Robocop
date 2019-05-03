@@ -25,6 +25,7 @@ public class Lobby {
     private boolean startedTimer = false;
     private int startStage = 0;
     private int userCount = 0;
+    private int artificialCount = 0;
     private boolean gameStarted = false;
 
     public Lobby(String name, MapFile map, User host, GameWorldInstance gwi) {
@@ -218,9 +219,8 @@ public class Lobby {
                             break;
                         }
                     }
-                    if (userCount == 0) {
+                    if (userCount - artificialCount == 0) {
                         kickAllAndDestroy();
-
                     }
                 }
                 user.sendPacket(new Packet(FromServer.STATE_CHANGED, new StateChangePacket(StateChange.PLAYER_KICKED)));
@@ -242,7 +242,7 @@ public class Lobby {
      * Kick all users and destory the lobby
      */
     private void kickAllAndDestroy() {
-        if (gameStarted && userCount > 0) {
+        if (gameStarted && userCount-artificialCount >= 1) {
             return;
         }
         for (User user : users) {
@@ -388,6 +388,7 @@ public class Lobby {
                     if (users[i].getChannel() == null) {
                         actionUser.sendServerMessage("Kicking AI: " + users[i].getName());
                         users[i].leaveLobby();
+                        this.artificialCount--;
                         return;
                     }
                 }
@@ -404,6 +405,7 @@ public class Lobby {
                     "cpu",
                     null);
             user.joinLobby(gwi, getName());
+            this.artificialCount++;
         }
 
     }
