@@ -2,6 +2,7 @@ package inf112.skeleton.server.Instance;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import inf112.skeleton.app.board.entity.Entity;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.CardPacket;
@@ -124,13 +125,15 @@ public class Game {
                 break;
             case DO_TILES:
                 for (Player player : players) {
-                    Vector2 pos = player.getCurrentPos();
-                    for (TileEntity tileEntity :
-                            gameBoard.tileEntities[Tools.coordToIndex(pos.x, pos.y, gameBoard.getWidth())]) {
-                        tileEntity.walkOn(player);
-                    }
-                    for (TileEntity laser : gameBoard.lasers) {
-                        ((Laser) laser).checkIfPlayerAffected(player);
+                    if(player != null) {
+                        Vector2 pos = player.getCurrentPos();
+                        for (TileEntity tileEntity :
+                                gameBoard.tileEntities[Tools.coordToIndex(pos.x, pos.y, gameBoard.getWidth())]) {
+                            tileEntity.walkOn(player);
+                        }
+                        for (TileEntity laser : gameBoard.lasers) {
+                            ((Laser) laser).checkIfPlayerAffected(player);
+                        }
                     }
                 }
                 gameStage = LEFTOVER_MOVEMENT;
@@ -403,6 +406,17 @@ public class Game {
                             break whileloop;
                         }
                     }
+                    for (Flag flag : flags) {
+                        if(flag.getPos().dst(loc) == 0) {
+                            break whileloop;
+                        }
+                    }
+                    ArrayList<TileEntity> entities = gameBoard.getTileEntityAtPosition(loc);
+                    for (TileEntity entity : entities) {
+                        if(!entity.canContinueWalking()) {
+                            break whileloop;
+                        }
+                    }
                     suitableLocation = gameBoard.isTileWalkable(loc);
                 }
 
@@ -432,6 +446,12 @@ public class Game {
                         break;
                     }
                     if (flag.getPos().dst(loc) == 0) {
+                        break whileloop;
+                    }
+                }
+                ArrayList<TileEntity> entities = gameBoard.getTileEntityAtPosition(loc);
+                for (TileEntity entity : entities) {
+                    if(!entity.canContinueWalking()) {
                         break whileloop;
                     }
                 }
