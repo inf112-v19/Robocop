@@ -120,13 +120,10 @@ public abstract class GameBoard {
     }
 
     public void receiveCardHand(CardHandPacket packet) {
-        Gdx.app.log("Gameboard clientside - receiveCardHand", "Receiving card hand.");
         if (myPlayer != null) {
-            Gdx.app.log("Gameboard clientside - receiveCardHand", "MyPlayer exists!");
             myPlayer.receiveCardHandPacket(packet);
         } else {
             foo = packet;
-            Gdx.app.log("Gameboard clientside - receiveCardHand", "MyPlayer does not exist - saving packet for later");
         }
     }
 

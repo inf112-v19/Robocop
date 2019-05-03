@@ -16,7 +16,6 @@ public class Wall extends Entity {
         this.cell = cell;
         this.tile = tile;
         def = TileDefinition.getTileById(tile.getId());
-        System.out.println(getDirection(def, cell));
     }
 
     @Override

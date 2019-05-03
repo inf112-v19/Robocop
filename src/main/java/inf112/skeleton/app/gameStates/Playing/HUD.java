@@ -92,9 +92,10 @@ public class HUD {
         // Update players displayed in status-bar.
         if (statusBar != null && RoboRally.gameBoard.getPlayers().size() + 1 != statusBar.size()) {
             statusBar_clearPlayers();
-            statusBar_addPlayer(RoboRally.gameBoard.myPlayer.name);
+            statusBar_addPlayer(RoboRally.gameBoard.myPlayer);
             for (Player player : (Collection<Player>) RoboRally.gameBoard.getPlayers().values()) {
-                statusBar_addPlayer(player.name);
+                statusBar_addPlayer(player);
+
             }
         }
 
@@ -103,6 +104,12 @@ public class HUD {
 
         // Set projection matrix for correct positioning on screen.
         sb.setProjectionMatrix(stage.getCamera().combined);
+
+        if (statusBar != null) {
+            statusBar.displayCards();
+            statusBar.setPosition(stage.getWidth() - statusBar.getWidth(),stage.getHeight() - statusBar.getHeight());
+            turnTimer.setPosition(stage.getWidth() - turnTimer.getMinWidth() - 2,stage.getHeight() - statusBar.getHeight() - turnTimer.getHeight() - 2);
+        }
 
         // Draw stage to screen
         stage.draw();
@@ -147,10 +154,8 @@ public class HUD {
         stage.addActor(gameChat);
     }
 
-    public void statusBar_addPlayer(String username) {
-        statusBar.addStatus(username);
-        statusBar.setPosition(stage.getWidth() - statusBar.getWidth(),stage.getHeight() - statusBar.getHeight());
-        turnTimer.setPosition(stage.getWidth() - turnTimer.getMinWidth() - 2,stage.getHeight() - statusBar.getHeight() - turnTimer.getHeight() - 2);
+    public void statusBar_addPlayer(Player player) {
+        statusBar.addStatus(player);
     }
     private void statusBar_clearPlayers() {
         statusBar.clear();
@@ -171,4 +176,6 @@ public class HUD {
     public void statusBar_powerDown(String username, boolean powerDown) {
         statusBar.powerDown(username, powerDown);
     }
+    public void statusBar_hideCards() {statusBar.hideCards();}
+    public void statusBar_showCards() {statusBar.displayCards();}
 }
