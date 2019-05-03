@@ -20,8 +20,7 @@ public class Belt extends TileEntity  {
      */
     @Override
     public void walkOn(Player player) {
-        //damage the player
-        player.startMovement(Direction.NORTH, 1, false);
+        player.startMovement(Direction.NORTH, 4, true);
 
 
     }

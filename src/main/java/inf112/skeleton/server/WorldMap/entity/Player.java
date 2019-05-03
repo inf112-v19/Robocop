@@ -39,6 +39,7 @@ public class Player {
 
     private int slot;
     private int currentHP;
+    private int initialHP;
     private int flagsVisited;
     private int respawns;
     private Direction direction;
@@ -56,6 +57,7 @@ public class Player {
     public Player(String name, Vector2 pos, int hp, int slot, Direction direction, User owner) {
         this.name = name;
         this.currentHP = hp;
+        this.initialHP = hp;
         this.flagsVisited = 0;
         this.respawns = 0;
         this.currentPos = pos;
@@ -214,6 +216,14 @@ public class Player {
             //TODO GAME OVER.
             owner.leaveLobby();
         }
+    }
+
+    /**
+     * Restore the players HP
+     */
+    public void restoreHp() {
+        this.currentHP = this.initialHP;
+        sendUpdate();
     }
 
     /**

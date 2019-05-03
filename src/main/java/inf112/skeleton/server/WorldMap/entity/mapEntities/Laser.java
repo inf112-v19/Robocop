@@ -20,6 +20,7 @@ public class Laser extends TileEntity {
     @Override
     public void walkOn(Player player) {
         //damage the player
+        player.getHit();
     }
 
     /**

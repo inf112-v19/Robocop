@@ -20,6 +20,8 @@ public class BlackHole extends TileEntity {
     @Override
     public void walkOn(Player player) {
         // Should kill the player
+        player.restoreBackup();
+
     }
 
     /**

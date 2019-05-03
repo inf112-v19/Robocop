@@ -20,8 +20,7 @@ public class Repair extends TileEntity  {
      */
     @Override
     public void walkOn(Player player) {
-        // TODO: repair the player
-
+        player.restoreHp();
 
     }
 
