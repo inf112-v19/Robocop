@@ -560,7 +560,7 @@ public class Player {
 
     public int forceMove(ForceMovement poll, Game game) {
         int amount = startMovement(poll.getDirection(), poll.getAmount(), poll.isPushed());
-        if (poll.isPushed()) {
+        if (poll.isPushed() && !poll.isTileAction()) {
             game.movementStack.add(new ForceMovement(poll.getDirection(), amount, poll.getAction(), poll.getMoving(), false));
         }
         return amount;

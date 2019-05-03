@@ -8,6 +8,7 @@ public class ForceMovement {
     Player moving;
     Player action;
     boolean pushed;
+    boolean tileAction;
 
     public ForceMovement(Direction direction, int amount, Player moving, Player action, boolean pushed) {
         this.direction = direction;
@@ -16,6 +17,18 @@ public class ForceMovement {
         this.action = action;
         this.pushed = pushed;
     }
+
+    public ForceMovement(Direction direction, int amount, Player moving, boolean pushed, boolean tileAction) {
+        this.direction = direction;
+        this.amount = amount;
+        this.moving = moving;
+        this.pushed = pushed;
+        this.tileAction = tileAction;
+    }
+
+    public boolean isTileAction() {
+        return tileAction;
+}
 
     public Direction getDirection() {
         return direction;

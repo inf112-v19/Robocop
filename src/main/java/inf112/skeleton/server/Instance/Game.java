@@ -17,7 +17,10 @@ import inf112.skeleton.server.WorldMap.entity.TileEntity;
 import inf112.skeleton.server.card.CardDeck;
 import inf112.skeleton.server.user.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
+import java.util.Stack;
 
 import static inf112.skeleton.common.specs.Direction.values;
 import static inf112.skeleton.server.Instance.GameStage.*;
@@ -98,13 +101,20 @@ public class Game {
                 if (!cardsForOneRound.isEmpty()) {
                     if (tickCountdown > 0) {
                         tickCountdown--;
+                        System.out.println("sleep");
                     } else {
-                        if(!movementStack.isEmpty()) {
-                            int amount = movementStack.peek().getMoving().forceMove(movementStack.pop(), this);
-                            setTimerTicks(10 * amount);
-                            return;
+                        if (movementStack.size() != 0) {
+                            System.out.println("Forcing movement");
+                            ForceMovement forcedMove = movementStack.pop();
+                            int amount = forcedMove.getMoving().forceMove(forcedMove, this);
+                            if(amount > 1) {
+                                setTimerTicks(10);
+                            } else {
+                                setTimerTicks(10 * amount);
+                            }
+                        } else {
+                            useCard();
                         }
-                        useCard();
                     }
                     return;
                 }
@@ -159,6 +169,7 @@ public class Game {
      * Plays the highest priority card.
      */
     private void useCard() {
+        System.out.println("USECARD");
         Player player = findUserWithHighestPriorityCard();
         Card card = cardsForOneRound.get(player);
         if (player == null) {
@@ -197,7 +208,7 @@ public class Game {
      * @param ticks
      */
     private void setTimerTicks(int ticks) {
-        this.tickCountdown = ticks;
+        this.tickCountdown += ticks;
     }
 
     /**
