@@ -7,19 +7,24 @@ import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.CardPacket;
 import inf112.skeleton.common.packet.data.StateChangePacket;
 import inf112.skeleton.common.specs.*;
+import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.WorldMap.entity.Flag;
+import inf112.skeleton.server.WorldMap.entity.ForceMovement;
 import inf112.skeleton.server.WorldMap.entity.Player;
+import inf112.skeleton.server.WorldMap.entity.TileEntity;
+import inf112.skeleton.server.WorldMap.entity.mapEntities.Laser;
 import inf112.skeleton.server.card.CardDeck;
 import inf112.skeleton.server.user.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Stack;
 
-import static inf112.skeleton.server.Instance.GameStage.*;
 import static inf112.skeleton.common.specs.Direction.values;
+import static inf112.skeleton.server.Instance.GameStage.*;
 
 
 public class Game {
@@ -33,6 +38,7 @@ public class Game {
     private Flag[] flags = new Flag[NUMBER_OF_FLAGS];
     private ArrayList<Player> players = new ArrayList<>();
     private HashMap<Player, Card> cardsForOneRound = new HashMap<>();
+    public Stack<ForceMovement> movementStack = new Stack<>();
     private GameBoard gameBoard;
 
     private int tickCountdown = 0;  //If greater than 0, the server will not check or perform any action other than count down this number.
@@ -56,7 +62,6 @@ public class Game {
         switch (gameStage) {
             case LOBBY:
                 break;
-
             case DEALING:   //Deal cards to players
                 Gdx.app.log("Game - update - DEALING", "Dealing cards to players.");
                 lobby.broadcastChatMessage("You have " + ROUND_SELECT_TIMER + " seconds to choose cards or cards will be automatically chosen");
@@ -81,35 +86,63 @@ public class Game {
                 }
 
                 break;
-            case GET_CARDS:
+            case GET_CARDS: //Get one card from each player, until all the selected cards have been played (5 cards per player).
                 for (Player player : players) {
                     cardsForOneRound.put(player, player.getNextFromSelected());
                 }
                 cardRound++;
                 gameStage = MOVING;
                 if (cardRound > 5) {
-                    /*for (Player player : players) { //TESTING
-                        player.getHit();
-                    }*/
                     gameStage = DEALING;
                     cardRound = 0;
                     Gdx.app.log("Game - update - WAITING", "Moving to MOVING.");
                 }
                 break;
-            case MOVING:    //Move the robots in correct order.
+            case MOVING:    //Play cards in descending priority.
                 if (!cardsForOneRound.isEmpty()) {
                     if (tickCountdown > 0) {
                         tickCountdown--;
                     } else {
-                        useCard();
+                        if (movementStack.size() != 0) {
+                            doMovementStack();
+
+                        } else {
+                            useCard();
+                        }
                     }
-                    return;
+                    break;
                 }
-                gameStage = GET_CARDS;
+                gameStage = DO_TILES;
+                break;
+            case DO_TILES:
+                for (Player player : players) {
+                    Vector2 pos = player.getCurrentPos();
+                    for (TileEntity tileEntity :
+                            gameBoard.tileEntities[Tools.coordToIndex(pos.x, pos.y, gameBoard.getWidth())]) {
+                        tileEntity.walkOn(player);
+                    }
+                    for (TileEntity laser: gameBoard.lasers){
+                        ((Laser) laser).checkIfPlayerAffected(player);
+                    }
+                }
+                gameStage = LEFTOVER_MOVEMENT;
                 break;
 
+            case LEFTOVER_MOVEMENT:
+                if (tickCountdown > 0) {
+                    tickCountdown--;
+                } else {
+                    if (movementStack.size() != 0) {
+                        doMovementStack();
+                        break;
+                    }
+                }
+                gameStage = GET_CARDS;
+
+                break;
+
+
             case VICTORY:
-                // Unreachable at the moment
                 lobby.broadcastChatMessage("Winner winner chicken dinner.");
                 gameStage = LOBBY;
                 break;
@@ -121,6 +154,20 @@ public class Game {
             player.update();
         }
 
+        gameBoard.update();
+
+    }
+
+    private void doMovementStack() {
+        ForceMovement forcedMove = movementStack.pop();
+        if (players.contains(forcedMove.getMoving())) {
+            int amount = forcedMove.getMoving().forceMove(forcedMove, this);
+            if (amount > 1) {
+                setTimerTicks(10);
+            } else {
+                setTimerTicks(10 * amount);
+            }
+        }
     }
 
     /**
@@ -154,7 +201,6 @@ public class Game {
             return;
         }
         if (card == null) {
-
             System.out.println("CARD IS NULL!!!!!!!");
             return;
         }
@@ -186,7 +232,7 @@ public class Game {
      * @param ticks
      */
     private void setTimerTicks(int ticks) {
-        this.tickCountdown = ticks;
+        this.tickCountdown += ticks;
     }
 
     /**
@@ -211,10 +257,10 @@ public class Game {
     }
 
     public void checkWinCondition() {
-        for(Player player : players) {
+        for (Player player : players) {
             System.out.println("Player " + player.getOwner().getName() + " is currently at flag " + player.getFlagsVisited());
             System.out.println("Number of flags in game: " + NUMBER_OF_FLAGS);
-            if(player.getFlagsVisited() == NUMBER_OF_FLAGS) {
+            if (player.getFlagsVisited() == NUMBER_OF_FLAGS) {
                 lobby.broadcastChatMessage("Player " + player.getOwner().getName() + " has won!");
                 gameStage = VICTORY;
             }
@@ -353,7 +399,7 @@ public class Game {
                     }
                 }
                 for (Flag flag : flags) {
-                    if( flag == null) {
+                    if (flag == null) {
                         break;
                     }
                     if (flag.getPos().dst(loc) == 0) {
@@ -362,7 +408,7 @@ public class Game {
                 }
                 suitableLocation = gameBoard.isTileWalkable(loc);
             }
-            Flag flag = new Flag(loc,i+1);
+            Flag flag = new Flag(loc, i + 1);
             flags[i] = flag;
         }
     }

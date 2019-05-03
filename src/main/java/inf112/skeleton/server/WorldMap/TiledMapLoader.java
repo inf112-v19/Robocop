@@ -6,6 +6,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import inf112.skeleton.common.specs.MapFile;
 import inf112.skeleton.common.specs.TileDefinition;
+import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
 
 import java.util.ArrayList;
@@ -19,9 +20,12 @@ public class TiledMapLoader extends GameBoard {
         tiledMap = new TmxMapLoader().load(file.filename);
         walls = new ArrayList[getHeight() * getWidth()];
         tileEntities = new ArrayList[getHeight() * getWidth()];
+        players = new ArrayList[getHeight() * getWidth()];
+        lasers = new ArrayList<>();
         for (int i = 0; i < walls.length; i++) {
             walls[i] = new ArrayList<TileEntity>();
             tileEntities[i] = new ArrayList<TileEntity>();
+            players[i] = new ArrayList<Player>();
         }
         // CHeck for tile entities like lasers and black holes
         for (int i = 0; i < tiledMap.getLayers().getCount(); i++) {

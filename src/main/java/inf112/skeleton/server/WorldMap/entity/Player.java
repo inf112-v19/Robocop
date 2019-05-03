@@ -39,6 +39,7 @@ public class Player {
 
     private int slot;
     private int currentHP;
+    private int initialHP;
     private int flagsVisited;
     private int respawns;
     private Direction direction;
@@ -56,6 +57,7 @@ public class Player {
     public Player(String name, Vector2 pos, int hp, int slot, Direction direction, User owner) {
         this.name = name;
         this.currentHP = hp;
+        this.initialHP = hp;
         this.flagsVisited = 0;
         this.respawns = 0;
         this.currentPos = pos;
@@ -149,6 +151,13 @@ public class Player {
 
     }
 
+    private boolean delayForMovement(long targetTime) {
+        if(System.currentTimeMillis() < targetTime) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Force place the player at a specific location
      *
@@ -207,6 +216,14 @@ public class Player {
             //TODO GAME OVER.
             owner.leaveLobby();
         }
+    }
+
+    /**
+     * Restore the players HP
+     */
+    public void restoreHp() {
+        this.currentHP = this.initialHP;
+        sendUpdate();
     }
 
     /**
@@ -388,7 +405,7 @@ public class Player {
      *
      * @param direction     to move in
      * @param initialAmount to move
-     * @param pushed        player is being pushed by robot or moved by conveyor-belt.
+     * @param pushed        player is being moving by robot or moved by conveyor-belt.
      * @return The amount of tiles the player moved.
      */
     public int startMovement(Direction direction, int initialAmount, boolean pushed) {
@@ -427,7 +444,6 @@ public class Player {
             for (int i = 0; i <= initialAmount; i++) {
                 Vector2 toCheck = new Vector2(this.movingTo.x + dx * i, this.movingTo.y + dy * i);
                 walls = gameBoard.getWallsAtPosition(toCheck);
-
                 if (i == 0) {   //Our current tile. Check if we can leave.
                     for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
@@ -435,11 +451,11 @@ public class Player {
                             break outerloop;
                         }
                     }
+
                 } else {        //All other tiles in our path.
                     for (TileEntity wall : walls) {
                         if (!wall.canLeave(direction)) {
                             actual = i;
-                            checkForFlag(toCheck);
                             break outerloop;
                         }
                         if (!wall.canEnter(direction)) {
@@ -453,38 +469,25 @@ public class Player {
                         break;
                     }
 
+
+                    ArrayList<TileEntity> entities = gameBoard.getTileEntityAtPosition(toCheck);
+                    for (TileEntity entity : entities) {
+                        if(!entity.canContinueWalking()) {
+                            actual = i;
+                            break outerloop;
+                        }
+                    }
+
                     checkForFlag(toCheck);
 
                     for (Player player : players) {
                         if (toCheck.dst(player.currentPos) == 0 && player != this) {
                             int delta = i - 1;    //Open tiles between the two robots.
-
-                            //Move up next to robot.
-                            this.movingTo.add(dx * delta, dy * delta);
-                            this.movingTiles = delta;
                             actual = delta;
-                            sendUpdate();
-                            try {
-                                Thread.sleep((actual + 1) * 500);     //Don't delay, sleep today!
-
-                            } catch (InterruptedException e) {
-                                System.out.println("Quoth the Raven 'Nevermore.'");
-                            }
-
-                            //Move other robot the remaining required distance.
-                            int otherRobotMoved = player.startMovement(direction, initialAmount - delta, true);
-
-                            //Make our robot follow.
-                            try {
-                                Thread.sleep((otherRobotMoved + 1) * 500);     //Don't delay, sleep today!
-
-                            } catch (InterruptedException e) {
-                                System.out.println("Quoth the Raven 'Nevermore.'");
-                            }
-
-                            actual += startMovement(direction, otherRobotMoved, false);
-                            sendUpdate();
-                            return actual;
+                            int remainder = initialAmount-delta;
+                            //Add other robot to queue with remaining amount and who it is moving by.
+                            game.movementStack.add(new ForceMovement(direction, remainder, player,this, true));
+                            break outerloop;
                         }
                     }
                 }
@@ -494,7 +497,7 @@ public class Player {
             sendUpdate();
             return actual;
         }
-        return 0;
+        return initialAmount;
     }
 
     /**
@@ -553,5 +556,13 @@ public class Player {
 
     public boolean isArtificial() {
         return owner.getChannel() == null;
+    }
+
+    public int forceMove(ForceMovement poll, Game game) {
+        int amount = startMovement(poll.getDirection(), poll.getAmount(), poll.isPushed());
+        if (poll.isPushed() && !poll.isTileAction()) {
+            game.movementStack.add(new ForceMovement(poll.getDirection(), amount, poll.getAction(), poll.getMoving(), false));
+        }
+        return amount;
     }
 }

@@ -65,6 +65,13 @@ public class Laser extends Entity {
 
     public void checkLength() {
         int length = 0;
+        ArrayList<Entity> entities = RoboRally.gameBoard.entityLocations[Tools.coordToIndex(pos.x, pos.y, RoboRally.gameBoard.getWidth())];
+        for (Entity entity : entities) {
+            if (entity.isBlocking()) {
+                this.length = length;
+                return;
+            }
+        }
         outerloop:
         while (true) {
             Vector2 toCheck = getTileInDirection(Direction.values()[(direction.ordinal() + 1) % 4], length + 1);
@@ -84,9 +91,9 @@ public class Laser extends Entity {
                     break outerloop;
                 }
             }
-            ArrayList<Entity> entities = RoboRally.gameBoard.entityLocations[Tools.coordToIndex(toCheck.x, toCheck.y, RoboRally.gameBoard.getWidth())];
+            entities = RoboRally.gameBoard.entityLocations[Tools.coordToIndex(toCheck.x, toCheck.y, RoboRally.gameBoard.getWidth())];
             for (Entity entity : entities) {
-                if(entity.isBlocking()){
+                if (entity.isBlocking()) {
                     break outerloop;
                 }
             }
