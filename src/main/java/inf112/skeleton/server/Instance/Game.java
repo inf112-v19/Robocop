@@ -98,9 +98,10 @@ public class Game {
                         tickCountdown--;
                     } else {
                         if(!movementStack.isEmpty()) {
-                            int amount = movementStack.peek().getMoving().forceMove(movementStack.pop(), this);
-                            setTimerTicks(10 * amount);
-                            return;
+                            ForceMovement foo = movementStack.pop();    //Get a movement-action.
+                            int amount = foo.getMoving().forceMove(foo, this);  //Do the action.
+                            setTimerTicks(10 * amount);                 //Set tick-timer so no other events occur.
+                            return;                                     //Return so no cards are played at the same time.
                         }
                         useCard();
                     }
@@ -150,11 +151,9 @@ public class Game {
         Player player = findUserWithHighestPriorityCard();
         Card card = cardsForOneRound.get(player);
         if (player == null) {
-            System.out.println("player IS NULL!!!!!!!");
             return;
         }
         if (card == null) {
-            System.out.println("CARD IS NULL!!!!!!!");
             return;
         }
 
