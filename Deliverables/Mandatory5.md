@@ -40,7 +40,31 @@ tydelige krav som har gjort det enkele å fullføre alle mvp.
 * Vi har erfart er at god kommunikasjon, tydelige krav og jenvnlige møter har vært vikttigst for oss.
  
 ## Deloppgave 2: Krav
--	Liste med fullførte krav 
+
+Finished tasks:
+
+	* One must be able to play a complete round
+
+
+	* Tile entities that fire at the end of turns 
+		* Fire at end of turn
+		* There must be lasers on the board
+		* There must be holes on the board
+		* Functioning assembly line on the board that moves the robots
+			* Double speed assembly line
+		* One must be able to win the game by visiting the last flag(completing a game)
+
+
+
+	* Injury mechanisms
+		* Player gets fewer cards
+	* Game over when lives reach 0
+	* Play against random bots AI
+
+
+
+	* Multiplayer over network
+
 
 ## Deloppgave 3: Kode 
 -	Hvordan bygge prosjekter og kjøre: 
