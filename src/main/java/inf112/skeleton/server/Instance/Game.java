@@ -11,14 +11,13 @@ import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.TiledMapLoader;
 import inf112.skeleton.server.WorldMap.entity.Flag;
+import inf112.skeleton.server.WorldMap.entity.ForceMovement;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
 import inf112.skeleton.server.card.CardDeck;
 import inf112.skeleton.server.user.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 import static inf112.skeleton.common.specs.Direction.values;
 import static inf112.skeleton.server.Instance.GameStage.*;
@@ -35,6 +34,7 @@ public class Game {
     private Flag[] flags = new Flag[NUMBER_OF_FLAGS];
     private ArrayList<Player> players = new ArrayList<>();
     private HashMap<Player, Card> cardsForOneRound = new HashMap<>();
+    public Stack<ForceMovement> movementStack = new Stack<>();
     private GameBoard gameBoard;
 
     private int tickCountdown = 0;  //If greater than 0, the server will not check or perform any action other than count down this number.
@@ -99,6 +99,11 @@ public class Game {
                     if (tickCountdown > 0) {
                         tickCountdown--;
                     } else {
+                        if(!movementStack.isEmpty()) {
+                            int amount = movementStack.peek().getMoving().forceMove(movementStack.pop(), this);
+                            setTimerTicks(10 * amount);
+                            return;
+                        }
                         useCard();
                     }
                     return;
