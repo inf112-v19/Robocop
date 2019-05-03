@@ -395,7 +395,7 @@ public class Player {
      *
      * @param direction     to move in
      * @param initialAmount to move
-     * @param pushed        player is being pushed by robot or moved by conveyor-belt.
+     * @param pushed        player is being moving by robot or moved by conveyor-belt.
      * @return The amount of tiles the player moved.
      */
     public int startMovement(Direction direction, int initialAmount, boolean pushed) {
@@ -459,49 +459,25 @@ public class Player {
                         break;
                     }
 
-                    /*TileEntity entity = gameBoard.getTileEntityAtPosition(toCheck);
-                    if (entity != null) {
-                        if (!entity.canContinueWalking()) {
+
+                    ArrayList<TileEntity> entities = gameBoard.getTileEntityAtPosition(toCheck);
+                    for (TileEntity entity : entities) {
+                        if(!entity.canContinueWalking()) {
                             actual = i;
-                            break;
+                            break outerloop;
                         }
-                    }*/
+                    }
 
                     checkForFlag(toCheck);
 
                     for (Player player : players) {
                         if (toCheck.dst(player.currentPos) == 0 && player != this) {
                             int delta = i - 1;    //Open tiles between the two robots.
-                            System.out.println("Delta: " + delta);
-
-                            //Move up next to robot.
-                            this.movingTo.add(dx * delta, dy * delta);
-                            this.movingTiles = delta;
-                            System.out.println("Moving " + movingTiles);
                             actual = delta;
-                            sendUpdate();
-
-                            //Move other robot the remaining required distance.
-                            System.out.println("Amount: " + initialAmount);
-                            int otherRobotMoved = player.startMovement(direction, initialAmount - delta, true);
-                            System.out.println("otherRobotMoved: " + otherRobotMoved);
-
-                            //Make our robot follow. //TODO Use recursion in order to be able to check every tile that the player moves across. Otherwise, might be able to not register a flag if following a robot.
-                            if (delta == 0) {
-                                //actual += startMovement(direction, otherRobotMoved, false);
-                                this.movingTo.add(dx * otherRobotMoved, dy * otherRobotMoved);
-                                this.movingTiles = otherRobotMoved;
-                                actual += otherRobotMoved;
-                            } else {
-                                //actual += startMovement(direction, initialAmount-(otherRobotMoved-1), false);
-                                this.movingTo.add(dx * (initialAmount - (otherRobotMoved - 1)), dy * (initialAmount - (otherRobotMoved - 1)));
-                                this.movingTiles = initialAmount - (otherRobotMoved - 1);
-                                actual += otherRobotMoved - 1;
-
-                            }
-                            System.out.println("Moving " + movingTiles);
-                            sendUpdate();
-                            return actual;
+                            int remainder = initialAmount-delta;
+                            //Add other robot to queue with remaining amount and who it is moving by.
+                            game.movementStack.add(new ForceMovement(direction, remainder, player,this, true));
+                            break outerloop;
                         }
                     }
                 }
@@ -565,5 +541,13 @@ public class Player {
 
     public boolean isArtificial() {
         return owner.getChannel() == null;
+    }
+
+    public int forceMove(ForceMovement poll, Game game) {
+        int amount = startMovement(poll.getDirection(), poll.getAmount(), poll.isPushed());
+        if (poll.isPushed()) {
+            game.movementStack.add(new ForceMovement(poll.getDirection(), amount, poll.getAction(), poll.getMoving(), false));
+        }
+        return amount;
     }
 }
