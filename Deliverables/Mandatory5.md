@@ -37,8 +37,9 @@ Vi har hadd møter jevnlig som gjør at vi alle har holdt seg oppdatert på hva 
 spesielt god er at vi har hatt 
 tydelige krav som har gjort det enkele å fullføre alle mvp. 
 * Hvis vi skulle fortsette på prosjektet ville vi prøvd å fått det over til en app og grafisk vennesystem. 
-* Vi har erfart er at god kommunikasjon, tydelige krav og jenvnlige møter har vært vikttigst for oss.
- 
+* Vi har erfart er at god kommunikasjon, tydelige krav og jenvnlige møter har vært viktigst for oss.
+* Nokon har ikke vert like gode til å si ifra hvist dei ikke blir ferdige med sin tildelte del.
+
 ## Deloppgave 2: Krav
 
 Finished tasks:
