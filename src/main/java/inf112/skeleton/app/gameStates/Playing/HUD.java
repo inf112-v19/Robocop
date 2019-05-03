@@ -104,6 +104,10 @@ public class HUD {
         // Set projection matrix for correct positioning on screen.
         sb.setProjectionMatrix(stage.getCamera().combined);
 
+        if (statusBar != null) {
+            statusBar.displayCards();
+        }
+
         // Draw stage to screen
         stage.draw();
 
@@ -171,4 +175,6 @@ public class HUD {
     public void statusBar_powerDown(String username, boolean powerDown) {
         statusBar.powerDown(username, powerDown);
     }
+    public void statusBar_hideCards() {statusBar.hideCards();}
+    public void statusBar_showCards() {statusBar.displayCards();}
 }
