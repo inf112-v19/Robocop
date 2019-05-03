@@ -4,14 +4,15 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import inf112.skeleton.common.specs.Direction;
 import inf112.skeleton.common.specs.TileDefinition;
+import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
 
 public class Wall extends TileEntity {
 
 
-    public Wall(TiledMapTile tile, int x, int y, TiledMapTileLayer.Cell cell) {
-        super(tile, x, y, cell);
+    public Wall(TiledMapTile tile, int x, int y, TiledMapTileLayer.Cell cell, GameBoard board) {
+        super(tile, x, y, cell, board);
     }
 
     /**

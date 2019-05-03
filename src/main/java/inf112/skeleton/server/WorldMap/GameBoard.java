@@ -5,6 +5,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.specs.TileDefinition;
 import inf112.skeleton.common.utility.Tools;
+import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.*;
 
@@ -14,6 +15,8 @@ public abstract class GameBoard {
 
     public ArrayList<TileEntity>[] walls;
     public ArrayList<TileEntity>[] tileEntities;
+    public ArrayList<Laser> lasers;
+    public ArrayList<Player>[] players;
 
 
     /**
@@ -29,10 +32,11 @@ public abstract class GameBoard {
             case LASER:
             case LASERSOURCE:
             case LASERCROSS:
-                newTile = new Laser(tile, x, y, cell);
+                newTile = new Laser(tile, x, y, cell, this);
+                lasers.add((Laser) newTile);
                 break;
             case BLACK_HOLE:
-                newTile = new BlackHole(tile, x, y, cell);
+                newTile = new BlackHole(tile, x, y, cell, this);
                 break;
             case VERTICAL:
             case BELT_HORISONTAL:
@@ -40,15 +44,15 @@ public abstract class GameBoard {
             case TBRACKETFLIPPED:
             case RIGHTTURN:
             case LEFTTURN:
-                newTile = new Belt(tile, x, y, cell);
+                newTile = new Belt(tile, x, y, cell, this);
                 break;
             case WALL:
             case LWALL:
-                walls[Tools.coordToIndex(x, y, getWidth())].add(new Wall(tile, x, y, cell));
+                walls[Tools.coordToIndex(x, y, getWidth())].add(new Wall(tile, x, y, cell, this));
                 return;
             case DWRENCH:
             case WRENCH:
-                newTile = new Repair(tile, x, y, cell);
+                newTile = new Repair(tile, x, y, cell, this);
                 break;
 
             default:

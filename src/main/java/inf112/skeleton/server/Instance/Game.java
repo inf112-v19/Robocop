@@ -14,6 +14,7 @@ import inf112.skeleton.server.WorldMap.entity.Flag;
 import inf112.skeleton.server.WorldMap.entity.ForceMovement;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
+import inf112.skeleton.server.WorldMap.entity.mapEntities.Laser;
 import inf112.skeleton.server.card.CardDeck;
 import inf112.skeleton.server.user.User;
 
@@ -101,22 +102,15 @@ public class Game {
                 if (!cardsForOneRound.isEmpty()) {
                     if (tickCountdown > 0) {
                         tickCountdown--;
-                        System.out.println("sleep");
                     } else {
                         if (movementStack.size() != 0) {
-                            System.out.println("Forcing movement");
-                            ForceMovement forcedMove = movementStack.pop();
-                            int amount = forcedMove.getMoving().forceMove(forcedMove, this);
-                            if(amount > 1) {
-                                setTimerTicks(10);
-                            } else {
-                                setTimerTicks(10 * amount);
-                            }
+                            doMovementStack();
+
                         } else {
                             useCard();
                         }
                     }
-                    return;
+                    break;
                 }
                 gameStage = DO_TILES;
                 break;
@@ -127,9 +121,26 @@ public class Game {
                             gameBoard.tileEntities[Tools.coordToIndex(pos.x, pos.y, gameBoard.getWidth())]) {
                         tileEntity.walkOn(player);
                     }
+                    for (TileEntity laser: gameBoard.lasers){
+                        ((Laser) laser).checkIfPlayerAffected(player);
+                    }
+                }
+                gameStage = LEFTOVER_MOVEMENT;
+                break;
+
+            case LEFTOVER_MOVEMENT:
+                if (tickCountdown > 0) {
+                    tickCountdown--;
+                } else {
+                    if (movementStack.size() != 0) {
+                        doMovementStack();
+                        break;
+                    }
                 }
                 gameStage = GET_CARDS;
+
                 break;
+
 
             case VICTORY:
                 lobby.broadcastChatMessage("Winner winner chicken dinner.");
@@ -143,6 +154,20 @@ public class Game {
             player.update();
         }
 
+        gameBoard.update();
+
+    }
+
+    private void doMovementStack() {
+        ForceMovement forcedMove = movementStack.pop();
+        if (players.contains(forcedMove.getMoving())) {
+            int amount = forcedMove.getMoving().forceMove(forcedMove, this);
+            if (amount > 1) {
+                setTimerTicks(10);
+            } else {
+                setTimerTicks(10 * amount);
+            }
+        }
     }
 
     /**
@@ -169,7 +194,6 @@ public class Game {
      * Plays the highest priority card.
      */
     private void useCard() {
-        System.out.println("USECARD");
         Player player = findUserWithHighestPriorityCard();
         Card card = cardsForOneRound.get(player);
         if (player == null) {

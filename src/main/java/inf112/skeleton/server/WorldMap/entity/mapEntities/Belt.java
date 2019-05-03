@@ -3,6 +3,7 @@ package inf112.skeleton.server.WorldMap.entity.mapEntities;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import inf112.skeleton.common.specs.Direction;
+import inf112.skeleton.server.WorldMap.GameBoard;
 import inf112.skeleton.server.WorldMap.entity.ForceMovement;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
@@ -10,8 +11,8 @@ import inf112.skeleton.server.WorldMap.entity.TileEntity;
 public class Belt extends TileEntity {
 
 
-    public Belt(TiledMapTile tile, int x, int y, TiledMapTileLayer.Cell cell) {
-        super(tile, x, y, cell);
+    public Belt(TiledMapTile tile, int x, int y, TiledMapTileLayer.Cell cell, GameBoard board) {
+        super(tile, x, y, cell, board);
     }
 
     /**
@@ -21,8 +22,7 @@ public class Belt extends TileEntity {
      */
     @Override
     public void walkOn(Player player) {
-//        player.startMovement(Direction.NORTH, 4, true);
-        player.getOwner().getLobby().getGame().movementStack.add(new ForceMovement(Direction.NORTH, 1, player, true, true));
+        player.getOwner().getLobby().getGame().movementStack.add(new ForceMovement(getDirection(), 1, player, true, true));
 
 
     }
