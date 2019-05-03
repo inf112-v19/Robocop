@@ -3,7 +3,10 @@ package inf112.skeleton.app.gameStates.Playing;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.skeleton.app.GUI.ChatBox;
@@ -14,6 +17,7 @@ import inf112.skeleton.app.RoboRally;
 import inf112.skeleton.app.board.entity.Player;
 import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.common.packet.data.ChatMessagePacket;
+import inf112.skeleton.common.packet.data.TimerPacket;
 import io.netty.channel.Channel;
 
 import java.util.Collection;
@@ -33,9 +37,10 @@ public class HUD {
 
     /**
      * Initializes display which may be seen on top of actual game.
+     *
      * @param gameStateManager lets you manage game-states
      * @param inputMultiplexer lets multiple objects receive input
-     * @param channel lets you communicate with server
+     * @param channel          lets you communicate with server
      */
     HUD(GameStateManager gameStateManager, InputMultiplexer inputMultiplexer, final Channel channel) {
         this.gsm = gameStateManager;
@@ -65,9 +70,10 @@ public class HUD {
 
     /**
      * Get the Player Deck
+     *
      * @return PlayerDeck
      */
-    public PlayerDeck getPlayerDeck(){
+    public PlayerDeck getPlayerDeck() {
         return playerDeck;
     }
 
@@ -79,15 +85,15 @@ public class HUD {
 
     /**
      * Draw HUD to screen
+     *
      * @param sb sprite-batch
      */
     public void render(SpriteBatch sb) {
         // Part of making sure that the map shouldn't be moved when scrolling in chat
         if (!Gdx.input.isTouched())
             gameChatIsTouched = false;
-
         // Act stage for certain features as chat-box to work
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1/30f));
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 
         // Update players displayed in status-bar.
         if (statusBar != null && RoboRally.gameBoard.getPlayers().size() + 1 != statusBar.size()) {
@@ -105,11 +111,20 @@ public class HUD {
         // Set projection matrix for correct positioning on screen.
         sb.setProjectionMatrix(stage.getCamera().combined);
 
-        if (statusBar != null) {
-            statusBar.displayCards();
-            statusBar.setPosition(stage.getWidth() - statusBar.getWidth(),stage.getHeight() - statusBar.getHeight());
-            turnTimer.setPosition(stage.getWidth() - turnTimer.getMinWidth() - 2,stage.getHeight() - statusBar.getHeight() - turnTimer.getHeight() - 2);
+        if (RoboRally.roboRally.timerPacket != null) {
+            turnTimer = new Timer(RoboRally.roboRally.timerPacket.getMessage(), RoboRally.roboRally.timerPacket.getMs(), 1);
+            turnTimer.setSize(turnTimer.getMinWidth(), turnTimer.getMinHeight());
+            turnTimer.start();
+            RoboRally.roboRally.timerPacket = null;
         }
+
+        if (statusBar != null) {
+
+            statusBar.displayCards();
+            statusBar.setPosition(stage.getWidth() - statusBar.getWidth(), stage.getHeight() - statusBar.getHeight());
+            turnTimer.setPosition(stage.getWidth() - turnTimer.getMinWidth() - 2, stage.getHeight() - statusBar.getHeight() - turnTimer.getHeight() - 2);
+        }
+
 
         // Draw stage to screen
         stage.draw();
@@ -122,13 +137,14 @@ public class HUD {
 
     /**
      * Update stage viewport of HUD whenever screen is resized
-     * @param width new width of screen
+     *
+     * @param width  new width of screen
      * @param height new height of screen
      */
     public void resize(int width, int height) {
         // TODO: Fix bug where event-listener click-box won't move along with button.
-        stage.getViewport().update(width,height);
-        if(playerDeck != null) {
+        stage.getViewport().update(width, height);
+        if (playerDeck != null) {
             playerDeck.resize(width, height);
         }
     }
@@ -142,7 +158,7 @@ public class HUD {
         gameChat.addMessage(new ChatMessagePacket("[INFO]: Available commands: "));
         gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!move <direction> <length>\" (north,south,east,west)"));
         gameChat.addMessage(new ChatMessagePacket("[INFO]:     \"!players\""));
-        gameChat.setSize(600,200);
+        gameChat.setSize(600, 200);
 
         gameChat.setTouchable(Touchable.enabled);
         gameChat.addListener(new InputListener() {
@@ -157,6 +173,7 @@ public class HUD {
     public void statusBar_addPlayer(Player player) {
         statusBar.addStatus(player);
     }
+
     private void statusBar_clearPlayers() {
         statusBar.clear();
     }
@@ -164,18 +181,28 @@ public class HUD {
     public void statusBar_addDamage(String username) {
         statusBar.addDamage(username);
     }
+
     public void statusBar_removeDamage(String username) {
         statusBar.removeDamage(username);
     }
+
     public void statusBar_addLife(String username) {
         statusBar.addLife(username);
     }
+
     public void statusBar_removeLife(String username) {
         statusBar.removeLife(username);
     }
+
     public void statusBar_powerDown(String username, boolean powerDown) {
         statusBar.powerDown(username, powerDown);
     }
-    public void statusBar_hideCards() {statusBar.hideCards();}
-    public void statusBar_showCards() {statusBar.displayCards();}
+
+    public void statusBar_hideCards() {
+        statusBar.hideCards();
+    }
+
+    public void statusBar_showCards() {
+        statusBar.displayCards();
+    }
 }

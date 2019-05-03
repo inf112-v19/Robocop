@@ -1,7 +1,6 @@
 package inf112.skeleton.app.Socket;
 
 
-import com.badlogic.gdx.Gdx;
 import com.google.gson.JsonObject;
 import inf112.skeleton.app.GUI.ChatBox;
 import inf112.skeleton.app.RoboRally;
@@ -53,12 +52,8 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
             case INIT_LOCALPLAYER:
                 RoboRally.gameBoard.setupPlayer(PlayerInitPacket.parseJSON(jsonObject));
                 break;
-            case TIME_TO_SELECT:
-                TimeToSelectCardsPacket ttsc = TimeToSelectCardsPacket.parseJSON(jsonObject);
-                if (RoboRally.gameBoard.hud != null) {
-                    RoboRally.gameBoard.hud.roundSelectTime = ttsc.timeToSelect;
-                }
-                //TODO no idea when the hud is actually initialized, figure out so that feature #82 works.
+            case TIMER:
+                RoboRally.roboRally.timerPacket = TimerPacket.parseJSON(jsonObject);
                 break;
             case CHATMESSAGE:
                 if (ChatBox.chatBox != null) {

@@ -27,7 +27,6 @@ public class Laser extends TileEntity {
     @Override
     public void walkOn(Player player) {
         checkLength();
-        System.out.println("lazor: " + length);
     }
 
     public void checkIfPlayerAffected(Player player) {
@@ -38,7 +37,6 @@ public class Laser extends TileEntity {
                 toCheck = getTileInDirection(Direction.values()[(getDirection().ordinal() + 1) % 4], i);
 
             }
-            System.out.println(player.getCurrentPos().dst(toCheck));
             if (player.getCurrentPos().dst(toCheck) == 0 ){
                 player.getHit();
             }

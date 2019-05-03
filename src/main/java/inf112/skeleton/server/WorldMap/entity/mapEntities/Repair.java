@@ -40,10 +40,6 @@ public class Repair extends TileEntity  {
      */
     @Override
     public boolean canContinueWalking() {
-        System.out.printf("Rotation %d \n", cell.getRotation());
-        System.out.println("Flip vert " + cell.getFlipHorizontally());
-        System.out.println("Flip horiz " + cell.getFlipHorizontally());
-        System.out.println(getDirection().name());
         return true;
     }
 

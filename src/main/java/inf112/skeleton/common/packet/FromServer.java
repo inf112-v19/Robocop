@@ -22,5 +22,6 @@ public enum FromServer {
     INIT_LOCALPLAYER,
     SEND_FLAGS,
     SEND_FLAG_UPDATE,
-    CARDS_SELECTED
+    CARDS_SELECTED,
+    TIMER
 }
