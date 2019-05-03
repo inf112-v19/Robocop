@@ -79,6 +79,9 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
             case CARD_HAND_PACKET:
                 CardHandPacket cardHandPacket = CardHandPacket.parseJSON(jsonObject);
                 RoboRally.gameBoard.receiveCardHand(cardHandPacket);
+                if (RoboRally.roboRally.gsm.peek() instanceof State_Playing) {
+                    ((State_Playing) RoboRally.roboRally.gsm.peek()).setCardsSelectedPacket(null);
+                }
                 break;
             case SEND_FLAGS:
                 FlagsPacket flags = FlagsPacket.parseJSON(jsonObject);
@@ -90,7 +93,7 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 break;
             case REMOVE_PLAYER:
                 PlayerRemovePacket playerRemovePacket = PlayerRemovePacket.parseJSON(jsonObject);
-                if(RoboRally.gameBoard != null) {
+                if (RoboRally.gameBoard != null) {
                     RoboRally.gameBoard.removePlayer(playerRemovePacket);
                 }
                 break;
@@ -146,6 +149,11 @@ public class GameSocketHandler extends SimpleChannelInboundHandler<String> {
                 break;
             case ERROR_LOBBY_RESPONSE:
                 RoboRally.roboRally.gsm.peek().addMessageToScreen("Lobby already exists...");
+                break;
+            case CARDS_SELECTED:
+                if (RoboRally.roboRally.gsm.peek() instanceof State_Playing) {
+                    ((State_Playing) RoboRally.roboRally.gsm.peek()).setCardsSelectedPacket(CardsSelectedPacket.parseJSON(jsonObject));
+                }
                 break;
             default:
                 System.err.println("Unhandled packet: " + packetId.name());

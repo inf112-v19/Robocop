@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.common.packet.FromServer;
 import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.CardPacket;
+import inf112.skeleton.common.packet.data.CardsSelectedPacket;
 import inf112.skeleton.common.packet.data.StateChangePacket;
 import inf112.skeleton.common.specs.*;
 import inf112.skeleton.common.utility.Tools;
@@ -82,6 +83,7 @@ public class Game {
                     if (!allPlayersReady() && !players.isEmpty()) {
                         forcePlayersReady();
                     }
+                    sendAllCards();
                     gameStage = GET_CARDS;
                 }
 
@@ -121,7 +123,7 @@ public class Game {
                             gameBoard.tileEntities[Tools.coordToIndex(pos.x, pos.y, gameBoard.getWidth())]) {
                         tileEntity.walkOn(player);
                     }
-                    for (TileEntity laser: gameBoard.lasers){
+                    for (TileEntity laser : gameBoard.lasers) {
                         ((Laser) laser).checkIfPlayerAffected(player);
                     }
                 }
@@ -138,9 +140,7 @@ public class Game {
                     }
                 }
                 gameStage = GET_CARDS;
-
                 break;
-
 
             case VICTORY:
                 lobby.broadcastChatMessage("Winner winner chicken dinner.");
@@ -156,6 +156,17 @@ public class Game {
 
         gameBoard.update();
 
+    }
+
+    private void sendAllCards() {
+        CardsSelectedPacket cardsSelectedPacket = new CardsSelectedPacket();
+
+        for (Player player : players) {
+            cardsSelectedPacket.getPlayerCards().put(player.getOwner().getUUID(),player.getSelectedCards());
+        }
+
+        Packet pkt = new Packet(FromServer.CARDS_SELECTED, cardsSelectedPacket);
+        lobby.broadcastPacket(pkt);
     }
 
     private void doMovementStack() {
@@ -197,11 +208,9 @@ public class Game {
         Player player = findUserWithHighestPriorityCard();
         Card card = cardsForOneRound.get(player);
         if (player == null) {
-            System.out.println("player IS NULL!!!!!!!");
             return;
         }
         if (card == null) {
-            System.out.println("CARD IS NULL!!!!!!!");
             return;
         }
 

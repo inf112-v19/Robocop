@@ -469,7 +469,6 @@ public class Player {
                         break;
                     }
 
-
                     ArrayList<TileEntity> entities = gameBoard.getTileEntityAtPosition(toCheck);
                     for (TileEntity entity : entities) {
                         if(!entity.canContinueWalking()) {
@@ -484,8 +483,9 @@ public class Player {
                         if (toCheck.dst(player.currentPos) == 0 && player != this) {
                             int delta = i - 1;    //Open tiles between the two robots.
                             actual = delta;
-                            int remainder = initialAmount-delta;
+
                             //Add other robot to queue with remaining amount and who it is moving by.
+                            int remainder = initialAmount-delta;
                             game.movementStack.add(new ForceMovement(direction, remainder, player,this, true));
                             break outerloop;
                         }
@@ -564,5 +564,9 @@ public class Player {
             game.movementStack.add(new ForceMovement(poll.getDirection(), amount, poll.getAction(), poll.getMoving(), false));
         }
         return amount;
+    }
+
+    public Card[] getSelectedCards(){
+        return cardsSelected;
     }
 }
