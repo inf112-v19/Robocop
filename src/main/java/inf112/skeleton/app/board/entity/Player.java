@@ -3,8 +3,6 @@ package inf112.skeleton.app.board.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import inf112.skeleton.app.RoboRally;
-import inf112.skeleton.common.packet.Packet;
-import inf112.skeleton.common.packet.ToServer;
 import inf112.skeleton.common.packet.data.CardHandPacket;
 import inf112.skeleton.common.packet.data.CardPacket;
 import inf112.skeleton.common.packet.data.UpdatePlayerPacket;
@@ -60,7 +58,8 @@ public class Player {
             this.robot = new Robot(initialPos.x, initialPos.y, slot, this);
             try {
                 RoboRally.gameBoard.addEntity(robot);
-            } catch (NullPointerException e) {}
+            } catch (NullPointerException e) {
+            }
         }
     }
 
@@ -101,7 +100,6 @@ public class Player {
         while (true) {
             try {
                 RoboRally.gameBoard.hud.getPlayerDeck().resetDeck();
-                RoboRally.gameBoard.hud.turnTimer.start();
                 return;
             } catch (NullPointerException npe) {
 
@@ -158,7 +156,7 @@ public class Player {
         }
         for (int i = burntAmount; i < selectedCards.length; i++) {
             System.out.println("Force select: normal i " + i);
-            selectedCards[i] = cards[i-burntAmount];
+            selectedCards[i] = cards[i - burntAmount];
         }
     }
 

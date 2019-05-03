@@ -7,6 +7,7 @@ import inf112.skeleton.common.packet.Packet;
 import inf112.skeleton.common.packet.data.CardPacket;
 import inf112.skeleton.common.packet.data.CardsSelectedPacket;
 import inf112.skeleton.common.packet.data.StateChangePacket;
+import inf112.skeleton.common.packet.data.TimerPacket;
 import inf112.skeleton.common.specs.*;
 import inf112.skeleton.common.utility.Tools;
 import inf112.skeleton.server.WorldMap.GameBoard;
@@ -29,7 +30,7 @@ import static inf112.skeleton.server.Instance.GameStage.*;
 
 
 public class Game {
-    private final int ROUND_SELECT_TIMER = 300; //The time in seconds the player will have to select their cards.
+    private final int ROUND_SELECT_TIMER = 30; //The time in seconds the player will have to select their cards.
     private final int NUMBER_OF_FLAGS = 9;
     private final int INITIAL_PLAYER_HP = 9;
     private Random random = new Random();
@@ -64,16 +65,21 @@ public class Game {
             case LOBBY:
                 break;
             case DEALING:   //Deal cards to players
-                Gdx.app.log("Game - update - DEALING", "Dealing cards to players.");
-                lobby.broadcastChatMessage("You have " + ROUND_SELECT_TIMER + " seconds to choose cards or cards will be automatically chosen");
-                for (Player player : players) {
-                    player.sendCardHandToClient(createCardHand(player));
-                }
-                deck = new CardDeck();
+                if (tickCountdown > 0) {
+                    tickCountdown--;
+                } else {
+                    Gdx.app.log("Game - update - DEALING", "Dealing cards to players.");
+                    lobby.broadcastChatMessage("You have " + ROUND_SELECT_TIMER + " seconds to choose cards or cards will be automatically chosen");
+                    lobby.broadcastPacket(new Packet(FromServer.TIMER, new TimerPacket(ROUND_SELECT_TIMER, "Time to choose cards: ")));
+                    for (Player player : players) {
+                        player.sendCardHandToClient(createCardHand(player));
+                    }
+                    deck = new CardDeck();
 
-                setTimer(ROUND_SELECT_TIMER);
-                Gdx.app.log("Game - update - DEALING", "Moving to WAITING.");
-                gameStage = WAITING;
+                    setTimer(ROUND_SELECT_TIMER);
+                    Gdx.app.log("Game - update - DEALING", "Moving to WAITING.");
+                    gameStage = WAITING;
+                }
                 break;
 
             case WAITING:   //Wait for players to choose cards from their hand or send card after request.
@@ -363,6 +369,8 @@ public class Game {
         }
         setTimer(ROUND_SELECT_TIMER);
         gameStage = WAITING;
+        lobby.broadcastChatMessage("You have " + ROUND_SELECT_TIMER + " seconds to choose cards or cards will be automatically chosen");
+        lobby.broadcastPacket(new Packet(FromServer.TIMER, new TimerPacket(ROUND_SELECT_TIMER, "Time to choose cards: ")));
         deck = new CardDeck();
     }
 

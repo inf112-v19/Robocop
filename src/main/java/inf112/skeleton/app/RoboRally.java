@@ -14,6 +14,7 @@ import inf112.skeleton.app.gameStates.GameStateManager;
 import inf112.skeleton.app.gameStates.LoginScreen.State_Login;
 import inf112.skeleton.common.packet.data.ClientInitPacket;
 import inf112.skeleton.common.packet.data.InitMapPacket;
+import inf112.skeleton.common.packet.data.TimerPacket;
 import inf112.skeleton.common.specs.MapFile;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -34,6 +35,8 @@ public class RoboRally extends ApplicationAdapter {
     public static String username = "";
     public static String clientInfo = "";
     public static GraphicsLoader graphics;
+    public TimerPacket timerPacket;
+
 
     public static void setClientInfo(ClientInitPacket pkt) {
         clientInfo = pkt.getUUID();
