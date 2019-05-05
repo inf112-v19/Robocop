@@ -497,7 +497,7 @@ public class Player {
             sendUpdate();
             return actual;
         }
-        return initialAmount;
+        return 0;
     }
 
     /**

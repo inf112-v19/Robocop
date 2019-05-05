@@ -17,6 +17,7 @@ import inf112.skeleton.server.WorldMap.entity.Flag;
 import inf112.skeleton.server.WorldMap.entity.ForceMovement;
 import inf112.skeleton.server.WorldMap.entity.Player;
 import inf112.skeleton.server.WorldMap.entity.TileEntity;
+import inf112.skeleton.server.WorldMap.entity.mapEntities.BlackHole;
 import inf112.skeleton.server.WorldMap.entity.mapEntities.Laser;
 import inf112.skeleton.server.card.CardDeck;
 import inf112.skeleton.server.user.User;
@@ -430,36 +431,54 @@ public class Game {
 
     public void placeFlags() {
         for (int i = 0; i < NUMBER_OF_FLAGS; i++) {
-            boolean suitableLocation = false;
-            Vector2 loc = new Vector2(0, 0);
+            boolean suitableLocation;
+            Vector2 loc;
 
             whileloop:
-            while (!suitableLocation) {
+            do {
                 loc = new Vector2(random.nextInt(gameBoard.getWidth()), random.nextInt(gameBoard.getHeight()));
+                //Check if a player has been placed at the location.
                 for (Player player : players) {
                     if (player.getCurrentPos().dst(loc) == 0) {
                         break whileloop;
                     }
                 }
+
+                //Check if there's already a flag at the location.
                 for (Flag flag : flags) {
                     if (flag == null) {
-                        break;
+                        continue ;
                     }
-                    if (flag.getPos().dst(loc) == 0) {
+                    if (flag.getPos().x == loc.x && flag.getPos().y == loc.y) {
+                        System.out.println("BREAKING WHILE LOOP I GUESS");
                         break whileloop;
                     }
                 }
-                ArrayList<TileEntity> entities = gameBoard.getTileEntityAtPosition(loc);
-                for (TileEntity entity : entities) {
-                    if(!entity.canContinueWalking()) {
-                        break whileloop;
-                    }
-                }
-                suitableLocation = gameBoard.isTileWalkable(loc);
-            }
+
+                //Check if there's a black hole on the tile.
+                suitableLocation = notBlackHole(loc);
+
+            } while (!suitableLocation);
+
             Flag flag = new Flag(loc, i + 1);
             flags[i] = flag;
         }
+    }
+
+    /**
+     * Don't ask how or why it was necessary to break this loop out into it's own method, but for some reason
+     * the exact same code (just with break whileloop: istead of return false) allows flags to be placed on black holes.
+     * @param loc to check for black hole.
+     * @return False if the location contains a black hole, true if free for holes.
+     */
+    private boolean notBlackHole(Vector2 loc) {
+        ArrayList<TileEntity> entities = gameBoard.getTileEntityAtPosition(loc);
+        for (TileEntity entity : entities) {
+            if(!entity.canContinueWalking()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Flag[] getFlags() {
