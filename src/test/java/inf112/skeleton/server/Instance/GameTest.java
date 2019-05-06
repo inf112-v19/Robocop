@@ -52,23 +52,20 @@ public class GameTest {
 
     @Test
     public void testFlags() {
-        for (int i = 0; i < 3000; i++) {
+        for (int i = 0; i < 300; i++) {
             game = new Game(dummyLobby, dummyMap);
             Flag[] gameFlags = game.getFlags();
-            for (Flag flag : gameFlags) {
-                Vector2 loc = flag.getPos();
+            for (int j = 0; j < gameFlags.length; j++) {
+                //Check for black holes.
+                Vector2 loc = gameFlags[j].getPos();
                 for (TileEntity entity : game.getGameBoard().getTileEntityAtPosition(loc)) {
                     if (entity != null) {
                         assertTrue(entity.canContinueWalking());
                     }
                 }
-                for (Flag flag2 : gameFlags) {
-                    if (flag.equals(flag2)) {
-                        continue;
-                    }
-                    Vector2 loc2 = flag2.getPos();
-                    System.out.println(loc.dst(loc2));
-                    assertTrue(loc.dst(loc2) > 0);
+                //Check for duplicates.
+                for (int k = j+1; k < gameFlags.length; k++) {
+                    assertNotEquals(gameFlags[j], gameFlags[k]);
                 }
             }
         }

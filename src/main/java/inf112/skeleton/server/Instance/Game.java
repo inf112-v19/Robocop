@@ -436,7 +436,7 @@ public class Game {
 
             whileloop:
             do {
-                loc = new Vector2(random.nextInt(gameBoard.getWidth()), random.nextInt(gameBoard.getHeight()));
+                loc = new Vector2(random.nextInt(gameBoard.getWidth()-2)+1, random.nextInt(gameBoard.getHeight()-2)+1);
                 //Check if a player has been placed at the location.
                 for (Player player : players) {
                     if (player.getCurrentPos().dst(loc) == 0) {
@@ -447,10 +447,9 @@ public class Game {
                 //Check if there's already a flag at the location.
                 for (Flag flag : flags) {
                     if (flag == null) {
-                        continue ;
+                        continue;
                     }
                     if (flag.getPos().x == loc.x && flag.getPos().y == loc.y) {
-                        System.out.println("BREAKING WHILE LOOP I GUESS");
                         break whileloop;
                     }
                 }
@@ -467,7 +466,7 @@ public class Game {
 
     /**
      * Don't ask how or why it was necessary to break this loop out into it's own method, but for some reason
-     * the exact same code (just with break whileloop: istead of return false) allows flags to be placed on black holes.
+     * the exact same code (just with break whileloop: instead of return false) allows flags to be placed on black holes.
      * @param loc to check for black hole.
      * @return False if the location contains a black hole, true if free for holes.
      */
