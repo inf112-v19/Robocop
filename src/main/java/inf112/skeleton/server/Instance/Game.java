@@ -439,7 +439,7 @@ public class Game {
                 loc = new Vector2(random.nextInt(gameBoard.getWidth()-2)+1, random.nextInt(gameBoard.getHeight()-2)+1);
                 //Check if a player has been placed at the location.
                 for (Player player : players) {
-                    if (player.getCurrentPos().dst(loc) == 0) {
+                    if (player.getCurrentPos().equals(loc)) {
                         break whileloop;
                     }
                 }
@@ -449,7 +449,7 @@ public class Game {
                     if (flag == null) {
                         continue;
                     }
-                    if (flag.getPos().x == loc.x && flag.getPos().y == loc.y) {
+                    if(flag.getPos().equals(loc)) {
                         break whileloop;
                     }
                 }
